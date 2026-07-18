@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>管理者画面｜ポンコツ倶楽部</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+
+      color: #17364d;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dff5ff 0%,
+          #eefaff 210px,
+          #f8fcff 480px,
+          #edf4f8 100%
+        );
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      position: relative;
+      overflow: hidden;
+
+      padding: 27px 18px 39px;
+
+      color: white;
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #0b5f99 0%,
+          #2793c8 55%,
+          #8fd9f2 100%
+        );
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: -30px;
+
+      height: 66px;
+
+      background: #eefaff;
+
+      clip-path: polygon(
+        0 72%,
+        10% 48%,
+        20% 68%,
+        31% 28%,
+        43% 66%,
+        55% 39%,
+        67% 72%,
+        79% 34%,
+        90% 61%,
+        100% 40%,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .header h1 {
+      position: relative;
+      z-index: 1;
+
+      margin: 0;
+
+      font-size: 25px;
+    }
+
+    .header p {
+      position: relative;
+      z-index: 1;
+
+      margin: 6px 0 0;
+
+      font-size: 13px;
+      opacity: 0.92;
+    }
+
+    .container {
+      width: min(calc(100% - 24px), 760px);
+      margin: 0 auto;
+      padding: 18px 0 42px;
+    }
+
+    .back-link {
+      display: inline-block;
+
+      margin-bottom: 16px;
+
+      color: #176a99;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      margin: 6px 2px 13px;
+
+      font-size: 20px;
+    }
+
+    .section-title::before {
+      content: "";
+
+      width: 5px;
+      height: 23px;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          #1282bc,
+          #76cfe9
+        );
+    }
+
+    .loading-card,
+    .empty-card,
+    .error-card {
+      padding: 22px 16px;
+
+      border-radius: 16px;
+
+      text-align: center;
+
+      background:
+        rgba(255, 255, 255, 0.95);
+
+      box-shadow:
+        0 5px 17px
+        rgba(34, 91, 125, 0.08);
+    }
+
+    .loading-card,
+    .empty-card {
+      color: #67889b;
+    }
+
+    .error-card {
+      color: #bd3838;
+      font-weight: bold;
+    }
+
+    .trip-card {
+      padding: 16px;
+
+      border:
+        1px solid
+        rgba(87, 155, 194, 0.23);
+
+      border-left:
+        5px solid
+        #2a95c8;
+
+      border-radius: 16px;
+
+      background:
+        rgba(255, 255, 255, 0.97);
+
+      box-shadow:
+        0 5px 17px
+        rgba(34, 91, 125, 0.08);
+    }
+
+    .trip-card + .trip-card {
+      margin-top: 12px;
+    }
+
+    .trip-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .trip-title {
+      margin: 0;
+
+      color: #173d58;
+      font-size: 19px;
+      line-height: 1.45;
+    }
+
+    .status-badge {
+      flex-shrink: 0;
+
+      padding: 5px 9px;
+
+      border-radius: 20px;
+
+      color: #996000;
+      font-size: 12px;
+      font-weight: bold;
+
+      background: #fff0cf;
+    }
+
+    .trip-info {
+      margin: 9px 0 0;
+
+      color: #557185;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .trip-info strong {
+      color: #284f69;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+
+      margin-top: 15px;
+    }
+
+    .reject-button,
+    .approve-button {
+      padding: 11px 8px;
+
+      border-radius: 10px;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .reject-button {
+      border: 1px solid #d79a9a;
+
+      color: #ad3f3f;
+      background: white;
+    }
+
+    .approve-button {
+      border: none;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #2aa8d3
+        );
+    }
+
+    .approve-button:disabled,
+    .reject-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    @media (max-width: 520px) {
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+
+      .trip-title-row {
+        display: block;
+      }
+
+      .status-badge {
+        display: inline-block;
+        margin-top: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>管理者画面</h1>
+    <p>Trip Approval Management</p>
+  </header>
+
+  <main class="container">
+
+    <a
+      class="back-link"
+      href="index.html"
+    >
+      ← ホームへ戻る
+    </a>
+
+    <h2 class="section-title">
+      承認待ちの山行届
+    </h2>
+
+    <div id="trip-list">
+
+      <div class="loading-card">
+        山行届を読み込んでいます...
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="portal-auth.js?v=2"></script>
+  <script src="admin.js?v=1"></script>
+
+</body>
+</html>

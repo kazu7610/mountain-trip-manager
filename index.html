@@ -139,6 +139,28 @@
       cursor: pointer;
     }
 
+        .admin-button {
+      width: 100%;
+
+      margin-top: 11px;
+      padding: 12px;
+
+      border:
+        1px solid
+        #78b8d7;
+
+      border-radius: 12px;
+
+      color: #176a99;
+      font-size: 15px;
+      font-weight: bold;
+
+      background:
+        rgba(255, 255, 255, 0.92);
+
+      cursor: pointer;
+    }
+
     .summary-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -427,6 +449,14 @@
       onclick="location.href='trip-form.html'"
     >
       ＋ 山行届を作成
+    </button>
+
+        <button
+      class="admin-button"
+      type="button"
+      onclick="location.href='admin.html'"
+    >
+      管理者画面
     </button>
 
     <section class="summary-grid">
