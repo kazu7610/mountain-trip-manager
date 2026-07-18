@@ -1,22 +1,24 @@
 /* =========================================
    ポンコツ倶楽部
-   管理者・山行届承認画面
+   管理者・山行管理画面
 ========================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
-    loadSubmittedTrips();
+    loadAdminTrips();
   }
 );
 
 /* =========================================
-   承認待ち山行届を取得
+   管理対象の山行を読み込む
 ========================================= */
 
-async function loadSubmittedTrips() {
+async function loadAdminTrips() {
   const tripList =
-    document.getElementById("trip-list");
+    document.getElementById(
+      "trip-list"
+    );
 
   if (!tripList) {
     console.error(
@@ -28,84 +30,199 @@ async function loadSubmittedTrips() {
 
   tripList.innerHTML = `
     <div class="loading-card">
-      山行届を読み込んでいます...
+      山行情報を読み込んでいます...
     </div>
   `;
 
   try {
-    const response = await portalFetch(
-      "/rest/v1/trips" +
-      "?select=*" +
-      "&status=eq.submitted" +
-      "&order=submitted_at.asc"
-    );
+    const response =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=*" +
+        "&status=in.(submitted,descended)" +
+        "&order=created_at.asc"
+      );
 
     if (!response.ok) {
       const errorText =
         await response.text();
 
       throw new Error(
-        "山行届の取得に失敗しました。" +
+        "山行情報の取得に失敗しました。" +
         ` ${response.status} ${errorText}`
       );
     }
 
-    const trips = await response.json();
+    const trips =
+      await response.json();
 
-    if (
-      !Array.isArray(trips) ||
-      trips.length === 0
-    ) {
-      tripList.innerHTML = `
-        <div class="empty-card">
-          現在、承認待ちの山行届はありません。
-        </div>
-      `;
-
-      return;
-    }
-
-    const cards = [];
-
-    for (const trip of trips) {
-      const memberNames =
-        await loadTripMemberNames(trip.id);
-
-      cards.push(
-        createTripCard(
-          trip,
-          memberNames
-        )
+    const submittedTrips =
+      trips.filter(
+        (trip) =>
+          trip.status === "submitted"
       );
-    }
+
+    const descendedTrips =
+      trips.filter(
+        (trip) =>
+          trip.status === "descended"
+      );
 
     tripList.innerHTML = "";
-    cards.forEach((card) => {
-      tripList.appendChild(card);
-    });
+
+    const submittedSection =
+      await createSubmittedSection(
+        submittedTrips
+      );
+
+    const descendedSection =
+      await createDescendedSection(
+        descendedTrips
+      );
+
+    tripList.appendChild(
+      submittedSection
+    );
+
+    tripList.appendChild(
+      descendedSection
+    );
 
   } catch (error) {
     console.error(error);
 
     tripList.innerHTML = `
       <div class="error-card">
-        山行届を読み込めませんでした。
+        山行情報を読み込めませんでした。
       </div>
     `;
   }
 }
 
 /* =========================================
+   承認待ち一覧を作成
+========================================= */
+
+async function createSubmittedSection(
+  trips
+) {
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.className =
+    "admin-trip-section";
+
+  section.innerHTML = `
+    <h2 class="section-title">
+      承認待ち
+      <span class="section-count">
+        ${trips.length}件
+      </span>
+    </h2>
+  `;
+
+  if (trips.length === 0) {
+    section.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div class="empty-card">
+          現在、承認待ちの山行届はありません。
+        </div>
+      `
+    );
+
+    return section;
+  }
+
+  for (const trip of trips) {
+    const memberNames =
+      await loadTripMemberNames(
+        trip.id
+      );
+
+    const card =
+      createSubmittedTripCard(
+        trip,
+        memberNames
+      );
+
+    section.appendChild(card);
+  }
+
+  return section;
+}
+
+/* =========================================
+   下山確認待ち一覧を作成
+========================================= */
+
+async function createDescendedSection(
+  trips
+) {
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.className =
+    "admin-trip-section";
+
+  section.innerHTML = `
+    <h2 class="section-title">
+      下山確認待ち
+      <span class="section-count">
+        ${trips.length}件
+      </span>
+    </h2>
+  `;
+
+  if (trips.length === 0) {
+    section.insertAdjacentHTML(
+      "beforeend",
+      `
+        <div class="empty-card">
+          現在、下山確認待ちの山行はありません。
+        </div>
+      `
+    );
+
+    return section;
+  }
+
+  for (const trip of trips) {
+    const memberNames =
+      await loadTripMemberNames(
+        trip.id
+      );
+
+    const card =
+      createDescendedTripCard(
+        trip,
+        memberNames
+      );
+
+    section.appendChild(card);
+  }
+
+  return section;
+}
+
+/* =========================================
    山行参加者を取得
 ========================================= */
 
-async function loadTripMemberNames(tripId) {
-  const response = await portalFetch(
-    "/rest/v1/trip_members" +
-    "?select=member_id,members(name)" +
-    `&trip_id=eq.${tripId}` +
-    "&order=id.asc"
-  );
+async function loadTripMemberNames(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_members" +
+      "?select=member_id,members(name)" +
+      `&trip_id=eq.${tripId}` +
+      "&order=id.asc"
+    );
 
   if (!response.ok) {
     console.error(
@@ -116,51 +233,49 @@ async function loadTripMemberNames(tripId) {
     return [];
   }
 
-  const rows = await response.json();
+  const rows =
+    await response.json();
 
   return rows
-    .map((row) => row.members?.name)
+    .map(
+      (row) =>
+        row.members?.name
+    )
     .filter(Boolean);
 }
 
 /* =========================================
-   山行届カードを作成
+   承認待ちカードを作成
 ========================================= */
 
-function createTripCard(
+function createSubmittedTripCard(
   trip,
   memberNames
 ) {
   const card =
-    document.createElement("article");
+    document.createElement(
+      "article"
+    );
 
-  card.className = "trip-card";
-
-  const entryDate =
-    formatDate(trip.entry_date);
-
-  const descentDate =
-    formatDate(trip.descent_date);
-
-  const descentTime =
-    formatTime(trip.descent_time);
+  card.className =
+    "trip-card";
 
   const memberText =
-    memberNames.length > 0
-      ? memberNames.join("・")
-      : "会員参加者なし";
-
-  const outsideText =
-    Number(trip.outside_member_count) > 0
-      ? `、会員外 ${trip.outside_member_count}名`
-      : "";
+    createMemberText(
+      memberNames,
+      trip.outside_member_count
+    );
 
   card.innerHTML = `
     <div class="trip-title-row">
 
       <h3 class="trip-title">
-        ${escapeHtml(trip.mountain_area)}
-        ${escapeHtml(trip.mountain_name)}
+        ${escapeHtml(
+          trip.mountain_area
+        )}
+        ${escapeHtml(
+          trip.mountain_name
+        )}
       </h3>
 
       <span class="status-badge">
@@ -171,23 +286,33 @@ function createTripCard(
 
     <p class="trip-info">
       <strong>入山日：</strong>
-      ${entryDate}
+      ${formatDate(
+        trip.entry_date
+      )}
     </p>
 
     <p class="trip-info">
       <strong>下山予定：</strong>
-      ${descentDate} ${descentTime}
+      ${formatDate(
+        trip.descent_date
+      )}
+      ${formatTime(
+        trip.descent_time
+      )}
     </p>
 
     <p class="trip-info">
       <strong>ルート：</strong>
-      ${escapeHtml(trip.route)}
+      ${escapeHtml(
+        trip.route
+      )}
     </p>
 
     <p class="trip-info">
       <strong>参加者：</strong>
-      ${escapeHtml(memberText)}
-      ${escapeHtml(outsideText)}
+      ${escapeHtml(
+        memberText
+      )}
     </p>
 
     <div class="button-row">
@@ -195,7 +320,6 @@ function createTripCard(
       <button
         class="reject-button"
         type="button"
-        data-trip-id="${trip.id}"
       >
         修正依頼
       </button>
@@ -203,7 +327,6 @@ function createTripCard(
       <button
         class="approve-button"
         type="button"
-        data-trip-id="${trip.id}"
       >
         承認する
       </button>
@@ -212,10 +335,14 @@ function createTripCard(
   `;
 
   const approveButton =
-    card.querySelector(".approve-button");
+    card.querySelector(
+      ".approve-button"
+    );
 
   const rejectButton =
-    card.querySelector(".reject-button");
+    card.querySelector(
+      ".reject-button"
+    );
 
   approveButton.addEventListener(
     "click",
@@ -239,6 +366,140 @@ function createTripCard(
 }
 
 /* =========================================
+   下山確認待ちカードを作成
+========================================= */
+
+function createDescendedTripCard(
+  trip,
+  memberNames
+) {
+  const card =
+    document.createElement(
+      "article"
+    );
+
+  card.className =
+    "trip-card descended-card";
+
+  const memberText =
+    createMemberText(
+      memberNames,
+      trip.outside_member_count
+    );
+
+  card.innerHTML = `
+    <div class="trip-title-row">
+
+      <h3 class="trip-title">
+        ${escapeHtml(
+          trip.mountain_area
+        )}
+        ${escapeHtml(
+          trip.mountain_name
+        )}
+      </h3>
+
+      <span class="status-badge">
+        無事下山
+      </span>
+
+    </div>
+
+    <p class="trip-info">
+      <strong>入山日：</strong>
+      ${formatDate(
+        trip.entry_date
+      )}
+    </p>
+
+    <p class="trip-info">
+      <strong>下山予定：</strong>
+      ${formatDate(
+        trip.descent_date
+      )}
+      ${formatTime(
+        trip.descent_time
+      )}
+    </p>
+
+    <p class="trip-info">
+      <strong>下山連絡：</strong>
+      ${formatDateTime(
+        trip.descended_at
+      )}
+    </p>
+
+    <p class="trip-info">
+      <strong>ルート：</strong>
+      ${escapeHtml(
+        trip.route
+      )}
+    </p>
+
+    <p class="trip-info">
+      <strong>参加者：</strong>
+      ${escapeHtml(
+        memberText
+      )}
+    </p>
+
+    <div class="button-row">
+
+      <button
+        class="approve-button complete-button"
+        type="button"
+      >
+        確認して完了
+      </button>
+
+    </div>
+  `;
+
+  const completeButton =
+    card.querySelector(
+      ".complete-button"
+    );
+
+  completeButton.addEventListener(
+    "click",
+    () => completeTrip(
+      trip.id,
+      completeButton
+    )
+  );
+
+  return card;
+}
+
+/* =========================================
+   参加者表示
+========================================= */
+
+function createMemberText(
+  memberNames,
+  outsideMemberCount
+) {
+  const memberText =
+    memberNames.length > 0
+      ? memberNames.join("・")
+      : "会員参加者なし";
+
+  const outsideCount =
+    Number(
+      outsideMemberCount || 0
+    );
+
+  if (outsideCount > 0) {
+    return (
+      `${memberText}、` +
+      `会員外 ${outsideCount}名`
+    );
+  }
+
+  return memberText;
+}
+
+/* =========================================
    山行届を承認
 ========================================= */
 
@@ -247,9 +508,10 @@ async function approveTrip(
   approveButton,
   rejectButton
 ) {
-  const confirmed = confirm(
-    "この山行届を承認しますか？"
-  );
+  const confirmed =
+    confirm(
+      "この山行届を承認しますか？"
+    );
 
   if (!confirmed) {
     return;
@@ -261,25 +523,29 @@ async function approveTrip(
     true
   );
 
-  approveButton.textContent = "承認中...";
+  approveButton.textContent =
+    "承認中...";
 
   try {
-    const response = await portalFetch(
-      `/rest/v1/trips?id=eq.${tripId}`,
-      {
-        method: "PATCH",
+    const response =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${tripId}`,
+        {
+          method: "PATCH",
 
-        headers: {
-          Prefer: "return=minimal"
-        },
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
 
-        body: JSON.stringify({
-          status: "approved",
-          approved_at:
-            new Date().toISOString()
-        })
-      }
-    );
+          body: JSON.stringify({
+            status: "approved",
+            approved_at:
+              new Date()
+                .toISOString()
+          })
+        }
+      );
 
     if (!response.ok) {
       const errorText =
@@ -295,7 +561,7 @@ async function approveTrip(
       "山行届を承認しました。"
     );
 
-    await loadSubmittedTrips();
+    await loadAdminTrips();
 
   } catch (error) {
     console.error(error);
@@ -324,9 +590,10 @@ async function requestRevision(
   approveButton,
   rejectButton
 ) {
-  const confirmed = confirm(
-    "この山行届を修正依頼に戻しますか？"
-  );
+  const confirmed =
+    confirm(
+      "この山行届を修正依頼に戻しますか？"
+    );
 
   if (!confirmed) {
     return;
@@ -342,20 +609,23 @@ async function requestRevision(
     "処理中...";
 
   try {
-    const response = await portalFetch(
-      `/rest/v1/trips?id=eq.${tripId}`,
-      {
-        method: "PATCH",
+    const response =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${tripId}`,
+        {
+          method: "PATCH",
 
-        headers: {
-          Prefer: "return=minimal"
-        },
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
 
-        body: JSON.stringify({
-          status: "revision_required"
-        })
-      }
-    );
+          body: JSON.stringify({
+            status:
+              "revision_required"
+          })
+        }
+      );
 
     if (!response.ok) {
       const errorText =
@@ -371,7 +641,7 @@ async function requestRevision(
       "山行届を修正依頼に戻しました。"
     );
 
-    await loadSubmittedTrips();
+    await loadAdminTrips();
 
   } catch (error) {
     console.error(error);
@@ -392,6 +662,76 @@ async function requestRevision(
 }
 
 /* =========================================
+   下山確認して完了
+========================================= */
+
+async function completeTrip(
+  tripId,
+  completeButton
+) {
+  const confirmed =
+    confirm(
+      "下山を確認し、この山行を完了にしますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  completeButton.disabled = true;
+
+  completeButton.textContent =
+    "完了処理中...";
+
+  try {
+    const response =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${tripId}`,
+        {
+          method: "PATCH",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body: JSON.stringify({
+            status: "completed"
+          })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "完了処理に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "下山を確認し、山行を完了にしました。"
+    );
+
+    await loadAdminTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "山行を完了にできませんでした。"
+    );
+
+    completeButton.disabled = false;
+
+    completeButton.textContent =
+      "確認して完了";
+  }
+}
+
+/* =========================================
    ボタン操作
 ========================================= */
 
@@ -400,8 +740,11 @@ function setButtonsDisabled(
   rejectButton,
   disabled
 ) {
-  approveButton.disabled = disabled;
-  rejectButton.disabled = disabled;
+  approveButton.disabled =
+    disabled;
+
+  rejectButton.disabled =
+    disabled;
 }
 
 /* =========================================
@@ -413,9 +756,10 @@ function formatDate(value) {
     return "未設定";
   }
 
-  const date = new Date(
-    `${value}T00:00:00`
-  );
+  const date =
+    new Date(
+      `${value}T00:00:00`
+    );
 
   return new Intl.DateTimeFormat(
     "ja-JP",
@@ -436,7 +780,32 @@ function formatTime(value) {
     return "未設定";
   }
 
-  return String(value).slice(0, 5);
+  return String(value)
+    .slice(0, 5);
+}
+
+/* =========================================
+   日時表示
+========================================= */
+
+function formatDateTime(value) {
+  if (!value) {
+    return "日時不明";
+  }
+
+  const date =
+    new Date(value);
+
+  return new Intl.DateTimeFormat(
+    "ja-JP",
+    {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  ).format(date);
 }
 
 /* =========================================
@@ -445,9 +814,24 @@ function formatTime(value) {
 
 function escapeHtml(value) {
   return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 }

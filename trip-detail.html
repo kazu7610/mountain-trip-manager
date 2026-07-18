@@ -313,6 +313,47 @@
       cursor: not-allowed;
     }
 
+        .descent-button {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px 10px;
+
+      border: none;
+      border-radius: 12px;
+
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #1678b2,
+          #35afd5
+        );
+
+      cursor: pointer;
+    }
+
+    .descent-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .descent-complete {
+      margin-top: 12px;
+      padding: 13px;
+
+      border-radius: 12px;
+
+      color: #176a70;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+
+      background: #e6f8f5;
+    }
+
     @media (max-width: 520px) {
       .button-row {
         grid-template-columns: 1fr;
@@ -352,7 +393,7 @@
   </main>
 
   <script src="portal-auth.js?v=2"></script>
-  <script src="trip-detail.js?v=1"></script>
+  <script src="trip-detail.js?v=2"></script>
 
 </body>
 </html>

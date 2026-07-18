@@ -135,13 +135,13 @@ async function loadTripMembers(tripId) {
 
   const rows = await response.json();
 
-  return rows
-    .map((row) => ({
-      name:
-        row.members?.name || "不明",
-      isLeader:
-        row.is_leader === true
-    }));
+  return rows.map((row) => ({
+    name:
+      row.members?.name || "不明",
+
+    isLeader:
+      row.is_leader === true
+  }));
 }
 
 /* =========================================
@@ -158,6 +158,9 @@ function renderTripDetail(
       members,
       trip.outside_member_count
     );
+
+  const descentActionHtml =
+    createDescentActionHtml(trip);
 
   container.innerHTML = `
     <article class="detail-card">
@@ -227,6 +230,8 @@ function renderTripDetail(
 
     </article>
 
+    ${descentActionHtml}
+
     <div class="button-row">
 
       <button
@@ -247,6 +252,126 @@ function renderTripDetail(
 
     </div>
   `;
+
+  const descentButton =
+    document.getElementById(
+      "descent-button"
+    );
+
+  if (descentButton) {
+    descentButton.addEventListener(
+      "click",
+      () => reportDescent(
+        trip.id,
+        descentButton
+      )
+    );
+  }
+}
+
+/* =========================================
+   下山ボタン表示
+========================================= */
+
+function createDescentActionHtml(trip) {
+  if (
+    trip.status === "descended" ||
+    trip.status === "completed"
+  ) {
+    return `
+      <div class="descent-complete">
+        下山連絡済み
+        ${
+          trip.descended_at
+            ? `（${formatDateTime(
+                trip.descended_at
+              )}）`
+            : ""
+        }
+      </div>
+    `;
+  }
+
+  if (trip.status !== "approved") {
+    return "";
+  }
+
+  return `
+    <button
+      id="descent-button"
+      class="descent-button"
+      type="button"
+    >
+      下山しました
+    </button>
+  `;
+}
+
+/* =========================================
+   下山連絡
+========================================= */
+
+async function reportDescent(
+  tripId,
+  button
+) {
+  const confirmed = confirm(
+    "全員無事に下山しましたか？"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent =
+    "下山連絡を送信中...";
+
+  try {
+    const response = await portalFetch(
+      `/rest/v1/trips?id=eq.${tripId}`,
+      {
+        method: "PATCH",
+
+        headers: {
+          Prefer: "return=minimal"
+        },
+
+        body: JSON.stringify({
+          status: "descended",
+          descended_at:
+            new Date().toISOString()
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "下山連絡に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "下山連絡を送信しました。"
+    );
+
+    await loadTripDetail();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "下山連絡を送信できませんでした。"
+    );
+
+    button.disabled = false;
+    button.textContent =
+      "下山しました";
+  }
 }
 
 /* =========================================
@@ -310,7 +435,9 @@ function getStatusLabel(status) {
     completed: "完了"
   };
 
-  return labels[status] || status || "不明";
+  return labels[status] ||
+    status ||
+    "不明";
 }
 
 /* =========================================
@@ -346,6 +473,29 @@ function formatTime(value) {
   }
 
   return String(value).slice(0, 5);
+}
+
+/* =========================================
+   日時表示
+========================================= */
+
+function formatDateTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  return new Intl.DateTimeFormat(
+    "ja-JP",
+    {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  ).format(date);
 }
 
 /* =========================================
