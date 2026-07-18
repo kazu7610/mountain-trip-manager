@@ -400,6 +400,16 @@
       background: #dff6eb;
     }
 
+        .trip-card.revision-card {
+      border-left: 5px solid #d77a35;
+      background: rgba(255, 248, 240, 0.97);
+    }
+
+    .status-revision {
+      color: #9c4d12;
+      background: #ffe6d2;
+    }
+
     .status-recruiting {
       color: #9a5d00;
       background: #fff0cf;
@@ -566,6 +576,24 @@
       管理者画面
     </button>
 
+        <section
+      id="revision-section"
+      class="section"
+      hidden
+    >
+
+      <h2 class="section-title">
+        修正が必要な山行届
+      </h2>
+
+      <p class="section-subtitle">
+        内容を確認して、修正後にもう一度提出してください。
+      </p>
+
+      <div id="revision-trip-list"></div>
+
+    </section>
+
     <section class="summary-grid">
 
       <article class="summary-card">
@@ -703,7 +731,7 @@
   </main>
 
 <script src="portal-auth.js?v=3"></script>
-<script src="index.js?v=101"></script>
+<script src="index.js?v=200"></script>
 
 </body>
 </html>

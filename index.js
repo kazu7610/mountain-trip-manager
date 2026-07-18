@@ -12,6 +12,7 @@ document.addEventListener(
 
     initializeHomeLogin();
 
+    loadRevisionTrips();
     loadApprovalWaitingCount();
     loadHomeTrips();
   }
@@ -63,6 +64,155 @@ function initializeHomeLogin() {
     adminButton.hidden =
       member.role !== "admin";
   }
+}
+
+/* =========================================
+   修正依頼の山行届を取得
+========================================= */
+
+async function loadRevisionTrips() {
+  const revisionSection =
+    document.getElementById(
+      "revision-section"
+    );
+
+  const revisionTripList =
+    document.getElementById(
+      "revision-trip-list"
+    );
+
+  const member =
+    getPortalMember();
+
+  if (
+    !revisionSection ||
+    !revisionTripList ||
+    !member?.authUserId
+  ) {
+    return;
+  }
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=*" +
+        "&status=eq.revision_required" +
+        `&submitted_by=eq.${member.authUserId}` +
+        "&order=submitted_at.desc"
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "修正依頼の取得に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    const trips =
+      await response.json();
+
+    if (
+      !Array.isArray(trips) ||
+      trips.length === 0
+    ) {
+      revisionSection.hidden = true;
+      revisionTripList.innerHTML = "";
+
+      return;
+    }
+
+    revisionSection.hidden = false;
+    revisionTripList.innerHTML = "";
+
+    trips.forEach((trip) => {
+      const card =
+        createRevisionTripCard(
+          trip
+        );
+
+      revisionTripList.appendChild(
+        card
+      );
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    revisionSection.hidden = false;
+
+    revisionTripList.innerHTML = `
+      <div class="error-message">
+        修正依頼の山行届を読み込めませんでした。
+      </div>
+    `;
+  }
+}
+
+/* =========================================
+   修正依頼カードを作成
+========================================= */
+
+function createRevisionTripCard(
+  trip
+) {
+  const card =
+    document.createElement(
+      "article"
+    );
+
+  card.className =
+    "trip-card revision-card";
+
+  card.innerHTML = `
+    <div class="compact-title-row">
+
+      <h3 class="trip-title">
+        ${escapeHtml(
+          trip.mountain_area
+        )}
+        ${escapeHtml(
+          trip.mountain_name
+        )}
+      </h3>
+
+      <span class="status-badge status-revision">
+        修正依頼
+      </span>
+
+    </div>
+
+    <p class="trip-info">
+      <strong>入山日：</strong>
+      ${formatShortDate(
+        trip.entry_date
+      )}
+    </p>
+
+    <p class="trip-info">
+      <strong>ルート：</strong>
+      ${escapeHtml(
+        trip.route
+      )}
+    </p>
+
+    <div class="button-row">
+
+      <button
+        class="detail-button"
+        type="button"
+        onclick="location.href='trip-form.html?edit=${trip.id}'"
+      >
+        修正する
+      </button>
+
+    </div>
+  `;
+
+  return card;
 }
 
 /* =========================================

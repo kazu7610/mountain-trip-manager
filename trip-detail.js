@@ -6,6 +6,10 @@
 document.addEventListener(
   "DOMContentLoaded",
   () => {
+    if (!requirePortalLogin()) {
+      return;
+    }
+
     loadTripDetail();
   }
 );
@@ -39,7 +43,9 @@ function getTripId() {
 
 async function loadTripDetail() {
   const detailContainer =
-    document.getElementById("trip-detail");
+    document.getElementById(
+      "trip-detail"
+    );
 
   if (!detailContainer) {
     console.error(
@@ -49,7 +55,8 @@ async function loadTripDetail() {
     return;
   }
 
-  const tripId = getTripId();
+  const tripId =
+    getTripId();
 
   if (!tripId) {
     showError(
@@ -81,7 +88,8 @@ async function loadTripDetail() {
     const trips =
       await tripResponse.json();
 
-    const trip = trips[0];
+    const trip =
+      trips[0];
 
     if (!trip) {
       showError(
@@ -93,12 +101,25 @@ async function loadTripDetail() {
     }
 
     const members =
-      await loadTripMembers(tripId);
+      await loadTripMembers(
+        tripId
+      );
+
+    const loginMember =
+      getPortalMember();
+
+    const isParticipant =
+      members.some(
+        (member) =>
+          member.id ===
+          Number(loginMember?.id)
+      );
 
     renderTripDetail(
       detailContainer,
       trip,
-      members
+      members,
+      isParticipant
     );
 
   } catch (error) {
@@ -115,11 +136,13 @@ async function loadTripDetail() {
    参加者を読み込む
 ========================================= */
 
-async function loadTripMembers(tripId) {
+async function loadTripMembers(
+  tripId
+) {
   const response =
     await portalFetch(
       "/rest/v1/trip_members" +
-      "?select=is_leader,members(name)" +
+      "?select=member_id,is_leader,members(name)" +
       `&trip_id=eq.${tripId}` +
       "&order=id.asc"
     );
@@ -133,15 +156,22 @@ async function loadTripMembers(tripId) {
     return [];
   }
 
-  const rows = await response.json();
+  const rows =
+    await response.json();
 
-  return rows.map((row) => ({
-    name:
-      row.members?.name || "不明",
+  return rows.map(
+    (row) => ({
+      id:
+        Number(row.member_id),
 
-    isLeader:
-      row.is_leader === true
-  }));
+      name:
+        row.members?.name ||
+        "不明",
+
+      isLeader:
+        row.is_leader === true
+    })
+  );
 }
 
 /* =========================================
@@ -151,7 +181,8 @@ async function loadTripMembers(tripId) {
 function renderTripDetail(
   container,
   trip,
-  members
+  members,
+  isParticipant
 ) {
   const memberHtml =
     createMemberHtml(
@@ -160,7 +191,10 @@ function renderTripDetail(
     );
 
   const descentActionHtml =
-    createDescentActionHtml(trip);
+    createDescentActionHtml(
+      trip,
+      isParticipant
+    );
 
   container.innerHTML = `
     <article class="detail-card">
@@ -168,16 +202,22 @@ function renderTripDetail(
       <div class="detail-head">
 
         <p class="detail-area">
-          ${escapeHtml(trip.mountain_area)}
+          ${escapeHtml(
+            trip.mountain_area
+          )}
         </p>
 
         <h2 class="detail-title">
-          ${escapeHtml(trip.mountain_name)}
+          ${escapeHtml(
+            trip.mountain_name
+          )}
         </h2>
 
         <span class="status-badge">
           ${escapeHtml(
-            getStatusLabel(trip.status)
+            getStatusLabel(
+              trip.status
+            )
           )}
         </span>
 
@@ -186,37 +226,52 @@ function renderTripDetail(
       <div class="detail-body">
 
         <section class="detail-row">
+
           <p class="detail-label">
             ルート
           </p>
 
           <p class="detail-value">
-            ${escapeHtml(trip.route)}
+            ${escapeHtml(
+              trip.route
+            )}
           </p>
+
         </section>
 
         <section class="detail-row">
+
           <p class="detail-label">
             入山日
           </p>
 
           <p class="detail-value">
-            ${formatDate(trip.entry_date)}
+            ${formatDate(
+              trip.entry_date
+            )}
           </p>
+
         </section>
 
         <section class="detail-row">
+
           <p class="detail-label">
             下山予定
           </p>
 
           <p class="detail-value">
-            ${formatDate(trip.descent_date)}
-            ${formatTime(trip.descent_time)}
+            ${formatDate(
+              trip.descent_date
+            )}
+            ${formatTime(
+              trip.descent_time
+            )}
           </p>
+
         </section>
 
         <section class="detail-row">
+
           <p class="detail-label">
             参加者
           </p>
@@ -224,6 +279,7 @@ function renderTripDetail(
           <div class="member-list">
             ${memberHtml}
           </div>
+
         </section>
 
       </div>
@@ -273,7 +329,10 @@ function renderTripDetail(
    下山ボタン表示
 ========================================= */
 
-function createDescentActionHtml(trip) {
+function createDescentActionHtml(
+  trip,
+  isParticipant
+) {
   if (
     trip.status === "descended" ||
     trip.status === "completed"
@@ -292,8 +351,18 @@ function createDescentActionHtml(trip) {
     `;
   }
 
-  if (trip.status !== "approved") {
+  if (
+    trip.status !== "approved"
+  ) {
     return "";
+  }
+
+  if (!isParticipant) {
+    return `
+      <div class="descent-complete">
+        下山連絡は、この山行の参加者のみ行えます。
+      </div>
+    `;
   }
 
   return `
@@ -315,35 +384,83 @@ async function reportDescent(
   tripId,
   button
 ) {
-  const confirmed = confirm(
-    "全員無事に下山しましたか？"
-  );
+  const loginMember =
+    getPortalMember();
+
+  if (!loginMember?.id) {
+    alert(
+      "ログイン情報を確認できません。"
+    );
+
+    location.href =
+      "login.html";
+
+    return;
+  }
+
+  /*
+    ボタン表示後に参加者情報が変わった場合も考え、
+    送信直前にもう一度参加者か確認する
+  */
+  const members =
+    await loadTripMembers(
+      tripId
+    );
+
+  const isParticipant =
+    members.some(
+      (member) =>
+        member.id ===
+        Number(loginMember.id)
+    );
+
+  if (!isParticipant) {
+    alert(
+      "この山行の参加者ではないため、下山連絡はできません。"
+    );
+
+    await loadTripDetail();
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "全員無事に下山しましたか？"
+    );
 
   if (!confirmed) {
     return;
   }
 
   button.disabled = true;
+
   button.textContent =
     "下山連絡を送信中...";
 
   try {
-    const response = await portalFetch(
-      `/rest/v1/trips?id=eq.${tripId}`,
-      {
-        method: "PATCH",
+    const response =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${tripId}`,
+        {
+          method: "PATCH",
 
-        headers: {
-          Prefer: "return=minimal"
-        },
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
 
-        body: JSON.stringify({
-          status: "descended",
-          descended_at:
-            new Date().toISOString()
-        })
-      }
-    );
+          body:
+            JSON.stringify({
+              status:
+                "descended",
+
+              descended_at:
+                new Date()
+                  .toISOString()
+            })
+        }
+      );
 
     if (!response.ok) {
       const errorText =
@@ -369,6 +486,7 @@ async function reportDescent(
     );
 
     button.disabled = false;
+
     button.textContent =
       "下山しました";
   }
@@ -384,22 +502,28 @@ function createMemberHtml(
 ) {
   const chips = [];
 
-  members.forEach((member) => {
-    const leaderText =
-      member.isLeader
-        ? "（代表）"
-        : "";
+  members.forEach(
+    (member) => {
+      const leaderText =
+        member.isLeader
+          ? "（代表）"
+          : "";
 
-    chips.push(`
-      <span class="member-chip">
-        ${escapeHtml(member.name)}
-        ${leaderText}
-      </span>
-    `);
-  });
+      chips.push(`
+        <span class="member-chip">
+          ${escapeHtml(
+            member.name
+          )}
+          ${leaderText}
+        </span>
+      `);
+    }
+  );
 
   const outsideCount =
-    Number(outsideMemberCount || 0);
+    Number(
+      outsideMemberCount || 0
+    );
 
   if (outsideCount > 0) {
     chips.push(`
@@ -424,33 +548,54 @@ function createMemberHtml(
    状態表示
 ========================================= */
 
-function getStatusLabel(status) {
+function getStatusLabel(
+  status
+) {
   const labels = {
-    draft: "下書き",
-    submitted: "承認待ち",
-    approved: "承認済み",
-    revision_required: "修正依頼",
-    cancelled: "中止",
-    descended: "下山連絡済み",
-    completed: "完了"
+    draft:
+      "下書き",
+
+    submitted:
+      "承認待ち",
+
+    approved:
+      "承認済み",
+
+    revision_required:
+      "修正依頼",
+
+    cancelled:
+      "中止",
+
+    descended:
+      "下山連絡済み",
+
+    completed:
+      "完了"
   };
 
-  return labels[status] ||
+  return (
+    labels[status] ||
     status ||
-    "不明";
+    "不明"
+  );
 }
 
 /* =========================================
    日付表示
 ========================================= */
 
-function formatDate(value) {
+function formatDate(
+  value
+) {
   if (!value) {
     return "未設定";
   }
 
   const date =
-    new Date(`${value}T00:00:00`);
+    new Date(
+      `${value}T00:00:00`
+    );
 
   return new Intl.DateTimeFormat(
     "ja-JP",
@@ -467,24 +612,30 @@ function formatDate(value) {
    時刻表示
 ========================================= */
 
-function formatTime(value) {
+function formatTime(
+  value
+) {
   if (!value) {
     return "時刻未設定";
   }
 
-  return String(value).slice(0, 5);
+  return String(value)
+    .slice(0, 5);
 }
 
 /* =========================================
    日時表示
 ========================================= */
 
-function formatDateTime(value) {
+function formatDateTime(
+  value
+) {
   if (!value) {
     return "";
   }
 
-  const date = new Date(value);
+  const date =
+    new Date(value);
 
   return new Intl.DateTimeFormat(
     "ja-JP",
@@ -517,11 +668,28 @@ function showError(
    HTML安全対策
 ========================================= */
 
-function escapeHtml(value) {
+function escapeHtml(
+  value
+) {
   return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 }
