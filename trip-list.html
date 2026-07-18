@@ -9,7 +9,7 @@
   >
 
   <title>
-    管理者画面｜ポンコツ倶楽部
+    山行届一覧｜ポンコツ倶楽部
   </title>
 
   <style>
@@ -129,50 +129,19 @@
       text-decoration: none;
     }
 
-    .admin-trip-section {
-      margin-top: 28px;
+    .list-title {
+      margin: 0 0 6px;
+
+      color: #173d58;
+      font-size: 22px;
     }
 
-    .admin-trip-section:first-child {
-      margin-top: 0;
-    }
+    .list-description {
+      margin: 0 0 16px;
 
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-
-      margin: 6px 2px 13px;
-
-      font-size: 20px;
-    }
-
-    .section-title::before {
-      content: "";
-
-      width: 5px;
-      height: 23px;
-
-      border-radius: 10px;
-
-      background:
-        linear-gradient(
-          #1282bc,
-          #76cfe9
-        );
-    }
-
-    .section-count {
-      margin-left: auto;
-
-      padding: 4px 9px;
-
-      border-radius: 20px;
-
-      color: #176a99;
+      color: #6d8798;
       font-size: 13px;
-
-      background: #e4f4fb;
+      line-height: 1.6;
     }
 
     .loading-card,
@@ -252,29 +221,25 @@
       margin-top: 12px;
     }
 
+    .submitted-card {
+      border-left-color: #d8a136;
+    }
+
+    .approved-card {
+      border-left-color: #2a95c8;
+    }
+
     .descended-card {
       border-left-color: #3ca67a;
     }
 
-    .change-request-card {
-      border-left-color: #d98a2b;
-
-      background:
-        rgba(
-          255,
-          250,
-          240,
-          0.98
-        );
-    }
-
-    .cancel-request-card {
+    .cancelled-card {
       border-left-color: #d05252;
 
       background:
         rgba(
           255,
-          246,
+          244,
           246,
           0.98
         );
@@ -302,26 +267,28 @@
 
       border-radius: 20px;
 
-      color: #996000;
       font-size: 12px;
       font-weight: bold;
+    }
 
+    .status-submitted {
+      color: #945f08;
       background: #fff0cf;
     }
 
-    .change-request-badge {
-      color: #94510a;
-      background: #ffe7c2;
+    .status-approved {
+      color: #176a99;
+      background: #e1f2fa;
     }
 
-    .cancel-request-badge {
-      color: #a33d3d;
-      background: #ffe0e0;
-    }
-
-    .descended-badge {
+    .status-descended {
       color: #16714f;
       background: #dff6eb;
+    }
+
+    .status-cancelled {
+      color: #a33d3d;
+      background: #ffe0e0;
     }
 
     .trip-info {
@@ -336,83 +303,44 @@
       color: #284f69;
     }
 
-    .request-note {
-      margin-top: 12px;
-      padding: 12px;
+    .cancel-message {
+      margin-top: 13px;
+      padding: 13px;
 
-      border-radius: 11px;
+      border-radius: 12px;
 
-      color: #704716;
-      font-size: 14px;
+      color: #a33d3d;
+      font-size: 16px;
       font-weight: bold;
-      line-height: 1.6;
-      white-space: pre-wrap;
+      text-align: center;
 
-      background: #fff3dc;
+      background: #ffe6e9;
     }
 
-    .cancel-note {
-      color: #963c3c;
-      background: #ffeaea;
-    }
+    .detail-button {
+      width: 100%;
 
-    .button-row {
-      display: grid;
-      grid-template-columns:
-        1fr 1fr;
+      margin-top: 14px;
+      padding: 11px 10px;
 
-      gap: 9px;
-
-      margin-top: 15px;
-    }
-
-    .reject-button,
-    .approve-button {
-      padding: 11px 8px;
+      border:
+        1px solid
+        #78b8d7;
 
       border-radius: 10px;
 
+      color: #176a99;
       font-size: 14px;
       font-weight: bold;
 
-      cursor: pointer;
-    }
-
-    .reject-button {
-      border:
-        1px solid
-        #d79a9a;
-
-      color: #ad3f3f;
       background: white;
-    }
 
-    .approve-button {
-      border: none;
-
-      color: white;
-
-      background:
-        linear-gradient(
-          135deg,
-          #126da9,
-          #2aa8d3
-        );
-    }
-
-    .approve-button:disabled,
-    .reject-button:disabled {
-      opacity: 0.6;
-      cursor: wait;
+      cursor: pointer;
     }
 
     @media (
       max-width: 520px
     ) {
-      .button-row {
-        grid-template-columns: 1fr;
-      }
-
       .trip-title-row {
         display: block;
       }
@@ -422,38 +350,6 @@
         margin-top: 8px;
       }
     }
-    .cancelled-card {
-  border-color: #e3a2ab;
-  background: #fff4f5;
-}
-
-.cancelled-badge {
-  color: #a23d4b;
-  background: #ffe1e5;
-}
-
-.cancelled-message {
-  margin-top: 14px;
-  padding: 15px 12px;
-
-  border-radius: 12px;
-
-  color: #a23d4b;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-
-  background: #ffe1e5;
-}
-
-.cancelled-complete-button {
-  background: #c75b6a;
-}
-
-.cancelled-complete-button:hover {
-  background: #ad4857;
-}
-
   </style>
 </head>
 
@@ -462,11 +358,11 @@
   <header class="header">
 
     <h1>
-      管理者画面
+      山行届一覧
     </h1>
 
     <p>
-      Trip Approval Management
+      Trip List
     </p>
 
   </header>
@@ -480,10 +376,24 @@
       ← ホームへ戻る
     </a>
 
+    <h2
+      id="list-title"
+      class="list-title"
+    >
+      山行届一覧
+    </h2>
+
+    <p
+      id="list-description"
+      class="list-description"
+    >
+      山行情報を読み込んでいます。
+    </p>
+
     <div id="trip-list">
 
       <div class="loading-card">
-        山行情報を読み込んでいます...
+        山行届を読み込んでいます...
       </div>
 
     </div>
@@ -491,7 +401,7 @@
   </main>
 
   <script src="portal-auth.js?v=3"></script>
-  <script src="admin.js?v=5"></script>
+  <script src="trip-list.js?v=1"></script>
 
 </body>
 </html>

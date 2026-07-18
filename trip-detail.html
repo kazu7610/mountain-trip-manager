@@ -8,7 +8,9 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>山行詳細｜ポンコツ倶楽部</title>
+  <title>
+    山行詳細｜ポンコツ倶楽部
+  </title>
 
   <style>
     * {
@@ -107,7 +109,11 @@
     }
 
     .container {
-      width: min(calc(100% - 24px), 720px);
+      width: min(
+        calc(100% - 24px),
+        720px
+      );
+
       margin: 0 auto;
       padding: 18px 0 42px;
     }
@@ -132,11 +138,21 @@
       text-align: center;
 
       background:
-        rgba(255, 255, 255, 0.96);
+        rgba(
+          255,
+          255,
+          255,
+          0.96
+        );
 
       box-shadow:
         0 5px 17px
-        rgba(34, 91, 125, 0.08);
+        rgba(
+          34,
+          91,
+          125,
+          0.08
+        );
     }
 
     .loading-card {
@@ -153,16 +169,31 @@
 
       border:
         1px solid
-        rgba(87, 155, 194, 0.23);
+        rgba(
+          87,
+          155,
+          194,
+          0.23
+        );
 
       border-radius: 18px;
 
       background:
-        rgba(255, 255, 255, 0.97);
+        rgba(
+          255,
+          255,
+          255,
+          0.97
+        );
 
       box-shadow:
         0 5px 17px
-        rgba(34, 91, 125, 0.08);
+        rgba(
+          34,
+          91,
+          125,
+          0.08
+        );
     }
 
     .detail-head {
@@ -268,7 +299,9 @@
 
     .button-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns:
+        1fr 1fr;
+
       gap: 10px;
 
       margin-top: 17px;
@@ -313,8 +346,9 @@
       cursor: not-allowed;
     }
 
-        .descent-button {
+    .descent-button {
       width: 100%;
+
       margin-top: 12px;
       padding: 14px 10px;
 
@@ -340,6 +374,52 @@
       cursor: wait;
     }
 
+    .request-button-row {
+      display: grid;
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 10px;
+
+      margin-top: 12px;
+    }
+
+    .change-request-button,
+    .cancel-request-button {
+      padding: 12px 10px;
+
+      border-radius: 12px;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .change-request-button {
+      border:
+        1px solid
+        #78b8d7;
+
+      color: #176a99;
+      background: #ffffff;
+    }
+
+    .cancel-request-button {
+      border:
+        1px solid
+        #e0a0a0;
+
+      color: #a53a3a;
+      background: #fff6f6;
+    }
+
+    .change-request-button:disabled,
+    .cancel-request-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
     .descent-complete {
       margin-top: 12px;
       padding: 13px;
@@ -354,8 +434,11 @@
       background: #e6f8f5;
     }
 
-    @media (max-width: 520px) {
-      .button-row {
+    @media (
+      max-width: 520px
+    ) {
+      .button-row,
+      .request-button-row {
         grid-template-columns: 1fr;
       }
 
@@ -369,8 +452,15 @@
 <body>
 
   <header class="header">
-    <h1>山行詳細</h1>
-    <p>Mountain Trip Details</p>
+
+    <h1>
+      山行詳細
+    </h1>
+
+    <p>
+      Mountain Trip Details
+    </p>
+
   </header>
 
   <main class="container">
@@ -393,7 +483,7 @@
   </main>
 
   <script src="portal-auth.js?v=3"></script>
-  <script src="trip-detail.js?v=3"></script>
+  <script src="trip-detail.js?v=5"></script>
 
 </body>
 </html>

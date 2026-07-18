@@ -13,7 +13,9 @@ document.addEventListener(
     initializeHomeLogin();
 
     loadRevisionTrips();
+    loadRejectedChangeRequests();
     loadApprovalWaitingCount();
+    loadSubmittedCount();
     loadHomeTrips();
   }
 );
@@ -167,6 +169,12 @@ function createRevisionTripCard(
   card.className =
     "trip-card revision-card";
 
+      const revisionMessage =
+    trip.revision_reason ===
+    "change_approved"
+      ? "変更内容を確認しました。再度提出をお願いします。"
+      : "変更内容を確認しました。再度提出をお願いします。";
+
   card.innerHTML = `
     <div class="compact-title-row">
 
@@ -196,6 +204,12 @@ function createRevisionTripCard(
       <strong>ルート：</strong>
       ${escapeHtml(
         trip.route
+      )}
+    </p>
+
+    <p class="trip-info">
+      ${escapeHtml(
+        revisionMessage
       )}
     </p>
 
@@ -325,7 +339,7 @@ async function loadHomeTrips() {
       await portalFetch(
         "/rest/v1/trips" +
         "?select=*" +
-        "&status=in.(approved,descended)" +
+        "&status=in.(approved,descended,cancelled)" +
         `&entry_date=lte.${today}` +
         `&descent_date=gte.${today}` +
         "&order=descent_date.asc,descent_time.asc"
@@ -366,12 +380,13 @@ async function loadHomeTrips() {
 
       /*
        * 本日の山行には、
-       * 承認済みの山行だけ表示する。
+       * 承認済みと中止済みを表示する。
        *
        * 下山連絡済みは表示しない。
        */
       if (
-        trip.status === "approved"
+        trip.status === "approved" ||
+        trip.status === "cancelled"
       ) {
         todayTrips.push(item);
       }
@@ -380,11 +395,11 @@ async function loadHomeTrips() {
        * 下山日が今日の山行は、
        * 本日の下山へ表示する。
        *
-       * 下山連絡後も
-       * 「無事下山」として残す。
+       * 中止済みは表示しない。
        */
       if (
-        trip.descent_date === today
+        trip.descent_date === today &&
+        trip.status !== "cancelled"
       ) {
         todayDescents.push(item);
       }
@@ -553,8 +568,37 @@ function createTodayTripCard(
       "article"
     );
 
+  const isCancelled =
+    trip.status === "cancelled";
+
   card.className =
-    "trip-card active";
+    isCancelled
+      ? "trip-card cancelled"
+      : "trip-card active";
+
+  const statusHtml =
+    isCancelled
+      ? `
+        <div class="cancelled-message">
+          この山行は中止になりました
+        </div>
+      `
+      : `
+        <div class="status-row">
+
+          <span class="status-badge status-active">
+            山行中
+          </span>
+
+          <span class="trip-date">
+            ${formatTripPeriod(
+              trip.entry_date,
+              trip.descent_date
+            )}
+          </span>
+
+        </div>
+      `;
 
   card.innerHTML = `
     <div class="compact-title-row">
@@ -576,20 +620,7 @@ function createTodayTripCard(
 
     </div>
 
-    <div class="status-row">
-
-      <span class="status-badge status-active">
-        山行中
-      </span>
-
-      <span class="trip-date">
-        ${formatTripPeriod(
-          trip.entry_date,
-          trip.descent_date
-        )}
-      </span>
-
-    </div>
+    ${statusHtml}
 
     <div class="button-row">
 
@@ -823,4 +854,319 @@ function escapeHtml(
       "'",
       "&#039;"
     );
+}
+
+/* =========================================
+   提出済み件数を取得
+========================================= */
+
+async function loadSubmittedCount() {
+  const countElement =
+    document.getElementById(
+      "submitted-count"
+    );
+
+  if (!countElement) {
+    return;
+  }
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=id" +
+        "&status=in.(approved,descended,cancelled)"
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        await response.text()
+      );
+    }
+
+    const trips =
+      await response.json();
+
+    countElement.innerHTML =
+      `${trips.length}<span>件</span>`;
+
+  } catch (error) {
+    console.error(
+      "提出済み件数の取得に失敗しました。",
+      error
+    );
+
+    countElement.innerHTML =
+      `－<span>件</span>`;
+  }
+}
+
+/* =========================================
+   却下された変更申請を表示
+   提出者またはリーダーだけに表示
+========================================= */
+
+async function loadRejectedChangeRequests() {
+  const section =
+    document.getElementById(
+      "rejected-request-section"
+    );
+
+  const list =
+    document.getElementById(
+      "rejected-request-list"
+    );
+
+  if (!section || !list) {
+    return;
+  }
+
+  const session =
+    getPortalAuthSession();
+
+  const member =
+    getPortalMember();
+
+  const authUserId =
+    session?.user?.id;
+
+  const memberId =
+    Number(member?.id);
+
+  if (!authUserId || !memberId) {
+    section.hidden = true;
+    return;
+  }
+
+  try {
+    /*
+     * 自分がリーダーになっている
+     * 山行IDを取得
+     */
+    const leaderResponse =
+      await portalFetch(
+        "/rest/v1/trip_members" +
+        "?select=trip_id" +
+        `&member_id=eq.${memberId}` +
+        "&is_leader=eq.true"
+      );
+
+    if (!leaderResponse.ok) {
+      throw new Error(
+        await leaderResponse.text()
+      );
+    }
+
+    const leaderRows =
+      await leaderResponse.json();
+
+    const leaderTripIds =
+      leaderRows.map(
+        (row) =>
+          Number(row.trip_id)
+      );
+
+    /*
+     * 却下された変更申請を取得
+     */
+    const requestResponse =
+      await portalFetch(
+        "/rest/v1/trip_requests" +
+        "?select=*,trips(*)" +
+        "&request_type=eq.change" +
+        "&status=eq.rejected" +
+        "&order=reviewed_at.desc"
+      );
+
+    if (!requestResponse.ok) {
+      throw new Error(
+        await requestResponse.text()
+      );
+    }
+
+    const requests =
+      await requestResponse.json();
+
+    /*
+     * 提出者本人または
+     * 山行リーダーだけに絞る
+     */
+    const visibleRequests =
+      requests.filter(
+        (request) => {
+          const isRequester =
+            request.requested_by ===
+            authUserId;
+
+          const isLeader =
+            leaderTripIds.includes(
+              Number(request.trip_id)
+            );
+
+          return (
+            isRequester ||
+            isLeader
+          );
+        }
+      );
+
+    if (
+      visibleRequests.length === 0
+    ) {
+      section.hidden = true;
+      list.innerHTML = "";
+      return;
+    }
+
+    section.hidden = false;
+    list.innerHTML = "";
+
+    visibleRequests.forEach(
+  (request) => {
+    const trip =
+      request.trips || {};
+
+    const note =
+      request.proposed_data?.note ||    
+      "変更内容の記載なし";
+
+    const card =
+      document.createElement(
+        "article"
+      );
+
+    card.className =
+      "trip-card rejected-request-card";
+
+    card.innerHTML = `
+      <h3 class="trip-title">
+        ${escapeHtml(
+          trip.mountain_area || ""
+        )}
+        ${escapeHtml(
+          trip.mountain_name || ""
+        )}
+      </h3>
+
+      <div class="rejected-request-message">
+        変更申請は却下されました
+      </div>
+
+      <p class="trip-info">
+        <strong>申請内容：</strong>
+        ${escapeHtml(note)}
+      </p>
+
+      <div class="button-row">
+
+        <button
+          class="detail-button"
+          type="button"
+          onclick="location.href='trip-detail.html?id=${request.trip_id}'"
+        >
+          山行届を確認する
+        </button>
+
+        <button
+          class="close-rejected-button"
+          type="button"
+        >
+          確認して閉じる
+        </button>
+
+      </div>
+    `;
+
+    const closeButton =
+      card.querySelector(
+        ".close-rejected-button"
+      );
+
+    closeButton.addEventListener(
+      "click",
+      () =>
+        acknowledgeRejectedRequest(
+          request.id,
+          closeButton
+        )
+    );
+
+    list.appendChild(card);
+  }
+);
+
+  } catch (error) {
+    console.error(
+      "却下された変更申請を読み込めませんでした。",
+      error
+    );
+
+    section.hidden = true;
+  }
+}
+
+/* =========================================
+   却下通知を確認済みにする
+========================================= */
+
+async function acknowledgeRejectedRequest(
+  requestId,
+  closeButton
+) {
+  const confirmed =
+    confirm(
+      "この通知を確認済みにして閉じますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  closeButton.disabled = true;
+  closeButton.textContent =
+    "処理中...";
+
+  try {
+    const response =
+      await portalFetch(
+        `/rest/v1/trip_requests?id=eq.${requestId}`,
+        {
+          method: "PATCH",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              status:
+                "acknowledged"
+            })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "通知の更新に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    await loadRejectedChangeRequests();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "通知を閉じられませんでした。"
+    );
+
+    closeButton.disabled = false;
+    closeButton.textContent =
+      "確認して閉じる";
+  }
 }

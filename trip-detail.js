@@ -105,7 +105,7 @@ async function loadTripDetail() {
         tripId
       );
 
-    const loginMember =
+       const loginMember =
       getPortalMember();
 
     const isParticipant =
@@ -115,11 +115,34 @@ async function loadTripDetail() {
           Number(loginMember?.id)
       );
 
+    const isLeader =
+      members.some(
+        (member) =>
+          member.id ===
+            Number(loginMember?.id) &&
+          member.isLeader === true
+      );
+
+    const isSubmitter =
+      Boolean(
+        loginMember?.authUserId &&
+        trip.submitted_by ===
+          loginMember.authUserId
+      );
+
+    const pendingRequest =
+      await loadPendingTripRequest(
+        tripId
+      );
+
     renderTripDetail(
       detailContainer,
       trip,
       members,
-      isParticipant
+      isParticipant,
+      isLeader,
+      isSubmitter,
+      pendingRequest
     );
 
   } catch (error) {
@@ -175,6 +198,38 @@ async function loadTripMembers(
 }
 
 /* =========================================
+   申請中の変更・中止連絡を取得
+========================================= */
+
+async function loadPendingTripRequest(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_requests" +
+      "?select=id,request_type,status" +
+      `&trip_id=eq.${tripId}` +
+      "&status=eq.pending" +
+      "&order=created_at.desc" +
+      "&limit=1"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "申請中データの取得に失敗しました。",
+      await response.text()
+    );
+
+    return null;
+  }
+
+  const rows =
+    await response.json();
+
+  return rows[0] || null;
+}
+
+/* =========================================
    詳細を表示
 ========================================= */
 
@@ -182,8 +237,12 @@ function renderTripDetail(
   container,
   trip,
   members,
-  isParticipant
+  isParticipant,
+  isLeader,
+  isSubmitter,
+  pendingRequest
 ) {
+
   const memberHtml =
     createMemberHtml(
       members,
@@ -194,6 +253,14 @@ function renderTripDetail(
     createDescentActionHtml(
       trip,
       isParticipant
+    );
+
+      const requestActionHtml =
+    createRequestActionHtml(
+      trip,
+      isLeader,
+      isSubmitter,
+      pendingRequest
     );
 
   container.innerHTML = `
@@ -286,7 +353,9 @@ function renderTripDetail(
 
     </article>
 
-    ${descentActionHtml}
+        ${descentActionHtml}
+
+        ${requestActionHtml}
 
     <div class="button-row">
 
@@ -323,6 +392,107 @@ function renderTripDetail(
       )
     );
   }
+    if (descentButton) {
+    descentButton.addEventListener(
+      "click",
+      () => reportDescent(
+        trip.id,
+        descentButton
+      )
+    );
+  }
+
+  const changeRequestButton =
+    document.getElementById(
+      "change-request-button"
+    );
+
+  const cancelRequestButton =
+    document.getElementById(
+      "cancel-request-button"
+    );
+
+  if (changeRequestButton) {
+    changeRequestButton.addEventListener(
+      "click",
+      () => submitChangeRequest(
+        trip.id,
+        changeRequestButton,
+        cancelRequestButton
+      )
+    );
+  }
+
+  if (cancelRequestButton) {
+    cancelRequestButton.addEventListener(
+      "click",
+      () => submitCancelRequest(
+        trip.id,
+        changeRequestButton,
+        cancelRequestButton
+      )
+    );
+  }
+}
+
+/* =========================================
+   変更・中止申請ボタン表示
+========================================= */
+
+function createRequestActionHtml(
+  trip,
+  isLeader,
+  isSubmitter,
+  pendingRequest
+) {
+  if (
+    trip.status !== "approved"
+  ) {
+    return "";
+  }
+
+  if (
+    !isLeader &&
+    !isSubmitter
+  ) {
+    return "";
+  }
+
+  if (pendingRequest) {
+    const requestLabel =
+      pendingRequest.request_type ===
+      "cancel"
+        ? "中止申請"
+        : "変更申請";
+
+    return `
+      <div class="descent-complete">
+        ${requestLabel}を管理者が確認中です。
+      </div>
+    `;
+  }
+
+  return `
+    <div class="request-button-row">
+
+      <button
+        id="change-request-button"
+        class="change-request-button"
+        type="button"
+      >
+        変更を申請
+      </button>
+
+      <button
+        id="cancel-request-button"
+        class="cancel-request-button"
+        type="button"
+      >
+        中止を申請
+      </button>
+
+    </div>
+  `;
 }
 
 /* =========================================
@@ -374,6 +544,251 @@ function createDescentActionHtml(
       下山しました
     </button>
   `;
+}
+
+/* =========================================
+   変更申請
+========================================= */
+
+async function submitChangeRequest(
+  tripId,
+  changeButton,
+  cancelButton
+) {
+  const loginMember =
+    getPortalMember();
+
+  const changeNote =
+    prompt(
+      "変更したい内容を入力してください。\n\n例：下山予定を17時から18時に変更"
+    );
+
+  if (changeNote === null) {
+    return;
+  }
+
+  const trimmedNote =
+    changeNote.trim();
+
+  if (!trimmedNote) {
+    alert(
+      "変更したい内容を入力してください。"
+    );
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "この内容で変更申請を送信しますか？\n\n" +
+      trimmedNote
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  setRequestButtonsDisabled(
+    changeButton,
+    cancelButton,
+    true
+  );
+
+  changeButton.textContent =
+    "申請中...";
+
+  try {
+    await createTripRequest({
+      tripId,
+      requestType: "change",
+      requestedBy:
+        loginMember?.authUserId,
+      proposedData: {
+        note: trimmedNote
+      }
+    });
+
+    alert(
+      "変更申請を管理者へ送信しました。"
+    );
+
+    await loadTripDetail();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "変更申請を送信できませんでした。"
+    );
+
+    changeButton.textContent =
+      "変更を申請";
+
+    setRequestButtonsDisabled(
+      changeButton,
+      cancelButton,
+      false
+    );
+  }
+}
+
+/* =========================================
+   中止申請
+========================================= */
+
+async function submitCancelRequest(
+  tripId,
+  changeButton,
+  cancelButton
+) {
+  const loginMember =
+    getPortalMember();
+
+  const confirmed =
+    confirm(
+      "この山行の中止を管理者へ申請しますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  setRequestButtonsDisabled(
+    changeButton,
+    cancelButton,
+    true
+  );
+
+  cancelButton.textContent =
+    "申請中...";
+
+  try {
+    await createTripRequest({
+      tripId,
+      requestType: "cancel",
+      requestedBy:
+        loginMember?.authUserId,
+      proposedData: null
+    });
+
+    alert(
+      "中止申請を管理者へ送信しました。"
+    );
+
+    await loadTripDetail();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "中止申請を送信できませんでした。"
+    );
+
+    cancelButton.textContent =
+      "中止を申請";
+
+    setRequestButtonsDisabled(
+      changeButton,
+      cancelButton,
+      false
+    );
+  }
+}
+
+/* =========================================
+   trip_requestsへ申請保存
+========================================= */
+
+async function createTripRequest({
+  tripId,
+  requestType,
+  requestedBy,
+  proposedData
+}) {
+  const duplicateResponse =
+    await portalFetch(
+      "/rest/v1/trip_requests" +
+      "?select=id" +
+      `&trip_id=eq.${tripId}` +
+      "&status=eq.pending" +
+      "&limit=1"
+    );
+
+  if (!duplicateResponse.ok) {
+    throw new Error(
+      "申請状況を確認できませんでした。"
+    );
+  }
+
+  const duplicateRows =
+    await duplicateResponse.json();
+
+  if (duplicateRows.length > 0) {
+    throw new Error(
+      "すでに確認中の申請があります。"
+    );
+  }
+
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_requests",
+      {
+        method: "POST",
+
+        headers: {
+          Prefer:
+            "return=minimal"
+        },
+
+        body:
+          JSON.stringify({
+            trip_id:
+              tripId,
+
+            request_type:
+              requestType,
+
+            requested_by:
+              requestedBy || null,
+
+            status:
+              "pending",
+
+            proposed_data:
+              proposedData
+          })
+      }
+    );
+
+  if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    throw new Error(
+      "申請の保存に失敗しました。" +
+      ` ${response.status} ${errorText}`
+    );
+  }
+}
+
+/* =========================================
+   申請ボタン操作
+========================================= */
+
+function setRequestButtonsDisabled(
+  changeButton,
+  cancelButton,
+  disabled
+) {
+  if (changeButton) {
+    changeButton.disabled =
+      disabled;
+  }
+
+  if (cancelButton) {
+    cancelButton.disabled =
+      disabled;
+  }
 }
 
 /* =========================================
