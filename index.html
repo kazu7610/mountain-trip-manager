@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>ポンコツ倶楽部</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+
+      color: #17364d;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dff5ff 0%,
+          #eefaff 210px,
+          #f8fcff 480px,
+          #edf4f8 100%
+        );
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      position: relative;
+      overflow: hidden;
+
+      padding: 30px 18px 42px;
+
+      color: white;
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #0b5f99 0%,
+          #2793c8 55%,
+          #8fd9f2 100%
+        );
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: -30px;
+
+      height: 70px;
+
+      background: #eefaff;
+
+      clip-path: polygon(
+        0 72%,
+        10% 48%,
+        20% 68%,
+        31% 28%,
+        43% 66%,
+        55% 39%,
+        67% 72%,
+        79% 34%,
+        90% 61%,
+        100% 40%,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .header h1 {
+      position: relative;
+      z-index: 1;
+
+      margin: 0;
+
+      font-size: 28px;
+      letter-spacing: 0.04em;
+    }
+
+    .header p {
+      position: relative;
+      z-index: 1;
+
+      margin: 7px 0 0;
+
+      font-size: 13px;
+      opacity: 0.92;
+    }
+
+    .container {
+      width: min(calc(100% - 24px), 760px);
+      margin: 0 auto;
+      padding: 18px 0 42px;
+    }
+
+    .create-button {
+      width: 100%;
+
+      padding: 16px;
+
+      border: none;
+      border-radius: 15px;
+
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #2aa8d3
+        );
+
+      box-shadow:
+        0 7px 18px
+        rgba(21, 108, 162, 0.23);
+
+      cursor: pointer;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+
+      margin-top: 18px;
+    }
+
+    .summary-card {
+      padding: 18px 12px;
+
+      border:
+        1px solid
+        rgba(83, 159, 200, 0.25);
+
+      border-radius: 16px;
+
+      background:
+        rgba(255, 255, 255, 0.93);
+
+      box-shadow:
+        0 5px 16px
+        rgba(34, 91, 125, 0.09);
+
+      text-align: center;
+    }
+
+    .summary-icon {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 25px;
+    }
+
+    .summary-label {
+      margin: 0;
+
+      color: #58768b;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .summary-count {
+      margin: 6px 0 0;
+
+      color: #126ca8;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .summary-count span {
+      margin-left: 3px;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-top: 28px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      margin: 0 2px 12px;
+
+      font-size: 20px;
+    }
+
+    .section-title::before {
+      content: "";
+
+      width: 5px;
+      height: 23px;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          #1282bc,
+          #76cfe9
+        );
+    }
+
+    .section-subtitle {
+      margin: -4px 2px 12px;
+
+      color: #6c8799;
+      font-size: 13px;
+    }
+
+    .trip-card {
+      padding: 14px 15px;
+
+      border:
+        1px solid
+        rgba(87, 155, 194, 0.22);
+
+      border-radius: 16px;
+
+      background:
+        rgba(255, 255, 255, 0.96);
+
+      box-shadow:
+        0 5px 17px
+        rgba(34, 91, 125, 0.08);
+    }
+
+    .trip-card + .trip-card {
+      margin-top: 11px;
+    }
+
+    .trip-card.active {
+      border-left: 5px solid #2c9fd0;
+    }
+
+    .trip-card.descent {
+      border-left: 5px solid #6b85c8;
+    }
+
+    .trip-card.recruiting {
+      border-left: 5px solid #e1a23d;
+    }
+
+    .compact-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+
+      min-width: 0;
+    }
+
+    .trip-title {
+      margin: 0;
+
+      color: #173d58;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .trip-leader {
+      flex-shrink: 0;
+
+      color: #557185;
+      font-size: 14px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .trip-leader::before {
+      content: "代表：";
+
+      color: #7890a0;
+      font-size: 12px;
+      font-weight: normal;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      margin-top: 10px;
+    }
+
+    .status-badge {
+      padding: 5px 9px;
+
+      border-radius: 20px;
+
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .status-active {
+      color: #11658f;
+      background: #dff3fc;
+    }
+
+    .status-descent {
+      color: #4d5fa0;
+      background: #e9edff;
+    }
+
+    .status-recruiting {
+      color: #9a5d00;
+      background: #fff0cf;
+    }
+
+    .trip-date {
+      color: #557185;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .trip-info {
+      margin: 8px 0 0;
+
+      color: #557185;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .trip-info strong {
+      color: #284f69;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 9px;
+
+      margin-top: 11px;
+    }
+
+    .detail-button,
+    .join-button {
+      flex: 1;
+
+      padding: 9px 8px;
+
+      border-radius: 10px;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .detail-button {
+      border: 1px solid #78b8d7;
+
+      color: #176a99;
+      background: white;
+    }
+
+    .join-button {
+      border: none;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #dc9227,
+          #efb44d
+        );
+    }
+
+    @media (max-width: 420px) {
+      .container {
+        width: min(calc(100% - 18px), 760px);
+      }
+
+      .summary-card {
+        padding: 16px 8px;
+      }
+
+      .compact-title-row {
+        align-items: flex-start;
+      }
+
+      .trip-title {
+        font-size: 17px;
+      }
+
+      .trip-leader {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>ポンコツ倶楽部</h1>
+    <p>Mountain Trip Management</p>
+  </header>
+
+  <main class="container">
+
+        <button
+      class="create-button"
+      type="button"
+      onclick="location.href='trip-form.html'"
+    >
+      ＋ 山行届を作成
+    </button>
+
+    <section class="summary-grid">
+
+      <article class="summary-card">
+        <span class="summary-icon">📨</span>
+
+        <p class="summary-label">
+          提出済み
+        </p>
+
+        <p class="summary-count">
+          3<span>件</span>
+        </p>
+      </article>
+
+      <article class="summary-card">
+        <span class="summary-icon">📣</span>
+
+        <p class="summary-label">
+          山行募集
+        </p>
+
+        <p class="summary-count">
+          2<span>件</span>
+        </p>
+      </article>
+
+    </section>
+
+    <section class="section">
+
+      <h2 class="section-title">
+        本日の山行
+      </h2>
+
+      <p class="section-subtitle">
+        今日、山行期間に入っている予定
+      </p>
+
+      <article class="trip-card active">
+
+        <div class="compact-title-row">
+
+          <h3 class="trip-title">
+            御在所岳　前尾根
+          </h3>
+
+          <span class="trip-leader">
+            鈴木
+          </span>
+
+        </div>
+
+        <div class="status-row">
+
+          <span class="status-badge status-active">
+            山行中
+          </span>
+
+          <span class="trip-date">
+            7月18日
+          </span>
+
+        </div>
+
+        <div class="button-row">
+
+          <button
+            class="detail-button"
+            type="button"
+          >
+            詳細を見る
+          </button>
+
+        </div>
+
+      </article>
+
+      <article class="trip-card active">
+
+        <div class="compact-title-row">
+
+          <h3 class="trip-title">
+            北アルプス　穂高
+          </h3>
+
+          <span class="trip-leader">
+            川瀬
+          </span>
+
+        </div>
+
+        <div class="status-row">
+
+          <span class="status-badge status-active">
+            山行中
+          </span>
+
+          <span class="trip-date">
+            7月17日〜7月19日
+          </span>
+
+        </div>
+
+        <div class="button-row">
+
+          <button
+            class="detail-button"
+            type="button"
+          >
+            詳細を見る
+          </button>
+
+        </div>
+
+      </article>
+
+    </section>
+
+    <section class="section">
+
+      <h2 class="section-title">
+        本日の下山
+      </h2>
+
+      <p class="section-subtitle">
+        今日が下山予定日の山行
+      </p>
+
+      <article class="trip-card descent">
+
+        <div class="compact-title-row">
+
+          <h3 class="trip-title">
+            御在所岳　前尾根
+          </h3>
+
+          <span class="trip-leader">
+            鈴木
+          </span>
+
+        </div>
+
+        <div class="status-row">
+
+          <span class="status-badge status-descent">
+            下山予定
+          </span>
+
+          <span class="trip-date">
+            17:00
+          </span>
+
+        </div>
+
+        <div class="button-row">
+
+          <button
+            class="detail-button"
+            type="button"
+          >
+            詳細を見る
+          </button>
+
+        </div>
+
+      </article>
+
+    </section>
+
+    <section class="section">
+
+      <h2 class="section-title">
+        山行募集
+      </h2>
+
+      <p class="section-subtitle">
+        現在参加者を募集している山行
+      </p>
+
+      <article class="trip-card recruiting">
+
+        <div class="compact-title-row">
+
+          <h3 class="trip-title">
+            南山クライミング
+          </h3>
+
+          <span class="trip-leader">
+            鈴木
+          </span>
+
+        </div>
+
+        <div class="status-row">
+
+          <span class="status-badge status-recruiting">
+            参加者募集中
+          </span>
+
+          <span class="trip-date">
+            7月25日
+          </span>
+
+        </div>
+
+        <p class="trip-info">
+          <strong>現在の参加者：</strong>
+          3名
+        </p>
+
+        <div class="button-row">
+
+          <button
+            class="detail-button"
+            type="button"
+          >
+            詳細を見る
+          </button>
+
+          <button
+            class="join-button"
+            type="button"
+          >
+            参加する
+          </button>
+
+        </div>
+
+      </article>
+
+    </section>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>山行届作成｜ポンコツ倶楽部</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+
+      color: #17364d;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dff5ff 0%,
+          #eefaff 210px,
+          #f8fcff 480px,
+          #edf4f8 100%
+        );
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font-family: inherit;
+    }
+
+    .header {
+      position: relative;
+      overflow: hidden;
+
+      padding: 26px 18px 38px;
+
+      color: white;
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #0b5f99 0%,
+          #2793c8 55%,
+          #8fd9f2 100%
+        );
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: -30px;
+
+      height: 65px;
+
+      background: #eefaff;
+
+      clip-path: polygon(
+        0 72%,
+        10% 48%,
+        20% 68%,
+        31% 28%,
+        43% 66%,
+        55% 39%,
+        67% 72%,
+        79% 34%,
+        90% 61%,
+        100% 40%,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .header h1 {
+      position: relative;
+      z-index: 1;
+
+      margin: 0;
+
+      font-size: 25px;
+    }
+
+    .header p {
+      position: relative;
+      z-index: 1;
+
+      margin: 6px 0 0;
+
+      font-size: 13px;
+      opacity: 0.92;
+    }
+
+    .container {
+      width: min(calc(100% - 24px), 720px);
+      margin: 0 auto;
+      padding: 18px 0 40px;
+    }
+
+    .back-link {
+      display: inline-block;
+
+      margin-bottom: 14px;
+
+      color: #176a99;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .form-card {
+      padding: 18px;
+
+      border:
+        1px solid
+        rgba(87, 155, 194, 0.22);
+
+      border-radius: 18px;
+
+      background:
+        rgba(255, 255, 255, 0.96);
+
+      box-shadow:
+        0 5px 17px
+        rgba(34, 91, 125, 0.08);
+    }
+
+    .form-section + .form-section {
+      margin-top: 21px;
+    }
+
+    .form-label {
+      display: block;
+
+      margin-bottom: 8px;
+
+      color: #234b66;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .required {
+      margin-left: 5px;
+
+      color: #d94d4d;
+      font-size: 12px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+
+      padding: 12px;
+
+      border:
+        1px solid
+        #a9cadc;
+
+      border-radius: 11px;
+
+      color: #17364d;
+      font-size: 16px;
+
+      background: white;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+
+      border-color: #2b97c7;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(43, 151, 199, 0.12);
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .member-box {
+      padding: 5px 13px;
+
+      border:
+        1px solid
+        #c5dce8;
+
+      border-radius: 12px;
+
+      background: #f7fcff;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      padding: 11px 0;
+
+      cursor: pointer;
+    }
+
+    .member-item + .member-item {
+      border-top:
+        1px solid
+        #deebf2;
+    }
+
+    .member-item input {
+      width: 20px;
+      height: 20px;
+      margin: 0;
+
+      accent-color: #1885bc;
+    }
+
+    .member-name {
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .help-text {
+      margin: 7px 2px 0;
+
+      color: #718a9a;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .outside-count-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .outside-count-row input {
+      max-width: 130px;
+    }
+
+    .count-unit {
+      color: #557185;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .option-box {
+      padding: 13px;
+
+      border:
+        1px solid
+        #c9dce7;
+
+      border-radius: 12px;
+
+      background: #f7fbfd;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .option-label input {
+      width: 20px;
+      height: 20px;
+      margin: 0;
+
+      accent-color: #1885bc;
+    }
+
+    .option-note {
+      margin: 7px 0 0 30px;
+
+      color: #718a9a;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+
+      margin-top: 24px;
+    }
+
+    .draft-button,
+    .submit-button {
+      padding: 14px 10px;
+
+      border-radius: 12px;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .draft-button {
+      border:
+        1px solid
+        #78b8d7;
+
+      color: #176a99;
+      background: white;
+    }
+
+    .submit-button {
+      border: none;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #2aa8d3
+        );
+    }
+
+    @media (max-width: 520px) {
+      .input-row {
+        grid-template-columns: 1fr;
+      }
+
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>山行届作成</h1>
+    <p>Mountain Trip Form</p>
+  </header>
+
+  <main class="container">
+
+    <a
+      class="back-link"
+      href="index.html"
+    >
+      ← ホームへ戻る
+    </a>
+
+    <form class="form-card">
+
+      <section class="form-section">
+
+        <label
+          class="form-label"
+          for="entry-date"
+        >
+          入山日
+          <span class="required">
+            必須
+          </span>
+        </label>
+
+        <input
+          id="entry-date"
+          name="entry-date"
+          type="date"
+          required
+        >
+
+      </section>
+
+      <section class="form-section">
+
+        <span class="form-label">
+          下山予定
+          <span class="required">
+            必須
+          </span>
+        </span>
+
+        <div class="input-row">
+
+          <div>
+            <label
+              class="help-text"
+              for="descent-date"
+            >
+              下山日
+            </label>
+
+            <input
+              id="descent-date"
+              name="descent-date"
+              type="date"
+              required
+            >
+          </div>
+
+          <div>
+            <label
+              class="help-text"
+              for="descent-time"
+            >
+              下山予定時刻
+            </label>
+
+            <input
+              id="descent-time"
+              name="descent-time"
+              type="time"
+              required
+            >
+          </div>
+
+        </div>
+
+      </section>
+
+      <section class="form-section">
+
+        <label
+          class="form-label"
+          for="mountain-area"
+        >
+          山域
+          <span class="required">
+            必須
+          </span>
+        </label>
+
+        <input
+          id="mountain-area"
+          name="mountain-area"
+          type="text"
+          placeholder="例：鈴鹿山脈"
+          required
+        >
+
+      </section>
+
+      <section class="form-section">
+
+        <label
+          class="form-label"
+          for="mountain-name"
+        >
+          山名
+          <span class="required">
+            必須
+          </span>
+        </label>
+
+        <input
+          id="mountain-name"
+          name="mountain-name"
+          type="text"
+          placeholder="例：御在所岳"
+          required
+        >
+
+      </section>
+
+      <section class="form-section">
+
+        <label
+          class="form-label"
+          for="route"
+        >
+          ルート
+          <span class="required">
+            必須
+          </span>
+        </label>
+
+        <textarea
+          id="route"
+          name="route"
+          placeholder="例：前尾根"
+          required
+        ></textarea>
+
+      </section>
+
+      <section class="form-section">
+
+        <span class="form-label">
+          参加者
+          <span class="required">
+            必須
+          </span>
+        </span>
+
+        <div class="member-box">
+
+          <label class="member-item">
+
+            <input
+              type="checkbox"
+              name="members"
+              value="鈴木"
+            >
+
+            <span class="member-name">
+              鈴木
+            </span>
+
+          </label>
+
+          <label class="member-item">
+
+            <input
+              type="checkbox"
+              name="members"
+              value="川瀬"
+            >
+
+            <span class="member-name">
+              川瀬
+            </span>
+
+          </label>
+
+          <label class="member-item">
+
+            <input
+              type="checkbox"
+              name="members"
+              value="田中"
+            >
+
+            <span class="member-name">
+              田中
+            </span>
+
+          </label>
+
+        </div>
+
+        <p class="help-text">
+          一緒に山行する会員を選択してください。
+        </p>
+
+      </section>
+
+      <section class="form-section">
+
+        <label
+          class="form-label"
+          for="outside-count"
+        >
+          会員外の参加人数
+        </label>
+
+        <div class="outside-count-row">
+
+          <input
+            id="outside-count"
+            name="outside-count"
+            type="number"
+            min="0"
+            max="99"
+            value="0"
+            inputmode="numeric"
+          >
+
+          <span class="count-unit">
+            人
+          </span>
+
+        </div>
+
+      </section>
+
+      <section class="form-section">
+
+        <div class="option-box">
+
+          <label class="option-label">
+
+            <input
+              id="create-plan"
+              name="create-plan"
+              type="checkbox"
+            >
+
+            <span>
+              詳細計画書も作成する
+            </span>
+
+          </label>
+
+          <p class="option-note">
+            必要な山行だけ、詳しい登山計画書を追加できます。
+          </p>
+
+        </div>
+
+      </section>
+
+      <div class="button-row">
+
+        <button
+          class="draft-button"
+          type="button"
+        >
+          下書き保存
+        </button>
+
+        <button
+          class="submit-button"
+          type="submit"
+        >
+          管理者へ提出
+        </button>
+
+      </div>
+
+    </form>
+
+  </main>
+
+</body>
+</html>
