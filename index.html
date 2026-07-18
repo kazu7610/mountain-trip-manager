@@ -410,6 +410,31 @@
         );
     }
 
+        .empty-message,
+    .error-message {
+      padding: 18px 14px;
+
+      border:
+        1px dashed
+        #9fc9df;
+
+      border-radius: 15px;
+
+      text-align: center;
+
+      background:
+        rgba(255, 255, 255, 0.76);
+    }
+
+    .empty-message {
+      color: #67889b;
+    }
+
+    .error-message {
+      color: #bd3838;
+      font-weight: bold;
+    }
+
     @media (max-width: 420px) {
       .container {
         width: min(calc(100% - 18px), 760px);
@@ -497,87 +522,15 @@
         今日、山行期間に入っている予定
       </p>
 
-      <article class="trip-card active">
+           <div id="today-trip-list">
 
-        <div class="compact-title-row">
-
-          <h3 class="trip-title">
-            御在所岳　前尾根
-          </h3>
-
-          <span class="trip-leader">
-            鈴木
-          </span>
-
+        <div class="empty-message">
+          本日の山行を読み込んでいます...
         </div>
 
-        <div class="status-row">
+      </div>
 
-          <span class="status-badge status-active">
-            山行中
-          </span>
-
-          <span class="trip-date">
-            7月18日
-          </span>
-
-        </div>
-
-        <div class="button-row">
-
-          <button
-            class="detail-button"
-            type="button"
-          >
-            詳細を見る
-          </button>
-
-        </div>
-
-      </article>
-
-      <article class="trip-card active">
-
-        <div class="compact-title-row">
-
-          <h3 class="trip-title">
-            北アルプス　穂高
-          </h3>
-
-          <span class="trip-leader">
-            川瀬
-          </span>
-
-        </div>
-
-        <div class="status-row">
-
-          <span class="status-badge status-active">
-            山行中
-          </span>
-
-          <span class="trip-date">
-            7月17日〜7月19日
-          </span>
-
-        </div>
-
-        <div class="button-row">
-
-          <button
-            class="detail-button"
-            type="button"
-          >
-            詳細を見る
-          </button>
-
-        </div>
-
-      </article>
-
-    </section>
-
-    <section class="section">
+        <section class="section">
 
       <h2 class="section-title">
         本日の下山
@@ -587,44 +540,15 @@
         今日が下山予定日の山行
       </p>
 
-      <article class="trip-card descent">
+      <div id="today-descent-list">
 
-        <div class="compact-title-row">
-
-          <h3 class="trip-title">
-            御在所岳　前尾根
-          </h3>
-
-          <span class="trip-leader">
-            鈴木
-          </span>
-
+        <div class="empty-message">
+          本日の下山予定を読み込んでいます...
         </div>
 
-        <div class="status-row">
+      </div>
 
-          <span class="status-badge status-descent">
-            下山予定
-          </span>
-
-          <span class="trip-date">
-            17:00
-          </span>
-
-        </div>
-
-        <div class="button-row">
-
-          <button
-            class="detail-button"
-            type="button"
-          >
-            詳細を見る
-          </button>
-
-        </div>
-
-      </article>
+    </section>
 
     </section>
 
@@ -692,6 +616,9 @@
     </section>
 
   </main>
+
+    <script src="portal-auth.js?v=2"></script>
+  <script src="index.js?v=1"></script>
 
 </body>
 </html>
