@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>山行詳細｜ポンコツ倶楽部</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+
+      color: #17364d;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dff5ff 0%,
+          #eefaff 210px,
+          #f8fcff 480px,
+          #edf4f8 100%
+        );
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .header {
+      position: relative;
+      overflow: hidden;
+
+      padding: 27px 18px 39px;
+
+      color: white;
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #0b5f99 0%,
+          #2793c8 55%,
+          #8fd9f2 100%
+        );
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      left: -10%;
+      right: -10%;
+      bottom: -30px;
+
+      height: 66px;
+
+      background: #eefaff;
+
+      clip-path: polygon(
+        0 72%,
+        10% 48%,
+        20% 68%,
+        31% 28%,
+        43% 66%,
+        55% 39%,
+        67% 72%,
+        79% 34%,
+        90% 61%,
+        100% 40%,
+        100% 100%,
+        0 100%
+      );
+    }
+
+    .header h1 {
+      position: relative;
+      z-index: 1;
+
+      margin: 0;
+
+      font-size: 25px;
+    }
+
+    .header p {
+      position: relative;
+      z-index: 1;
+
+      margin: 6px 0 0;
+
+      font-size: 13px;
+      opacity: 0.92;
+    }
+
+    .container {
+      width: min(calc(100% - 24px), 720px);
+      margin: 0 auto;
+      padding: 18px 0 42px;
+    }
+
+    .back-link {
+      display: inline-block;
+
+      margin-bottom: 15px;
+
+      color: #176a99;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .loading-card,
+    .error-card {
+      padding: 24px 16px;
+
+      border-radius: 18px;
+
+      text-align: center;
+
+      background:
+        rgba(255, 255, 255, 0.96);
+
+      box-shadow:
+        0 5px 17px
+        rgba(34, 91, 125, 0.08);
+    }
+
+    .loading-card {
+      color: #67889b;
+    }
+
+    .error-card {
+      color: #bd3838;
+      font-weight: bold;
+    }
+
+    .detail-card {
+      overflow: hidden;
+
+      border:
+        1px solid
+        rgba(87, 155, 194, 0.23);
+
+      border-radius: 18px;
+
+      background:
+        rgba(255, 255, 255, 0.97);
+
+      box-shadow:
+        0 5px 17px
+        rgba(34, 91, 125, 0.08);
+    }
+
+    .detail-head {
+      padding: 19px 18px;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #35afd5
+        );
+    }
+
+    .detail-area {
+      margin: 0 0 6px;
+
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .detail-title {
+      margin: 0;
+
+      font-size: 23px;
+      line-height: 1.45;
+    }
+
+    .status-badge {
+      display: inline-block;
+
+      margin-top: 11px;
+      padding: 6px 10px;
+
+      border-radius: 20px;
+
+      color: #135f8d;
+      font-size: 12px;
+      font-weight: bold;
+
+      background: #e2f5fc;
+    }
+
+    .detail-body {
+      padding: 7px 18px 20px;
+    }
+
+    .detail-row {
+      padding: 15px 0;
+
+      border-bottom:
+        1px solid
+        #e2edf3;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      margin: 0 0 6px;
+
+      color: #71899a;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .detail-value {
+      margin: 0;
+
+      color: #234b66;
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .member-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+
+      margin-top: 3px;
+    }
+
+    .member-chip {
+      padding: 7px 10px;
+
+      border-radius: 20px;
+
+      color: #176a99;
+      font-size: 13px;
+      font-weight: bold;
+
+      background: #e7f5fb;
+    }
+
+    .outside-chip {
+      color: #755800;
+      background: #fff1ca;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+
+      margin-top: 17px;
+    }
+
+    .home-button,
+    .plan-button {
+      padding: 13px 9px;
+
+      border-radius: 11px;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .home-button {
+      border:
+        1px solid
+        #78b8d7;
+
+      color: #176a99;
+      background: white;
+    }
+
+    .plan-button {
+      border: none;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #5c76bb,
+          #8398d4
+        );
+    }
+
+    .plan-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 520px) {
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-title {
+        font-size: 21px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>山行詳細</h1>
+    <p>Mountain Trip Details</p>
+  </header>
+
+  <main class="container">
+
+    <a
+      class="back-link"
+      href="index.html"
+    >
+      ← ホームへ戻る
+    </a>
+
+    <div id="trip-detail">
+
+      <div class="loading-card">
+        山行情報を読み込んでいます...
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="portal-auth.js?v=2"></script>
+  <script src="trip-detail.js?v=1"></script>
+
+</body>
+</html>

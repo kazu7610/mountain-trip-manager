@@ -252,7 +252,7 @@ function createTodayTripCard(trip) {
       <button
         class="detail-button"
         type="button"
-        onclick="alert('詳細画面は次に作成します。')"
+        onclick="location.href='trip-detail.html?id=${trip.id}'"
       >
         詳細を見る
       </button>
@@ -304,7 +304,7 @@ function createTodayDescentCard(trip) {
       <button
         class="detail-button"
         type="button"
-        onclick="alert('詳細画面は次に作成します。')"
+        onclick="location.href='trip-detail.html?id=${trip.id}'"
       >
         詳細を見る
       </button>
