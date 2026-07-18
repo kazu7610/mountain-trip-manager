@@ -242,9 +242,26 @@
       accent-color: #1885bc;
     }
 
-    .member-name {
+     .member-name {
       font-size: 15px;
       font-weight: bold;
+    }
+
+    .member-loading {
+      margin: 12px 0;
+
+      color: #718a9a;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .member-error {
+      margin: 12px 0;
+
+      color: #c43f3f;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
     }
 
     .help-text {
@@ -380,7 +397,10 @@
       ← ホームへ戻る
     </a>
 
-    <form class="form-card">
+    <form
+  id="trip-form"
+  class="form-card"
+>
 
       <section class="form-section">
 
@@ -524,55 +544,21 @@
           </span>
         </span>
 
-        <div class="member-box">
-
-          <label class="member-item">
-
-            <input
-              type="checkbox"
-              name="members"
-              value="鈴木"
-            >
-
-            <span class="member-name">
-              鈴木
-            </span>
-
-          </label>
-
-          <label class="member-item">
-
-            <input
-              type="checkbox"
-              name="members"
-              value="川瀬"
-            >
-
-            <span class="member-name">
-              川瀬
-            </span>
-
-          </label>
-
-          <label class="member-item">
-
-            <input
-              type="checkbox"
-              name="members"
-              value="田中"
-            >
-
-            <span class="member-name">
-              田中
-            </span>
-
-          </label>
-
+              <div
+          id="member-list"
+          class="member-box"
+        >
+          <p class="member-loading">
+            会員一覧を読み込んでいます...
+          </p>
         </div>
 
-        <p class="help-text">
+        <p
+          id="member-message"
+          class="help-text"
+        >
           一緒に山行する会員を選択してください。
-        </p>
+        </p> 
 
       </section>
 
@@ -640,12 +626,13 @@
           下書き保存
         </button>
 
-        <button
-          class="submit-button"
-          type="submit"
-        >
-          管理者へ提出
-        </button>
+       <button
+  id="submit-trip-button"
+  class="submit-button"
+  type="button"
+>
+  管理者へ提出
+</button>
 
       </div>
 
@@ -653,5 +640,8 @@
 
   </main>
 
+   <script src="portal-auth.js?v=2"></script>
+<script src="trip-form.js?v=3"></script>
+
 </body>
-</html>
+</html> 
