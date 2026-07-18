@@ -6,10 +6,64 @@
 document.addEventListener(
   "DOMContentLoaded",
   () => {
+    if (!requirePortalLogin()) {
+      return;
+    }
+
+    initializeHomeLogin();
+
     loadApprovalWaitingCount();
     loadHomeTrips();
   }
 );
+
+/* =========================================
+   ホーム画面のログイン表示
+========================================= */
+
+function initializeHomeLogin() {
+  const member =
+    getPortalMember();
+
+  const userNameElement =
+    document.getElementById(
+      "login-user-name"
+    );
+
+  const logoutButton =
+    document.getElementById(
+      "logout-button"
+    );
+
+  const adminButton =
+    document.getElementById(
+      "admin-button"
+    );
+
+  if (!member) {
+    window.location.href =
+      "login.html";
+
+    return;
+  }
+
+  if (userNameElement) {
+    userNameElement.textContent =
+      `${member.name} さん`;
+  }
+
+  if (logoutButton) {
+    logoutButton.addEventListener(
+      "click",
+      logoutPortal
+    );
+  }
+
+  if (adminButton) {
+    adminButton.hidden =
+      member.role !== "admin";
+  }
+}
 
 /* =========================================
    承認待ち件数を取得

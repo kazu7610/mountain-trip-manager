@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    ログイン｜ポンコツ倶楽部
+  </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Sans",
+        "Yu Gothic",
+        sans-serif;
+
+      color: #17384a;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dff4ff 0%,
+          #eefaff 45%,
+          #ffffff 100%
+        );
+    }
+
+    .page {
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 24px 16px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+
+      padding: 28px 22px;
+
+      border:
+        1px solid rgba(
+          126,
+          181,
+          210,
+          0.45
+        );
+
+      border-radius: 22px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.94
+        );
+
+      box-shadow:
+        0 18px 45px
+        rgba(
+          50,
+          107,
+          138,
+          0.15
+        );
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+
+    .brand-icon {
+      display: block;
+
+      margin-bottom: 8px;
+
+      font-size: 46px;
+    }
+
+    .brand-title {
+      margin: 0;
+
+      color: #175c83;
+
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-subtitle {
+      margin: 7px 0 0;
+
+      color: #6b8797;
+
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+
+    .login-title {
+      margin: 0 0 20px;
+
+      font-size: 19px;
+      text-align: center;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      display: block;
+
+      margin-bottom: 8px;
+
+      color: #36596d;
+
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .field-select,
+    .field-input {
+      width: 100%;
+      min-height: 48px;
+
+      padding: 10px 12px;
+
+      border:
+        1px solid #b9d6e5;
+
+      border-radius: 12px;
+
+      color: #183d50;
+      font-size: 16px;
+
+      background: #ffffff;
+    }
+
+    .field-select:focus,
+    .field-input:focus {
+      outline: none;
+
+      border-color: #3c9bc7;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          60,
+          155,
+          199,
+          0.15
+        );
+    }
+
+    .login-button {
+      width: 100%;
+      min-height: 50px;
+
+      margin-top: 4px;
+
+      border: none;
+      border-radius: 14px;
+
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #1678b2,
+          #35afd5
+        );
+
+      cursor: pointer;
+    }
+
+    .login-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .message {
+      min-height: 22px;
+
+      margin: 16px 0 0;
+
+      color: #c04444;
+
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .loading-text {
+      color: #5a8196;
+    }
+
+    .footer-note {
+      margin: 22px 0 0;
+
+      color: #8399a5;
+
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+
+    <section class="login-card">
+
+      <div class="brand">
+
+        <span class="brand-icon">
+          🏔️
+        </span>
+
+        <h1 class="brand-title">
+          ポンコツ倶楽部
+        </h1>
+
+        <p class="brand-subtitle">
+          Mountain Trip Management
+        </p>
+
+      </div>
+
+      <h2 class="login-title">
+        会員ログイン
+      </h2>
+
+      <form id="login-form">
+
+        <div class="field">
+
+          <label
+            class="field-label"
+            for="member-select"
+          >
+            名前
+          </label>
+
+          <select
+            id="member-select"
+            class="field-select"
+            required
+          >
+            <option value="">
+              会員を選択してください
+            </option>
+          </select>
+
+        </div>
+
+        <div class="field">
+
+          <label
+            class="field-label"
+            for="password"
+          >
+            パスワード
+          </label>
+
+          <input
+            id="password"
+            class="field-input"
+            type="password"
+            autocomplete="current-password"
+            placeholder="パスワードを入力"
+            required
+          >
+
+        </div>
+
+        <button
+          id="login-button"
+          class="login-button"
+          type="submit"
+        >
+          ログイン
+        </button>
+
+      </form>
+
+      <p
+        id="login-message"
+        class="message loading-text"
+      >
+        会員情報を読み込んでいます...
+      </p>
+
+      <p class="footer-note">
+        ログイン情報を他の人に教えないでください。
+      </p>
+
+    </section>
+
+  </main>
+
+  <script src="portal-auth.js?v=1"></script>
+  <script src="login.js?v=1"></script>
+</body>
+</html>

@@ -107,6 +107,50 @@
       opacity: 0.92;
     }
 
+        .login-user-area {
+      position: relative;
+      z-index: 1;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      margin-top: 15px;
+    }
+
+    .login-user-name {
+      margin: 0;
+
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .logout-button {
+      padding: 7px 11px;
+
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.75);
+
+      border-radius: 9px;
+
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: bold;
+
+      background:
+        rgba(255, 255, 255, 0.14);
+
+      cursor: pointer;
+    }
+
+    .logout-button:hover {
+      background:
+        rgba(255, 255, 255, 0.24);
+    }
+
     .container {
       width: min(calc(100% - 24px), 760px);
       margin: 0 auto;
@@ -471,9 +515,35 @@
 
 <body>
 
-  <header class="header">
-    <h1>ポンコツ倶楽部</h1>
-    <p>Mountain Trip Management</p>
+    <header class="header">
+
+    <h1>
+      ポンコツ倶楽部
+    </h1>
+
+    <p>
+      Mountain Trip Management
+    </p>
+
+    <div class="login-user-area">
+
+      <p
+        id="login-user-name"
+        class="login-user-name"
+      >
+        ログイン確認中...
+      </p>
+
+      <button
+        id="logout-button"
+        class="logout-button"
+        type="button"
+      >
+        ログアウト
+      </button>
+
+    </div>
+
   </header>
 
   <main class="container">
@@ -486,10 +556,12 @@
       ＋ 山行届を作成
     </button>
 
-        <button
+     <button
+      id="admin-button"
       class="admin-button"
       type="button"
       onclick="location.href='admin.html'"
+      hidden
     >
       管理者画面
     </button>
@@ -630,8 +702,8 @@
 
   </main>
 
-    <script src="portal-auth.js?v=2"></script>
-  <script src="index.js?v=5"></script>
+<script src="portal-auth.js?v=3"></script>
+<script src="index.js?v=101"></script>
 
 </body>
 </html>
