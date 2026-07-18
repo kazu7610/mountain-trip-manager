@@ -6,9 +6,81 @@
 document.addEventListener(
   "DOMContentLoaded",
   () => {
+    loadApprovalWaitingCount();
     loadHomeTrips();
   }
 );
+
+/* =========================================
+   承認待ち件数を取得
+========================================= */
+
+async function loadApprovalWaitingCount() {
+  const countElement =
+    document.getElementById(
+      "approval-waiting-count"
+    );
+
+  if (!countElement) {
+    console.error(
+      "承認待ち件数の表示場所が見つかりません。"
+    );
+
+    return;
+  }
+
+  try {
+    const response = await portalFetch(
+      "/rest/v1/trips" +
+      "?select=id" +
+      "&status=eq.submitted",
+      {
+        headers: {
+          Prefer: "count=exact"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "承認待ち件数の取得に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    const contentRange =
+      response.headers.get("content-range");
+
+    let count = 0;
+
+    if (contentRange) {
+      const countText =
+        contentRange.split("/")[1];
+
+      if (countText !== "*") {
+        count = Number(countText) || 0;
+      }
+    } else {
+      const rows = await response.json();
+
+      count = Array.isArray(rows)
+        ? rows.length
+        : 0;
+    }
+
+    countElement.innerHTML =
+      `${count}<span>件</span>`;
+
+  } catch (error) {
+    console.error(error);
+
+    countElement.innerHTML =
+      `？<span>件</span>`;
+  }
+}
 
 /* =========================================
    ホーム用山行一覧を読み込む
