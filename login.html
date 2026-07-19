@@ -224,6 +224,21 @@
       text-align: center;
     }
   </style>
+
+  <link
+  rel="manifest"
+  href="manifest.json"
+>
+
+<meta
+  name="theme-color"
+  content="#0b5f99"
+>
+
+<link
+  rel="apple-touch-icon"
+  href="icons/icon-192.png"
+>
 </head>
 
 <body>
@@ -321,5 +336,37 @@
 
   <script src="portal-auth.js?v=1"></script>
   <script src="login.js?v=1"></script>
+
+  <script>
+  if (
+    "serviceWorker" in navigator
+  ) {
+    window.addEventListener(
+      "load",
+      () => {
+        navigator.serviceWorker
+          .register(
+            "./service-worker.js"
+          )
+          .then(
+            () => {
+              console.log(
+                "Service Workerを登録しました。"
+              );
+            }
+          )
+          .catch(
+            (error) => {
+              console.error(
+                "Service Workerの登録に失敗しました。",
+                error
+              );
+            }
+          );
+      }
+    );
+  }
+</script>
+
 </body>
 </html>
