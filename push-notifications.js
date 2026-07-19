@@ -505,3 +505,23 @@ async function notifyAllMembersExceptSender({
     badge
   });
 }
+
+/* =========================================
+   アプリを開いた時にバッジを消す
+========================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+    try {
+      if ("clearAppBadge" in navigator) {
+        await navigator.clearAppBadge();
+      }
+    } catch (error) {
+      console.error(
+        "アプリのバッジを消せませんでした。",
+        error
+      );
+    }
+  }
+);
