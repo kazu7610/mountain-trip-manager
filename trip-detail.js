@@ -379,28 +379,17 @@ function renderTripDetail(
   `;
 
   const descentButton =
-    document.getElementById(
-      "descent-button"
-    );
+  document.getElementById(
+    "descent-button"
+  );
 
-  if (descentButton) {
-    descentButton.addEventListener(
-      "click",
-      () => reportDescent(
-        trip.id,
-        descentButton
-      )
+if (descentButton) {
+  descentButton.onclick =
+    () => reportDescent(
+      trip.id,
+      descentButton
     );
-  }
-    if (descentButton) {
-    descentButton.addEventListener(
-      "click",
-      () => reportDescent(
-        trip.id,
-        descentButton
-      )
-    );
-  }
+}
 
   const changeRequestButton =
     document.getElementById(
@@ -955,61 +944,78 @@ async function reportDescent(
   tripId,
   button
 ) {
-  const loginMember =
-    getPortalMember();
 
-  if (!loginMember?.id) {
-    alert(
-      "ログイン情報を確認できません。"
-    );
-
-    location.href =
-      "login.html";
-
-    return;
-  }
 
   /*
-    ボタン表示後に参加者情報が変わった場合も考え、
-    送信直前にもう一度参加者か確認する
+    ページ全体で下山処理の二重実行を防ぐ
   */
-  const members =
-    await loadTripMembers(
-      tripId
-    );
-
-  const isParticipant =
-    members.some(
-      (member) =>
-        member.id ===
-        Number(loginMember.id)
-    );
-
-  if (!isParticipant) {
-    alert(
-      "この山行の参加者ではないため、下山連絡はできません。"
-    );
-
-    await loadTripDetail();
-
+  if (
+    window.descentProcessing === true
+  ) {
     return;
   }
 
-  const confirmed =
-    confirm(
-      "全員無事に下山しましたか？"
-    );
+  window.descentProcessing =
+    true;
 
-  if (!confirmed) {
-    return;
-  }
+  button.disabled =
+    true;
 
-  button.disabled = true;
-
-  button.textContent =
-    "下山連絡を送信中...";
+  const originalText =
+    button.textContent;
 
   try {
+    const loginMember =
+      getPortalMember();
+
+    if (!loginMember?.id) {
+      alert(
+        "ログイン情報を確認できません。"
+      );
+
+      location.href =
+        "login.html";
+
+      return;
+    }
+
+    /*
+      送信直前に参加者か確認する
+    */
+    const members =
+      await loadTripMembers(
+        tripId
+      );
+
+    const isParticipant =
+      members.some(
+        (member) =>
+          member.id ===
+          Number(loginMember.id)
+      );
+
+    if (!isParticipant) {
+      alert(
+        "この山行の参加者ではないため、下山連絡はできません。"
+      );
+
+      await loadTripDetail();
+
+      return;
+    }
+
+    const confirmed =
+      confirm(
+        "全員無事に下山しましたか？"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    button.textContent =
+      "下山連絡を送信中...";
+
     const response =
       await portalFetch(
         `/rest/v1/trips?id=eq.${tripId}`,
@@ -1056,10 +1062,15 @@ async function reportDescent(
       "下山連絡を送信できませんでした。"
     );
 
-    button.disabled = false;
+  } finally {
+    window.descentProcessing =
+      false;
+
+    button.disabled =
+      false;
 
     button.textContent =
-      "下山しました";
+      originalText;
   }
 }
 
