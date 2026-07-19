@@ -75,17 +75,19 @@ async function initializeHomeLogin() {
   }
 
   if (!notificationButton) {
-    return;
-  }
-
-  if (
-    !canUsePushNotifications()
-  ) {
-    notificationButton.hidden =
-      true;
+    console.error(
+      "通知ボタンが見つかりません。"
+    );
 
     return;
   }
+
+  /*
+   * 動作確認のため、
+   * 通知ボタンは必ず表示する
+   */
+  notificationButton.hidden =
+    false;
 
   notificationButton.addEventListener(
     "click",
@@ -96,7 +98,10 @@ async function initializeHomeLogin() {
         );
 
       if (enabled) {
-        notificationButton.hidden =
+        notificationButton.textContent =
+          "🔔 通知は有効です";
+
+        notificationButton.disabled =
           true;
       }
     }
@@ -106,8 +111,19 @@ async function initializeHomeLogin() {
     const isEnabled =
       await isPushNotificationEnabled();
 
-    notificationButton.hidden =
-      isEnabled;
+    if (isEnabled) {
+      notificationButton.textContent =
+        "🔔 通知は有効です";
+
+      notificationButton.disabled =
+        true;
+    } else {
+      notificationButton.textContent =
+        "🔔 通知を有効にする";
+
+      notificationButton.disabled =
+        false;
+    }
 
   } catch (error) {
     console.error(
@@ -115,7 +131,10 @@ async function initializeHomeLogin() {
       error
     );
 
-    notificationButton.hidden =
+    notificationButton.textContent =
+      "🔔 通知を有効にする";
+
+    notificationButton.disabled =
       false;
   }
 }
