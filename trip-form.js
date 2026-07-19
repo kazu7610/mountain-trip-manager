@@ -207,6 +207,10 @@ async function loadMembers() {
    修正対象の山行を読み込む
 ========================================= */
 
+/* =========================================
+   修正・下書き対象の山行届を読み込む
+========================================= */
+
 async function loadEditTrip(
   tripId
 ) {
@@ -253,9 +257,15 @@ async function loadEditTrip(
       return;
     }
 
+    /*
+     * 修正依頼中または下書きだけ
+     * 編集できる
+     */
     if (
       trip.status !==
-      "revision_required"
+        "revision_required" &&
+      trip.status !==
+        "draft"
     ) {
       alert(
         "この山行届は修正できる状態ではありません。"
@@ -267,10 +277,13 @@ async function loadEditTrip(
       return;
     }
 
+    /*
+     * 提出した本人だけ編集できる
+     */
     if (
       !loginMember?.authUserId ||
       trip.submitted_by !==
-      loginMember.authUserId
+        loginMember.authUserId
     ) {
       alert(
         "この山行届を修正できるのは、提出した本人だけです。"
@@ -294,7 +307,9 @@ async function loadEditTrip(
 
     if (submitButton) {
       submitButton.textContent =
-        "管理者へ再提出";
+        trip.status === "draft"
+          ? "管理者へ提出"
+          : "管理者へ再提出";
     }
 
   } catch (error) {
@@ -539,9 +554,22 @@ function setupTripForm() {
       "submit-trip-button"
     );
 
+  const draftButton =
+    document.getElementById(
+      "draft-button"
+    );
+
   if (!submitButton) {
     console.error(
       "管理者へ提出ボタンが見つかりません。"
+    );
+
+    return;
+  }
+
+  if (!draftButton) {
+    console.error(
+      "下書き保存ボタンが見つかりません。"
     );
 
     return;
@@ -551,6 +579,215 @@ function setupTripForm() {
     "click",
     submitTripForm
   );
+
+  draftButton.addEventListener(
+    "click",
+    saveDraftTrip
+  );
+}
+
+/* =========================================
+   山行届を下書き保存
+========================================= */
+
+async function saveDraftTrip(
+  event
+) {
+  event.preventDefault();
+
+  const draftButton =
+    document.getElementById(
+      "draft-button"
+    );
+
+  const loginMember =
+    getPortalMember();
+
+  const editTripId =
+    getEditTripId();
+
+  if (!loginMember?.id) {
+    alert(
+      "ログイン情報を確認できません。もう一度ログインしてください。"
+    );
+
+    location.href =
+      "login.html";
+
+    return;
+  }
+
+  const entryDate =
+    document.getElementById(
+      "entry-date"
+    ).value || null;
+
+  const descentDate =
+    document.getElementById(
+      "descent-date"
+    ).value || null;
+
+  const descentTime =
+    document.getElementById(
+      "descent-time"
+    ).value || null;
+
+  const mountainArea =
+    document
+      .getElementById(
+        "mountain-area"
+      )
+      .value
+      .trim() || null;
+
+  const mountainName =
+    document
+      .getElementById(
+        "mountain-name"
+      )
+      .value
+      .trim() || null;
+
+  const route =
+    document
+      .getElementById(
+        "route"
+      )
+      .value
+      .trim() || null;
+
+  const outsideMemberCount =
+    Number(
+      document
+        .getElementById(
+          "outside-count"
+        )
+        .value || 0
+    );
+
+  const selectedMembers =
+    Array.from(
+      document.querySelectorAll(
+        'input[name="members"]:checked'
+      )
+    );
+
+  const leaderValue =
+    document.getElementById(
+      "leader-select"
+    ).value;
+
+  const leaderId =
+    leaderValue
+      ? Number(leaderValue)
+      : null;
+
+  const confirmed =
+    confirm(
+      "現在の入力内容を下書き保存しますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  if (draftButton) {
+    draftButton.disabled =
+      true;
+
+    draftButton.textContent =
+      "保存中...";
+  }
+
+  try {
+    const tripData = {
+      entry_date:
+        entryDate,
+
+      descent_date:
+        descentDate,
+
+      descent_time:
+        descentTime,
+
+      mountain_area:
+        mountainArea,
+
+      mountain_name:
+        mountainName,
+
+      route,
+
+      outside_member_count:
+        outsideMemberCount,
+
+      status:
+        "draft",
+
+      submitted_by:
+        loginMember.authUserId ||
+        null,
+
+      submitted_at:
+        null,
+
+      approved_by:
+        null,
+
+      approved_at:
+        null,
+
+      revision_reason:
+        null
+    };
+
+    let savedTripId;
+
+    if (editTripId) {
+      await updateExistingTrip(
+        editTripId,
+        tripData
+      );
+
+      savedTripId =
+        editTripId;
+
+    } else {
+      savedTripId =
+        await createNewTrip(
+          tripData
+        );
+    }
+
+    await replaceTripMembers(
+      savedTripId,
+      selectedMembers,
+      leaderId
+    );
+
+    alert(
+      "山行届を下書き保存しました。"
+    );
+
+    location.href =
+      "index.html";
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "下書き保存できませんでした。\n入力内容とSupabaseの設定を確認してください。"
+    );
+
+  } finally {
+    if (draftButton) {
+      draftButton.disabled =
+        false;
+
+      draftButton.textContent =
+        "下書き保存";
+    }
+  }
 }
 
 /* =========================================
@@ -944,7 +1181,9 @@ async function updateExistingTrip(
 
   if (
     currentTrip.status !==
-    "revision_required"
+      "revision_required" &&
+    currentTrip.status !==
+      "draft"
   ) {
     throw new Error(
       "この山行届は修正できる状態ではありません。"

@@ -10,6 +10,8 @@
 
   <title>ポンコツ倶楽部</title>
 
+ 
+
   <style>
     * {
       box-sizing: border-box;
@@ -355,6 +357,28 @@
         rgba(34, 91, 125, 0.08);
     }
 
+    .trip-card.cancelled {
+  border:
+    1px solid
+    #efb8c1;
+
+  background:
+    #ffe1e5;
+}
+
+.cancelled-message {
+  margin-top: 10px;
+
+  color:
+    #a23d4b;
+
+  font-size:
+    15px;
+
+  font-weight:
+    bold;
+}
+
     .trip-card + .trip-card {
       margin-top: 11px;
     }
@@ -638,6 +662,39 @@
   background: #c05668;
 }
 
+ .draft-button-row {
+  display: block;
+}
+
+.draft-button-row .detail-button {
+  width: 100%;
+}
+
+.delete-draft-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 10px;
+
+  border: 1px solid #efb8c1;
+  border-radius: 10px;
+
+  color: #a23d4b;
+  font-size: 14px;
+  font-weight: bold;
+
+  background: #ffe1e5;
+  cursor: pointer;
+}
+
+.delete-draft-button:hover {
+  background: #a24654;
+}
+
+.delete-draft-button:disabled {
+  opacity: 0.6; 
+  cursor: wait;
+}
+
   </style>
 </head>
 
@@ -693,6 +750,44 @@
     >
       管理者画面
     </button>
+
+        <section
+      id="admin-change-request-section"
+      class="section"
+      hidden
+    >
+      <h2 class="section-title">
+        変更申請があります
+      </h2>
+
+      <p class="section-subtitle">
+        管理者画面で申請内容を確認してください。
+      </p>
+
+      <button
+        class="detail-button"
+        type="button"
+        onclick="location.href='admin.html'"
+      >
+        変更申請を確認する
+      </button>
+    </section>
+
+    <section
+  id="draft-section"
+  class="section"
+  hidden
+>
+  <h2 class="section-title">
+    保存中の下書き
+  </h2>
+
+  <p class="section-subtitle">
+    入力途中の山行届です。続きを編集できます。
+  </p>
+
+  <div id="draft-trip-list"></div>
+</section>
 
         <section
       id="revision-section"
@@ -790,6 +885,24 @@
 
     </section>
 
+       <section
+      id="cancelled-trip-section"
+      class="section"
+      hidden
+    >
+
+      <h2 class="section-title">
+        中止のお知らせ
+      </h2>
+
+      <p class="section-subtitle">
+        中止になった山行のお知らせです。
+      </p>
+
+      <div id="cancelled-trip-list"></div>
+
+    </section>
+
     <section class="section">
 
       <h2 class="section-title">
@@ -800,7 +913,7 @@
         今日、山行期間に入っている予定
       </p>
 
-           <div id="today-trip-list">
+      <div id="today-trip-list">
 
         <div class="empty-message">
           本日の山行を読み込んでいます...
@@ -808,7 +921,9 @@
 
       </div>
 
-        <section class="section">
+    </section>
+
+    <section class="section">
 
       <h2 class="section-title">
         本日の下山
@@ -896,7 +1011,7 @@
   </main>
 
 <script src="portal-auth.js?v=3"></script>
-<script src="index.js?v=220"></script>
+<script src="index.js?v=260"></script>
 
 </body>
 </html>

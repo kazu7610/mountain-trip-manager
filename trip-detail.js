@@ -446,14 +446,40 @@ function createRequestActionHtml(
   pendingRequest
 ) {
   if (
-    trip.status !== "approved"
+    !isLeader &&
+    !isSubmitter
   ) {
     return "";
   }
 
+  /*
+    承認待ち中は、管理者の承認を待たずに
+    提出者またはリーダーが取り消せる
+  */
   if (
-    !isLeader &&
-    !isSubmitter
+    trip.status === "submitted"
+  ) {
+    return `
+      <div class="request-button-row">
+
+        <button
+          id="cancel-request-button"
+          class="cancel-request-button"
+          type="button"
+        >
+          提出を取り消す
+        </button>
+
+      </div>
+    `;
+  }
+
+  /*
+    承認済み以外では、
+    変更・中止申請ボタンを表示しない
+  */
+  if (
+    trip.status !== "approved"
   ) {
     return "";
   }
@@ -488,7 +514,7 @@ function createRequestActionHtml(
         class="cancel-request-button"
         type="button"
       >
-        中止を申請
+        山行を中止
       </button>
 
     </div>
@@ -633,7 +659,7 @@ async function submitChangeRequest(
 }
 
 /* =========================================
-   中止申請
+   山行の中止・承認待ち取り消し
 ========================================= */
 
 async function submitCancelRequest(
@@ -644,12 +670,17 @@ async function submitCancelRequest(
   const loginMember =
     getPortalMember();
 
-  const confirmed =
-    confirm(
-      "この山行の中止を管理者へ申請しますか？"
+  if (
+    !loginMember?.id ||
+    !loginMember?.authUserId
+  ) {
+    alert(
+      "ログイン情報を確認できません。"
     );
 
-  if (!confirmed) {
+    location.href =
+      "login.html";
+
     return;
   }
 
@@ -659,34 +690,159 @@ async function submitCancelRequest(
     true
   );
 
-  cancelButton.textContent =
-    "申請中...";
-
   try {
-    await createTripRequest({
-      tripId,
-      requestType: "cancel",
-      requestedBy:
-        loginMember?.authUserId,
-      proposedData: null
-    });
+    /*
+      ボタン表示後に状態や参加者が変わった場合に備えて、
+      送信直前に現在の山行情報を確認する
+    */
+    const tripResponse =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=*" +
+        `&id=eq.${tripId}`
+      );
+
+    if (!tripResponse.ok) {
+      const errorText =
+        await tripResponse.text();
+
+      throw new Error(
+        "山行情報の確認に失敗しました。" +
+        ` ${tripResponse.status} ${errorText}`
+      );
+    }
+
+    const trips =
+      await tripResponse.json();
+
+    const trip =
+      trips[0];
+
+    if (!trip) {
+      throw new Error(
+        "対象の山行が見つかりません。"
+      );
+    }
+
+    /*
+      提出者またはリーダーか再確認する
+    */
+    const members =
+      await loadTripMembers(
+        tripId
+      );
+
+    const isLeader =
+      members.some(
+        (member) =>
+          member.id ===
+            Number(loginMember.id) &&
+          member.isLeader === true
+      );
+
+    const isSubmitter =
+      trip.submitted_by ===
+      loginMember.authUserId;
+
+    if (
+      !isLeader &&
+      !isSubmitter
+    ) {
+      alert(
+        "提出者またはリーダーではないため、中止できません。"
+      );
+
+      await loadTripDetail();
+
+      return;
+    }
+
+    /*
+      submittedとapprovedだけ中止できる
+    */
+    if (
+      trip.status !== "submitted" &&
+      trip.status !== "approved"
+    ) {
+      alert(
+        "現在の山行状態では中止できません。"
+      );
+
+      await loadTripDetail();
+
+      return;
+    }
+
+    const confirmMessage =
+      trip.status === "submitted"
+        ? "この山行届の提出を取り消しますか？"
+        : "この山行を中止しますか？";
+
+    const confirmed =
+      confirm(
+        confirmMessage
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    cancelButton.textContent =
+      trip.status === "submitted"
+        ? "取り消し中..."
+        : "中止処理中...";
+
+    const cancelResponse =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${tripId}`,
+        {
+          method: "PATCH",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              status:
+                "cancelled"
+            })
+        }
+      );
+
+    if (!cancelResponse.ok) {
+      const errorText =
+        await cancelResponse.text();
+
+      throw new Error(
+        "山行の中止処理に失敗しました。" +
+        ` ${cancelResponse.status} ${errorText}`
+      );
+    }
+
+    const alertMessage =
+      trip.status === "submitted"
+        ? "山行届の提出を取り消しました。"
+        : "山行を中止しました。";
 
     alert(
-      "中止申請を管理者へ送信しました。"
+      alertMessage
     );
 
-    await loadTripDetail();
+    location.href =
+      "index.html";
 
   } catch (error) {
     console.error(error);
 
     alert(
-      "中止申請を送信できませんでした。"
+      "中止処理を完了できませんでした。"
     );
 
-    cancelButton.textContent =
-      "中止を申請";
+    await loadTripDetail();
 
+  } finally {
     setRequestButtonsDisabled(
       changeButton,
       cancelButton,

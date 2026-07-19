@@ -12,8 +12,10 @@ document.addEventListener(
 
     initializeHomeLogin();
 
+    loadDraftTrips();
     loadRevisionTrips();
     loadRejectedChangeRequests();
+    loadAdminChangeRequestNotice();
     loadApprovalWaitingCount();
     loadSubmittedCount();
     loadHomeTrips();
@@ -65,6 +67,67 @@ function initializeHomeLogin() {
   if (adminButton) {
     adminButton.hidden =
       member.role !== "admin";
+  }
+}
+
+/* =========================================
+   管理者向け変更申請通知
+========================================= */
+
+async function loadAdminChangeRequestNotice() {
+  const section =
+    document.getElementById(
+      "admin-change-request-section"
+    );
+
+  if (!section) {
+    return;
+  }
+
+  const member =
+    getPortalMember();
+
+  if (
+    member?.role !== "admin"
+  ) {
+    section.hidden = true;
+
+    return;
+  }
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_requests" +
+        "?select=id" +
+        "&request_type=eq.change" +
+        "&status=eq.pending" +
+        "&limit=1"
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "変更申請の確認に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    const requests =
+      await response.json();
+
+    section.hidden =
+      requests.length === 0;
+
+  } catch (error) {
+    console.error(
+      "変更申請通知を読み込めませんでした。",
+      error
+    );
+
+    section.hidden = true;
   }
 }
 
@@ -310,6 +373,16 @@ async function loadApprovalWaitingCount() {
 ========================================= */
 
 async function loadHomeTrips() {
+  const cancelledTripSection =
+    document.getElementById(
+      "cancelled-trip-section"
+    );
+
+  const cancelledTripList =
+    document.getElementById(
+      "cancelled-trip-list"
+    );
+
   const todayTripList =
     document.getElementById(
       "today-trip-list"
@@ -321,6 +394,8 @@ async function loadHomeTrips() {
     );
 
   if (
+    !cancelledTripSection ||
+    !cancelledTripList ||
     !todayTripList ||
     !todayDescentList
   ) {
@@ -358,6 +433,7 @@ async function loadHomeTrips() {
     const trips =
       await response.json();
 
+    const cancelledTrips = [];
     const todayTrips = [];
     const todayDescents = [];
 
@@ -379,30 +455,59 @@ async function loadHomeTrips() {
       };
 
       /*
-       * 本日の山行には、
-       * 承認済みと中止済みを表示する。
-       *
-       * 下山連絡済みは表示しない。
+       * 中止済みは、
+       * ホーム上部の中止のお知らせへ表示する。
        */
       if (
-        trip.status === "approved" ||
         trip.status === "cancelled"
+      ) {
+        cancelledTrips.push(item);
+
+        continue;
+      }
+
+      /*
+       * 承認済みの山行は、
+       * 本日の山行へ表示する。
+       */
+      if (
+        trip.status === "approved"
       ) {
         todayTrips.push(item);
       }
 
       /*
-       * 下山日が今日の山行は、
+       * 下山日が今日で、
+       * 中止されていない山行を
        * 本日の下山へ表示する。
-       *
-       * 中止済みは表示しない。
        */
       if (
-        trip.descent_date === today &&
-        trip.status !== "cancelled"
+        trip.descent_date === today
       ) {
         todayDescents.push(item);
       }
+    }
+
+    /*
+     * 中止のお知らせがある場合だけ、
+     * セクションを表示する。
+     */
+    if (
+      cancelledTrips.length > 0
+    ) {
+      cancelledTripSection.hidden =
+        false;
+
+      renderTodayTrips(
+        cancelledTripList,
+        cancelledTrips
+      );
+    } else {
+      cancelledTripSection.hidden =
+        true;
+
+      cancelledTripList.innerHTML =
+        "";
     }
 
     renderTodayTrips(
@@ -417,6 +522,12 @@ async function loadHomeTrips() {
 
   } catch (error) {
     console.error(error);
+
+    cancelledTripSection.hidden =
+      true;
+
+    cancelledTripList.innerHTML =
+      "";
 
     todayTripList.innerHTML = `
       <div class="error-message">
@@ -568,6 +679,12 @@ function createTodayTripCard(
       "article"
     );
 
+  const member =
+    getPortalMember();
+
+  const isAdmin =
+    member?.role === "admin";
+
   const isCancelled =
     trip.status === "cancelled";
 
@@ -599,6 +716,19 @@ function createTodayTripCard(
 
         </div>
       `;
+
+  const completeButtonHtml =
+    isCancelled &&
+    isAdmin
+      ? `
+        <button
+          class="cancel-complete-button"
+          type="button"
+        >
+          確認して完了
+        </button>
+      `
+      : "";
 
   card.innerHTML = `
     <div class="compact-title-row">
@@ -632,10 +762,115 @@ function createTodayTripCard(
         詳細を見る
       </button>
 
+      ${completeButtonHtml}
+
     </div>
   `;
 
+  const completeButton =
+    card.querySelector(
+      ".cancel-complete-button"
+    );
+
+  if (completeButton) {
+    completeButton.addEventListener(
+      "click",
+      () =>
+        completeCancelledTrip(
+          trip.id,
+          completeButton
+        )
+    );
+  }
+
   return card;
+}
+
+/* =========================================
+   中止確認して完了
+========================================= */
+
+async function completeCancelledTrip(
+  tripId,
+  completeButton
+) {
+  const member =
+    getPortalMember();
+
+  if (
+    member?.role !== "admin"
+  ) {
+    alert(
+      "管理者だけが完了処理できます。"
+    );
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "中止を確認し、この山行を完了にしますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  completeButton.disabled =
+    true;
+
+  completeButton.textContent =
+    "完了処理中...";
+
+  try {
+    const response =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${tripId}`,
+        {
+          method: "PATCH",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              status:
+                "completed"
+            })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "中止確認の完了処理に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "中止を確認し、山行を完了にしました。"
+    );
+
+    await loadHomeTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "山行を完了にできませんでした。"
+    );
+
+    completeButton.disabled =
+      false;
+
+    completeButton.textContent =
+      "確認して完了";
+  }
 }
 
 /* =========================================
@@ -1168,5 +1403,254 @@ async function acknowledgeRejectedRequest(
     closeButton.disabled = false;
     closeButton.textContent =
       "確認して閉じる";
+  }
+}
+
+/* =========================================
+   自分の下書き山行届を表示
+========================================= */
+
+async function loadDraftTrips() {
+  const section =
+    document.getElementById(
+      "draft-section"
+    );
+
+  const list =
+    document.getElementById(
+      "draft-trip-list"
+    );
+
+  if (!section || !list) {
+    return;
+  }
+
+  const session =
+    getPortalAuthSession();
+
+  const authUserId =
+    session?.user?.id;
+
+  if (!authUserId) {
+    section.hidden = true;
+    return;
+  }
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=*" +
+        "&status=eq.draft" +
+        `&submitted_by=eq.${authUserId}` +
+        "&order=created_at.desc"
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "下書きの取得に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    const trips =
+      await response.json();
+
+    if (
+      !Array.isArray(trips) ||
+      trips.length === 0
+    ) {
+      section.hidden = true;
+      list.innerHTML = "";
+      return;
+    }
+
+    section.hidden = false;
+    list.innerHTML = "";
+
+    trips.forEach(
+      (trip) => {
+        const card =
+          document.createElement(
+            "article"
+          );
+
+        card.className =
+          "trip-card draft-card";
+
+        const mountainTitle =
+          [
+            trip.mountain_area,
+            trip.mountain_name
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+        card.innerHTML = `
+          <h3 class="trip-title">
+            ${escapeHtml(
+              mountainTitle ||
+              "山名未入力"
+            )}
+          </h3>
+
+          <p class="trip-info">
+            <strong>入山日：</strong>
+            ${
+              trip.entry_date
+  ? escapeHtml(
+      trip.entry_date
+    )
+  : "未入力"
+            }
+          </p>
+
+          <p class="trip-info">
+            <strong>ルート：</strong>
+            ${escapeHtml(
+              trip.route ||
+              "未入力"
+            )}
+          </p>
+
+          <div class="button-row draft-button-row">
+
+  <button
+    class="detail-button"
+    type="button"
+    onclick="location.href='trip-form.html?edit=${trip.id}'"
+  >
+    続きを編集する
+  </button>
+
+  <button
+    class="delete-draft-button"
+    type="button"
+  >
+    下書きを削除
+  </button>
+
+</div>
+        `;
+
+        const deleteButton =
+  card.querySelector(
+    ".delete-draft-button"
+  );
+
+deleteButton.addEventListener(
+  "click",
+  () =>
+    deleteDraftTrip(
+      trip.id,
+      deleteButton
+    )
+);
+
+        list.appendChild(card);
+      }
+    );
+
+  } catch (error) {
+    console.error(
+      "下書きを読み込めませんでした。",
+      error
+    );
+
+    section.hidden = true;
+  }
+}
+
+/* =========================================
+   下書きを削除
+========================================= */
+
+async function deleteDraftTrip(
+  tripId,
+  deleteButton
+) {
+  const confirmed =
+    confirm(
+      "この下書きを削除しますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  deleteButton.disabled =
+    true;
+
+  deleteButton.textContent =
+    "削除中...";
+
+  try {
+    const memberDeleteResponse =
+      await portalFetch(
+        `/rest/v1/trip_members?trip_id=eq.${tripId}`,
+        {
+          method: "DELETE",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          }
+        }
+      );
+
+    if (!memberDeleteResponse.ok) {
+      const errorText =
+        await memberDeleteResponse.text();
+
+      throw new Error(
+        "参加者情報を削除できませんでした。" +
+        ` ${memberDeleteResponse.status} ${errorText}`
+      );
+    }
+
+    const tripDeleteResponse =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${tripId}&status=eq.draft`,
+        {
+          method: "DELETE",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          }
+        }
+      );
+
+    if (!tripDeleteResponse.ok) {
+      const errorText =
+        await tripDeleteResponse.text();
+
+      throw new Error(
+        "下書きを削除できませんでした。" +
+        ` ${tripDeleteResponse.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "下書きを削除しました。"
+    );
+
+    await loadDraftTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "下書きを削除できませんでした。"
+    );
+
+    deleteButton.disabled =
+      false;
+
+    deleteButton.textContent =
+      "下書きを削除";
   }
 }
