@@ -4,7 +4,7 @@
 ========================================= */
 
 const CACHE_NAME =
-  "mountain-trip-manager-v2";
+  "mountain-trip-manager-v3";
 
 const APP_FILES = [
   "./",
@@ -14,6 +14,7 @@ const APP_FILES = [
   "./trip-detail.html",
   "./admin.html",
   "./portal-auth.js",
+  "./push-notifications.js",
   "./index.js",
   "./trip-form.js",
   "./trip-detail.js",
@@ -87,7 +88,8 @@ self.addEventListener(
       event.request;
 
     if (
-      request.method !== "GET"
+      request.method !==
+      "GET"
     ) {
       return;
     }
@@ -96,8 +98,8 @@ self.addEventListener(
       new URL(request.url);
 
     /*
-     * Supabaseなど外部通信は
-     * キャッシュせず通常通信する
+     * Supabaseなどの外部通信は
+     * キャッシュしない
      */
     if (
       requestUrl.origin !==
@@ -110,9 +112,7 @@ self.addEventListener(
       fetch(request)
         .then(
           (response) => {
-            if (
-              response.ok
-            ) {
+            if (response.ok) {
               const responseCopy =
                 response.clone();
 
@@ -137,3 +137,194 @@ self.addEventListener(
     );
   }
 );
+
+/* =========================================
+   Push通知を受信
+========================================= */
+
+self.addEventListener(
+  "push",
+  (event) => {
+    let data = {
+      title:
+        "山行管理",
+
+      body:
+        "新しいお知らせがあります。",
+
+      url:
+        "./index.html",
+
+      badge:
+        1
+    };
+
+    if (event.data) {
+      try {
+        data = {
+          ...data,
+          ...event.data.json()
+        };
+
+      } catch (error) {
+        data.body =
+          event.data.text();
+      }
+    }
+
+    const badgeCount =
+      Math.max(
+        1,
+        Number(
+          data.badge || 1
+        )
+      );
+
+    const notificationOptions = {
+      body:
+        data.body,
+
+      icon:
+        "./icons/icon-192.png",
+
+      badge:
+        "./icons/icon-192.png",
+
+      tag:
+        "mountain-trip-notification",
+
+      renotify:
+        true,
+
+      data: {
+        url:
+          data.url ||
+          "./index.html"
+      }
+    };
+
+    event.waitUntil(
+      Promise.all([
+        self.registration
+          .showNotification(
+            data.title ||
+            "山行管理",
+            notificationOptions
+          ),
+
+        setApplicationBadge(
+          badgeCount
+        )
+      ])
+    );
+  }
+);
+
+/* =========================================
+   通知を押したとき
+========================================= */
+
+self.addEventListener(
+  "notificationclick",
+  (event) => {
+    event.notification.close();
+
+    const targetUrl =
+      new URL(
+        event.notification
+          .data?.url ||
+        "./index.html",
+        self.location.origin
+      ).href;
+
+    event.waitUntil(
+      Promise.all([
+        clearApplicationBadge(),
+
+        clients
+          .matchAll({
+            type:
+              "window",
+
+            includeUncontrolled:
+              true
+          })
+          .then(
+            (clientList) => {
+              for (
+                const client of
+                clientList
+              ) {
+                if (
+                  "focus" in client
+                ) {
+                  client.navigate(
+                    targetUrl
+                  );
+
+                  return client.focus();
+                }
+              }
+
+              if (
+                clients.openWindow
+              ) {
+                return clients
+                  .openWindow(
+                    targetUrl
+                  );
+              }
+
+              return null;
+            }
+          )
+      ])
+    );
+  }
+);
+
+/* =========================================
+   アプリアイコンへバッジを設定
+========================================= */
+
+async function setApplicationBadge(
+  count
+) {
+  try {
+    if (
+      "setAppBadge" in
+      navigator
+    ) {
+      await navigator
+        .setAppBadge(
+          count
+        );
+    }
+  } catch (error) {
+    console.error(
+      "バッジを設定できませんでした。",
+      error
+    );
+  }
+}
+
+/* =========================================
+   アプリアイコンのバッジを消す
+========================================= */
+
+async function clearApplicationBadge() {
+  try {
+    if (
+      "clearAppBadge" in
+      navigator
+    ) {
+      await navigator
+        .clearAppBadge();
+    }
+  } catch (error) {
+    console.error(
+      "バッジを消去できませんでした。",
+      error
+    );
+  }
+}

@@ -26,7 +26,7 @@ document.addEventListener(
    ホーム画面のログイン表示
 ========================================= */
 
-function initializeHomeLogin() {
+async function initializeHomeLogin() {
   const member =
     getPortalMember();
 
@@ -43,6 +43,11 @@ function initializeHomeLogin() {
   const adminButton =
     document.getElementById(
       "admin-button"
+    );
+
+  const notificationButton =
+    document.getElementById(
+      "enable-notification-button"
     );
 
   if (!member) {
@@ -67,6 +72,51 @@ function initializeHomeLogin() {
   if (adminButton) {
     adminButton.hidden =
       member.role !== "admin";
+  }
+
+  if (!notificationButton) {
+    return;
+  }
+
+  if (
+    !canUsePushNotifications()
+  ) {
+    notificationButton.hidden =
+      true;
+
+    return;
+  }
+
+  notificationButton.addEventListener(
+    "click",
+    async () => {
+      const enabled =
+        await enablePushNotifications(
+          notificationButton
+        );
+
+      if (enabled) {
+        notificationButton.hidden =
+          true;
+      }
+    }
+  );
+
+  try {
+    const isEnabled =
+      await isPushNotificationEnabled();
+
+    notificationButton.hidden =
+      isEnabled;
+
+  } catch (error) {
+    console.error(
+      "通知状態を確認できませんでした。",
+      error
+    );
+
+    notificationButton.hidden =
+      false;
   }
 }
 
