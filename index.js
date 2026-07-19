@@ -1174,13 +1174,39 @@ function createTodayTripCard(
   const commentsHtml =
     comments
       .map(
-        (comment) => `
-          <div class="trip-comment-message">
-            ${escapeHtml(
-              comment.message || ""
-            )}
-          </div>
-        `
+        (comment) => {
+          const commentTime =
+            comment.created_at
+              ? new Date(
+                  comment.created_at
+                ).toLocaleTimeString(
+                  "ja-JP",
+                  {
+                    hour:
+                      "2-digit",
+
+                    minute:
+                      "2-digit"
+                  }
+                )
+              : "時刻不明";
+
+          return `
+            <div class="trip-comment-message">
+              ${escapeHtml(
+                commentTime
+              )}：
+              ${escapeHtml(
+                comment.message ||
+                ""
+              )}：
+              ${escapeHtml(
+                comment.member_name ||
+                "氏名不明"
+              )}
+            </div>
+          `;
+        }
       )
       .join("");
 

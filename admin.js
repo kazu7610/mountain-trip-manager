@@ -74,6 +74,17 @@ async function loadAdminTrips() {
           "submitted"
       );
 
+      /*
+ * 承認済み・山行中の山行
+ */
+const approvedTrips =
+  trips.filter(
+    (trip) =>
+      trip.status ===
+      "approved"
+  );
+
+
     /*
      * 下山連絡済みの山行
      */
@@ -121,6 +132,11 @@ async function loadAdminTrips() {
         submittedTrips
       );
 
+      const approvedSection =
+  await createApprovedSection(
+    approvedTrips
+  );
+
     const changeSection =
       await createRequestSection(
         changeRequests,
@@ -146,6 +162,10 @@ async function loadAdminTrips() {
     tripList.appendChild(
       submittedSection
     );
+
+    tripList.appendChild(
+  approvedSection
+);
 
     tripList.appendChild(
       changeSection
@@ -175,7 +195,7 @@ async function loadAdminTrips() {
 }
 
 /* =========================================
-   承認待ち・下山済み・中止済み山行を取得
+   管理対象の山行を取得
 ========================================= */
 
 async function loadManagementTrips() {
@@ -183,7 +203,7 @@ async function loadManagementTrips() {
     await portalFetch(
       "/rest/v1/trips" +
       "?select=*" +
-      "&status=in.(submitted,descended,cancelled)" +
+      "&status=in.(submitted,approved,descended,cancelled)" +
       "&order=created_at.asc"
     );
 
@@ -265,6 +285,55 @@ async function createSubmittedSection(
 
   return section;
 }
+
+/* =========================================
+   承認済み・山行中一覧
+========================================= */
+
+async function createApprovedSection(
+  trips
+) {
+  const section =
+    createSectionBase(
+      "承認済み・山行中",
+      trips.length
+    );
+
+  if (trips.length === 0) {
+    addEmptyCard(
+      section,
+      "現在、承認済みの山行はありません。"
+    );
+
+    return section;
+  }
+
+  for (const trip of trips) {
+    const memberNames =
+      await loadTripMemberNames(
+        trip.id
+      );
+
+    const comments =
+      await loadTripComments(
+        trip.id
+      );
+
+    const card =
+      createApprovedTripCard(
+        trip,
+        memberNames,
+        comments
+      );
+
+    section.appendChild(
+      card
+    );
+  }
+
+  return section;
+}
+
 
 /* =========================================
    下山確認待ち一覧
@@ -612,6 +681,181 @@ function createSubmittedTripCard(
       rejectButton
     )
   );
+
+  return card;
+}
+
+/* =========================================
+   山行コメントを取得
+========================================= */
+
+async function loadTripComments(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_comments" +
+      "?select=*" +
+      `&trip_id=eq.${tripId}` +
+      "&order=created_at.asc"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "山行コメントの取得に失敗しました。",
+      await response.text()
+    );
+
+    return [];
+  }
+
+  return await response.json();
+}
+
+/* =========================================
+   承認済み・山行中カード
+========================================= */
+
+function createApprovedTripCard(
+  trip,
+  members,
+  comments
+) {
+  const card =
+    document.createElement(
+      "article"
+    );
+
+  card.className =
+    "trip-card";
+
+  const memberText =
+    createMemberText(
+      members,
+      trip.outside_member_count
+    );
+
+  let commentsHtml = "";
+
+  if (
+    Array.isArray(comments) &&
+    comments.length > 0
+  ) {
+    commentsHtml =
+      comments
+        .map(
+          (comment) => `
+            <div class="admin-comment-item">
+
+              <strong>
+                ${escapeHtml(
+                  comment.member_name ||
+                  "氏名不明"
+                )}
+              </strong>
+
+              <div>
+                ${escapeHtml(
+                  comment.message ||
+                  ""
+                )}
+              </div>
+
+              <span class="admin-comment-time">
+                ${formatDateTime(
+                  comment.created_at
+                )}
+              </span>
+
+            </div>
+          `
+        )
+        .join("");
+  } else {
+    commentsHtml = `
+      <p class="trip-info">
+        現在、コメントはありません。
+      </p>
+    `;
+  }
+
+  card.innerHTML = `
+    <div class="trip-title-row">
+
+      <h3 class="trip-title">
+        ${escapeHtml(
+          trip.mountain_area
+        )}
+        ${escapeHtml(
+          trip.mountain_name
+        )}
+      </h3>
+
+      <span class="status-badge">
+        承認済み
+      </span>
+
+    </div>
+
+    ${createTripInformationHtml(
+      trip,
+      memberText
+    )}
+
+    <div class="admin-comment-list">
+      ${commentsHtml}
+    </div>
+
+    <div class="admin-reply-box">
+
+      <strong>
+        管理者から返信
+      </strong>
+
+      <textarea
+        class="admin-reply-input"
+        rows="3"
+        maxlength="300"
+        placeholder="参加者への返信を入力してください。"
+      ></textarea>
+
+      <div class="button-row">
+
+        <button
+          class="approve-button admin-reply-button"
+          type="button"
+        >
+          返信する
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  const replyInput =
+    card.querySelector(
+      ".admin-reply-input"
+    );
+
+  const replyButton =
+    card.querySelector(
+      ".admin-reply-button"
+    );
+
+  if (
+    replyInput &&
+    replyButton
+  ) {
+    replyButton.addEventListener(
+      "click",
+      () => submitAdminTripComment(
+        trip.id,
+        replyInput,
+        replyButton
+      )
+    );
+  }
 
   return card;
 }
@@ -1392,6 +1636,117 @@ async function updateRequestStatus(
       "申請状態の更新に失敗しました。" +
       ` ${response.status} ${errorText}`
     );
+  }
+}
+
+/* =========================================
+   管理者コメントを送信
+========================================= */
+
+async function submitAdminTripComment(
+  tripId,
+  replyInput,
+  replyButton
+) {
+  const member =
+    getPortalMember();
+
+  if (!member?.id) {
+    alert(
+      "管理者のログイン情報を確認できません。"
+    );
+
+    return;
+  }
+
+  const message =
+    replyInput
+      ?.value
+      .trim();
+
+  if (!message) {
+    alert(
+      "返信内容を入力してください。"
+    );
+
+    replyInput?.focus();
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "この内容で参加者へ返信しますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  replyButton.disabled =
+    true;
+
+  replyButton.textContent =
+    "返信中...";
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_comments",
+        {
+          method:
+            "POST",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              trip_id:
+                Number(tripId),
+
+              member_id:
+                Number(member.id),
+
+              member_name:
+                member.name ||
+                "管理者",
+
+              message
+            })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "管理者コメントの保存に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "参加者へ返信しました。"
+    );
+
+    await loadAdminTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "返信を保存できませんでした。"
+    );
+
+    replyButton.disabled =
+      false;
+
+    replyButton.textContent =
+      "返信する";
   }
 }
 
