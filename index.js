@@ -995,6 +995,32 @@ async function submitTripApplication(
       );
     }
 
+        /*
+     * 参加希望を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          "山行への参加希望",
+
+        body:
+          `${loginMember.name}さんが山行への参加を希望しました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "参加希望のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
+
     alert(
       "参加希望を登録しました。"
     );
@@ -1064,6 +1090,32 @@ async function cancelTripApplication(
       throw new Error(
         "参加希望の取り消しに失敗しました。" +
         ` ${response.status} ${errorText}`
+      );
+    }
+
+        /*
+     * 参加希望の取り消しを、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          "山行参加希望の取り消し",
+
+        body:
+          `${loginMember.name}さんが参加希望を取り消しました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "参加希望取り消しのPush通知を送信できませんでした。",
+        notificationError
       );
     }
 
@@ -1516,6 +1568,32 @@ async function submitTripComment(
       throw new Error(
         "状況連絡の保存に失敗しました。" +
         ` ${response.status} ${errorText}`
+      );
+    }
+
+        /*
+     * 状況連絡を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          "山行中の状況連絡",
+
+        body:
+          `${member.name}さん：${trimmedMessage}`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "状況連絡のPush通知を送信できませんでした。",
+        notificationError
       );
     }
 

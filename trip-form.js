@@ -897,6 +897,33 @@ async function saveDraftTrip(
       leaderId
     );
 
+        /*
+     * 提出者本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          editTripId
+            ? "山行届が再提出されました"
+            : "新しい山行届が提出されました",
+
+        body:
+          `${loginMember.name}さん：${mountainArea} ${mountainName}`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${savedTripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "山行届提出のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
+
     alert(
       "山行届を下書き保存しました。"
     );

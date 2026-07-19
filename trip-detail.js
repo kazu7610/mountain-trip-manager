@@ -724,6 +724,32 @@ async function submitChangeRequest(
       }
     });
 
+        /*
+     * 変更申請を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          "山行の変更申請",
+
+        body:
+          `${loginMember?.name || "会員"}さん：${trimmedNote}`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "変更申請のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
+
     alert(
       "変更申請を管理者へ送信しました。"
     );
@@ -915,6 +941,36 @@ async function submitCancelRequest(
       trip.status === "submitted"
         ? "山行届の提出を取り消しました。"
         : "山行を中止しました。";
+
+            /*
+     * 提出取り消し・山行中止を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          trip.status === "submitted"
+            ? "山行届の提出が取り消されました"
+            : "山行が中止されました",
+
+        body:
+          trip.status === "submitted"
+            ? `${loginMember.name}さんが山行届の提出を取り消しました。`
+            : `${loginMember.name}さんが山行を中止しました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "提出取り消し・山行中止のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
 
     alert(
       alertMessage
@@ -1147,6 +1203,32 @@ async function reportDescent(
       throw new Error(
         "下山連絡に失敗しました。" +
         ` ${response.status} ${errorText}`
+      );
+    }
+
+        /*
+     * 下山連絡を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          "下山連絡",
+
+        body:
+          `${loginMember.name}さんから無事下山の連絡がありました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "下山連絡のPush通知を送信できませんでした。",
+        notificationError
       );
     }
 

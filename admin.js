@@ -1298,6 +1298,36 @@ async function approveTrip(
       );
     }
 
+        /*
+     * 承認した本人以外の
+     * 有効会員全員へ通知
+     */
+    try {
+      const loginMember =
+        getPortalMember();
+
+      await notifyAllMembersExceptSender({
+        title:
+          "山行届が承認されました",
+
+        body:
+          `${loginMember?.name || "管理者"}さんが山行届を承認しました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "山行届承認のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
+
+
     alert(
       "山行届を承認しました。"
     );
@@ -1375,6 +1405,35 @@ async function requestRevision(
     if (!response.ok) {
       throw new Error(
         await response.text()
+      );
+    }
+
+        /*
+     * 修正依頼を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      const loginMember =
+        getPortalMember();
+
+      await notifyAllMembersExceptSender({
+        title:
+          "山行届の修正依頼",
+
+        body:
+          `${loginMember?.name || "管理者"}さんが山行届を修正依頼に戻しました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "修正依頼のPush通知を送信できませんでした。",
+        notificationError
       );
     }
 
@@ -1458,6 +1517,39 @@ async function approveTripRequest(
       "approved"
     );
 
+        /*
+     * 変更・中止申請の承認を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      const loginMember =
+        getPortalMember();
+
+      await notifyAllMembersExceptSender({
+        title:
+          isChange
+            ? "山行の変更申請が承認されました"
+            : "山行の中止申請が承認されました",
+
+        body:
+          isChange
+            ? `${loginMember?.name || "管理者"}さんが変更申請を承認しました。`
+            : `${loginMember?.name || "管理者"}さんが中止申請を承認しました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${trip.id}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "変更・中止申請承認のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
+
     alert(
       isChange
         ? "変更申請を承認しました。\n提出者のホームに修正依頼として表示されます。"
@@ -1524,6 +1616,39 @@ async function rejectTripRequest(
       request.id,
       "rejected"
     );
+
+        /*
+     * 変更・中止申請の却下を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      const loginMember =
+        getPortalMember();
+
+      await notifyAllMembersExceptSender({
+        title:
+          isChange
+            ? "山行の変更申請が却下されました"
+            : "山行の中止申請が却下されました",
+
+        body:
+          isChange
+            ? `${loginMember?.name || "管理者"}さんが変更申請を却下しました。`
+            : `${loginMember?.name || "管理者"}さんが中止申請を却下しました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${request.trip_id}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "変更・中止申請却下のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
 
     alert(
       isChange
@@ -1729,6 +1854,32 @@ async function submitAdminTripComment(
       );
     }
 
+        /*
+     * 管理者コメントを、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          "管理者からコメントがあります",
+
+        body:
+          `${member.name || "管理者"}さん：${message}`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "管理者コメントのPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
+
     alert(
       "参加者へ返信しました。"
     );
@@ -1778,6 +1929,35 @@ async function completeTrip(
       tripId,
       "completed"
     );
+
+        /*
+     * 下山確認完了を、
+     * 本人以外の有効会員全員へ通知
+     */
+    try {
+      const loginMember =
+        getPortalMember();
+
+      await notifyAllMembersExceptSender({
+        title:
+          "山行の完了確認",
+
+        body:
+          `${loginMember?.name || "管理者"}さんが下山を確認し、山行を完了にしました。`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "山行完了確認のPush通知を送信できませんでした。",
+        notificationError
+      );
+    }
 
     alert(
       "下山を確認し、山行を完了にしました。"
