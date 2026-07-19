@@ -448,11 +448,28 @@ async function loadHomeTrips() {
           memberNames
         );
 
-      const item = {
-        ...trip,
-        memberNames,
-        leaderName
-      };
+        const comments =
+  await loadTripComments(
+    trip.id
+  );
+
+      const loginMember =
+  getPortalMember();
+
+const isParticipant =
+  memberNames.some(
+    (member) =>
+      member.memberId ===
+      Number(loginMember?.id)
+  );
+
+const item = {
+  ...trip,
+  memberNames,
+  leaderName,
+  isParticipant,
+  comments
+};
 
       /*
        * 中止済みは、
@@ -544,7 +561,7 @@ async function loadHomeTrips() {
 }
 
 /* =========================================
-   山行参加者を取得
+   山行参加者を読み込む
 ========================================= */
 
 async function loadTripMemberNames(
@@ -570,14 +587,46 @@ async function loadTripMemberNames(
   const rows =
     await response.json();
 
-  return rows.map((row) => ({
-    name:
-      row.members?.name ||
-      "不明",
+  return rows.map(
+    (row) => ({
+      memberId:
+        Number(row.member_id),
 
-    isLeader:
-      row.is_leader === true
-  }));
+      name:
+        row.members?.name ||
+        "不明",
+
+      isLeader:
+        row.is_leader === true
+    })
+  );
+}
+
+/* =========================================
+   山行コメントを読み込む
+========================================= */
+
+async function loadTripComments(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_comments" +
+      "?select=*" +
+      `&trip_id=eq.${tripId}` +
+      "&order=created_at.asc"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "山行コメントの取得に失敗しました。",
+      await response.text()
+    );
+
+    return [];
+  }
+
+  return await response.json();
 }
 
 /* =========================================
@@ -688,6 +737,11 @@ function createTodayTripCard(
   const isCancelled =
     trip.status === "cancelled";
 
+  const isOverdue =
+    isTripOverdue(
+      trip
+    );
+
   card.className =
     isCancelled
       ? "trip-card cancelled"
@@ -716,6 +770,49 @@ function createTodayTripCard(
 
         </div>
       `;
+
+  const overdueHtml =
+    isOverdue
+      ? `
+        <div class="trip-alert-message">
+          下山予定時刻が過ぎています
+        </div>
+      `
+      : "";
+
+  const comments =
+    Array.isArray(
+      trip.comments
+    )
+      ? trip.comments
+      : [];
+
+  const commentsHtml =
+    comments
+      .map(
+        (comment) => `
+          <div class="trip-comment-message">
+            ${escapeHtml(
+              comment.message || ""
+            )}
+          </div>
+        `
+      )
+      .join("");
+
+  const commentButtonHtml =
+    !isCancelled &&
+    trip.status === "approved" &&
+    trip.isParticipant
+      ? `
+        <button
+          class="trip-comment-button"
+          type="button"
+        >
+          状況を連絡
+        </button>
+      `
+      : "";
 
   const completeButtonHtml =
     isCancelled &&
@@ -752,6 +849,10 @@ function createTodayTripCard(
 
     ${statusHtml}
 
+    ${overdueHtml}
+
+    ${commentsHtml}
+
     <div class="button-row">
 
       <button
@@ -762,10 +863,28 @@ function createTodayTripCard(
         詳細を見る
       </button>
 
+      ${commentButtonHtml}
+
       ${completeButtonHtml}
 
     </div>
   `;
+
+  const commentButton =
+    card.querySelector(
+      ".trip-comment-button"
+    );
+
+  if (commentButton) {
+    commentButton.addEventListener(
+      "click",
+      () =>
+        submitTripComment(
+          trip.id,
+          commentButton
+        )
+    );
+  }
 
   const completeButton =
     card.querySelector(
@@ -784,6 +903,163 @@ function createTodayTripCard(
   }
 
   return card;
+}
+
+/* =========================================
+   山行状況コメントを送信
+========================================= */
+
+async function submitTripComment(
+  tripId,
+  commentButton
+) {
+  const member =
+    getPortalMember();
+
+  if (
+    !member?.id ||
+    !member?.name
+  ) {
+    alert(
+      "ログイン情報を確認できません。"
+    );
+
+    location.href =
+      "login.html";
+
+    return;
+  }
+
+  const message =
+    prompt(
+      "山行中の状況を入力してください。\n\n例：下山が1時間ほど遅れる見込みです。"
+    );
+
+  if (message === null) {
+    return;
+  }
+
+  const trimmedMessage =
+    message.trim();
+
+  if (!trimmedMessage) {
+    alert(
+      "状況を入力してください。"
+    );
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "この内容を全員に表示しますか？\n\n" +
+      trimmedMessage
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  commentButton.disabled =
+    true;
+
+  commentButton.textContent =
+    "送信中...";
+
+  try {
+    /*
+      送信直前に、この山行の参加者か確認する
+    */
+    const memberResponse =
+      await portalFetch(
+        "/rest/v1/trip_members" +
+        "?select=id" +
+        `&trip_id=eq.${tripId}` +
+        `&member_id=eq.${Number(member.id)}` +
+        "&limit=1"
+      );
+
+    if (!memberResponse.ok) {
+      const errorText =
+        await memberResponse.text();
+
+      throw new Error(
+        "参加者情報の確認に失敗しました。" +
+        ` ${memberResponse.status} ${errorText}`
+      );
+    }
+
+    const memberRows =
+      await memberResponse.json();
+
+    if (memberRows.length === 0) {
+      alert(
+        "この山行の参加者ではないため、状況を連絡できません。"
+      );
+
+      await loadHomeTrips();
+
+      return;
+    }
+
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_comments",
+        {
+          method: "POST",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              trip_id:
+                tripId,
+
+              member_id:
+                Number(member.id),
+
+              member_name:
+                member.name,
+
+              message:
+                trimmedMessage
+            })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "状況連絡の保存に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "状況を送信しました。"
+    );
+
+    await loadHomeTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "状況を送信できませんでした。"
+    );
+
+  } finally {
+    commentButton.disabled =
+      false;
+
+    commentButton.textContent =
+      "状況を連絡";
+  }
 }
 
 /* =========================================
@@ -1020,6 +1296,40 @@ function formatTripPeriod(
 
   return (
     `${entry}〜${descent}`
+  );
+}
+
+/* =========================================
+   下山予定時刻を過ぎているか確認
+========================================= */
+
+function isTripOverdue(
+  trip
+) {
+  if (
+    trip.status !== "approved" ||
+    !trip.descent_date ||
+    !trip.descent_time
+  ) {
+    return false;
+  }
+
+  const descentDateTime =
+    new Date(
+      `${trip.descent_date}T${trip.descent_time}`
+    );
+
+  if (
+    Number.isNaN(
+      descentDateTime.getTime()
+    )
+  ) {
+    return false;
+  }
+
+  return (
+    new Date().getTime() >
+    descentDateTime.getTime()
   );
 }
 
