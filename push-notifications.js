@@ -441,3 +441,67 @@ async function sendPushNotification({
 
   return result;
 }
+
+/* =========================================
+   操作者本人以外の有効会員全員へ通知
+========================================= */
+
+async function notifyAllMembersExceptSender({
+  title,
+  body,
+  url = "/mountain-trip-manager/index.html",
+  badge = 1
+}) {
+  const loginMember =
+    getPortalMember();
+
+  if (!loginMember?.id) {
+    throw new Error(
+      "通知送信者の会員情報を確認できません。"
+    );
+  }
+
+  const memberResponse =
+    await portalFetch(
+      "/rest/v1/members" +
+      "?select=id" +
+      "&active=eq.true"
+    );
+
+  if (!memberResponse.ok) {
+    const errorText =
+      await memberResponse.text();
+
+    throw new Error(
+      "通知対象会員の取得に失敗しました。" +
+      ` ${memberResponse.status} ${errorText}`
+    );
+  }
+
+  const memberRows =
+    await memberResponse.json();
+
+  const targetMemberIds =
+    memberRows
+      .map(
+        (row) =>
+          Number(row.id)
+      )
+      .filter(
+        (memberId) =>
+          Number.isInteger(memberId) &&
+          memberId > 0 &&
+          memberId !==
+            Number(loginMember.id)
+      );
+
+  return await sendPushNotification({
+    memberIds:
+      targetMemberIds,
+
+    title,
+    body,
+    url,
+    badge
+  });
+}
