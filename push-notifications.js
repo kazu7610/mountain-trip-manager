@@ -343,3 +343,101 @@ async function isPushNotificationEnabled() {
     subscription
   );
 }
+
+/* =========================================
+   指定した会員へPush通知を送信
+========================================= */
+
+async function sendPushNotification({
+  memberIds,
+  title,
+  body,
+  url = "/mountain-trip-manager/index.html",
+  badge = 1
+}) {
+  const targetMemberIds =
+    Array.from(
+      new Set(
+        (
+          Array.isArray(memberIds)
+            ? memberIds
+            : []
+        )
+          .map(
+            (memberId) =>
+              Number(memberId)
+          )
+          .filter(
+            (memberId) =>
+              Number.isInteger(memberId) &&
+              memberId > 0
+          )
+      )
+    );
+
+  if (
+    targetMemberIds.length === 0
+  ) {
+    console.log(
+      "通知対象者がいないため、Push通知を送信しませんでした。"
+    );
+
+    return {
+      success: true,
+      sent: 0
+    };
+  }
+
+  const response =
+    await portalFetch(
+      "/functions/v1/send-push",
+      {
+        method:
+          "POST",
+
+        body:
+          JSON.stringify({
+            member_ids:
+              targetMemberIds,
+
+            title:
+              String(
+                title ||
+                "ポンコツ倶楽部"
+              ),
+
+            body:
+              String(
+                body ||
+                "新しいお知らせがあります。"
+              ),
+
+            url:
+              String(url),
+
+            badge:
+              Number(badge) || 1
+          })
+      }
+    );
+
+  if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    throw new Error(
+      "Push通知の送信に失敗しました。" +
+      ` ${response.status} ${errorText}`
+    );
+  }
+
+  const result =
+    await response.json();
+
+  console.log(
+    "Push通知を送信しました。",
+    result
+  );
+
+  return result;
+}
