@@ -242,7 +242,7 @@
       accent-color: #1885bc;
     }
 
-     .member-name {
+    .member-name {
       font-size: 15px;
       font-weight: bold;
     }
@@ -286,6 +286,35 @@
       color: #557185;
       font-size: 15px;
       font-weight: bold;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .radio-label input {
+      width: 20px;
+      height: 20px;
+      margin: 0;
+
+      accent-color: #1885bc;
+    }
+
+    #recruiting-message-area {
+      margin-top: 16px;
     }
 
     .option-box {
@@ -398,9 +427,9 @@
     </a>
 
     <form
-  id="trip-form"
-  class="form-card"
->
+      id="trip-form"
+      class="form-card"
+    >
 
       <section class="form-section">
 
@@ -423,8 +452,6 @@
 
       </section>
 
-          
-
       <section class="form-section">
 
         <span class="form-label">
@@ -437,6 +464,7 @@
         <div class="input-row">
 
           <div>
+
             <label
               class="help-text"
               for="descent-date"
@@ -450,9 +478,11 @@
               type="date"
               required
             >
+
           </div>
 
           <div>
+
             <label
               class="help-text"
               for="descent-time"
@@ -466,6 +496,7 @@
               type="time"
               required
             >
+
           </div>
 
         </div>
@@ -537,7 +568,7 @@
 
       </section>
 
-        <section class="form-section">
+      <section class="form-section">
 
         <label
           class="form-label"
@@ -575,7 +606,7 @@
           </span>
         </span>
 
-              <div
+        <div
           id="member-list"
           class="member-box"
         >
@@ -589,7 +620,7 @@
           class="help-text"
         >
           一緒に山行する会員を選択してください。
-        </p> 
+        </p>
 
       </section>
 
@@ -617,6 +648,71 @@
           <span class="count-unit">
             人
           </span>
+
+        </div>
+
+      </section>
+
+      <section class="form-section">
+
+        <p class="form-label">
+          山行募集
+        </p>
+
+        <div class="radio-group">
+
+          <label class="radio-label">
+
+            <input
+              id="recruiting-no"
+              name="is-recruiting"
+              type="radio"
+              value="false"
+              checked
+            >
+
+            募集しない
+
+          </label>
+
+          <label class="radio-label">
+
+            <input
+              id="recruiting-yes"
+              name="is-recruiting"
+              type="radio"
+              value="true"
+            >
+
+            募集する
+
+          </label>
+
+        </div>
+
+        <div
+          id="recruiting-message-area"
+          hidden
+        >
+
+          <label
+            class="form-label"
+            for="recruiting-message"
+          >
+            募集コメント
+          </label>
+
+          <textarea
+            id="recruiting-message"
+            name="recruiting-message"
+            rows="3"
+            maxlength="200"
+            placeholder="例：初心者歓迎。あと2名ほど募集します。"
+          ></textarea>
+
+          <p class="help-text">
+            募集条件や対象者などを入力してください。
+          </p>
 
         </div>
 
@@ -654,17 +750,17 @@
           id="draft-button"
           class="draft-button"
           type="button"
-      >
+        >
           下書き保存
-       </button>
+        </button>
 
-       <button
-  id="submit-trip-button"
-  class="submit-button"
-  type="button"
->
-  管理者へ提出
-</button>
+        <button
+          id="submit-trip-button"
+          class="submit-button"
+          type="button"
+        >
+          管理者へ提出
+        </button>
 
       </div>
 
@@ -672,8 +768,8 @@
 
   </main>
 
-<script src="portal-auth.js?v=3"></script>
-<script src="trip-form.js?v=15"></script>
+  <script src="portal-auth.js?v=3"></script>
+  <script src="trip-form.js?v=25"></script>
 
 </body>
-</html> 
+</html>

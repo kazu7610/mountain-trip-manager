@@ -399,6 +399,52 @@ function fillTripForm(
       trip.outside_member_count || 0
     );
 
+  const recruitingYes =
+    document.getElementById(
+      "recruiting-yes"
+    );
+
+  const recruitingNo =
+    document.getElementById(
+      "recruiting-no"
+    );
+
+  if (
+    trip.is_recruiting === true
+  ) {
+    if (recruitingYes) {
+      recruitingYes.checked =
+        true;
+    }
+
+    if (recruitingNo) {
+      recruitingNo.checked =
+        false;
+    }
+  } else {
+    if (recruitingYes) {
+      recruitingYes.checked =
+        false;
+    }
+
+    if (recruitingNo) {
+      recruitingNo.checked =
+        true;
+    }
+  }
+
+  const recruitingMessage =
+    document.getElementById(
+      "recruiting-message"
+    );
+
+  if (recruitingMessage) {
+    recruitingMessage.value =
+      trip.recruiting_message || "";
+  }
+
+  updateRecruitingMessageArea();
+
   const selectedMemberIds =
     tripMembers.map(
       (row) =>
@@ -559,6 +605,16 @@ function setupTripForm() {
       "draft-button"
     );
 
+  const recruitingYes =
+    document.getElementById(
+      "recruiting-yes"
+    );
+
+  const recruitingNo =
+    document.getElementById(
+      "recruiting-no"
+    );
+
   if (!submitButton) {
     console.error(
       "管理者へ提出ボタンが見つかりません。"
@@ -584,6 +640,61 @@ function setupTripForm() {
     "click",
     saveDraftTrip
   );
+
+  if (recruitingYes) {
+    recruitingYes.addEventListener(
+      "change",
+      updateRecruitingMessageArea
+    );
+  }
+
+  if (recruitingNo) {
+    recruitingNo.addEventListener(
+      "change",
+      updateRecruitingMessageArea
+    );
+  }
+
+  updateRecruitingMessageArea();
+}
+
+/* =========================================
+   募集コメント欄の表示切替
+========================================= */
+
+function updateRecruitingMessageArea() {
+  const recruitingYes =
+    document.getElementById(
+      "recruiting-yes"
+    );
+
+  const messageArea =
+    document.getElementById(
+      "recruiting-message-area"
+    );
+
+  const messageInput =
+    document.getElementById(
+      "recruiting-message"
+    );
+
+  if (!messageArea) {
+    return;
+  }
+
+  const isRecruiting =
+    recruitingYes?.checked === true;
+
+  messageArea.hidden =
+    !isRecruiting;
+
+  if (
+    !isRecruiting &&
+    messageInput
+  ) {
+    messageInput.value =
+      "";
+  }
 }
 
 /* =========================================
@@ -665,6 +776,19 @@ async function saveDraftTrip(
         .value || 0
     );
 
+  const isRecruiting =
+    document.querySelector(
+      'input[name="is-recruiting"]:checked'
+    )?.value === "true";
+
+  const recruitingMessage =
+    document
+      .getElementById(
+        "recruiting-message"
+      )
+      ?.value
+      .trim() || null;
+
   const selectedMembers =
     Array.from(
       document.querySelectorAll(
@@ -720,6 +844,14 @@ async function saveDraftTrip(
 
       outside_member_count:
         outsideMemberCount,
+
+      is_recruiting:
+        isRecruiting,
+
+      recruiting_message:
+        isRecruiting
+          ? recruitingMessage
+          : null,
 
       status:
         "draft",
@@ -869,6 +1001,19 @@ async function submitTripForm(
         .value || 0
     );
 
+  const isRecruiting =
+    document.querySelector(
+      'input[name="is-recruiting"]:checked'
+    )?.value === "true";
+
+  const recruitingMessage =
+    document
+      .getElementById(
+        "recruiting-message"
+      )
+      ?.value
+      .trim() || "";
+
   const createDetailedPlan =
     document
       .getElementById(
@@ -961,6 +1106,17 @@ async function submitTripForm(
     return;
   }
 
+  if (
+    isRecruiting &&
+    !recruitingMessage
+  ) {
+    alert(
+      "募集する場合は、募集コメントを入力してください。"
+    );
+
+    return;
+  }
+
   const confirmMessage =
     editTripId
       ? "修正した内容で管理者へ再提出しますか？"
@@ -976,7 +1132,8 @@ async function submitTripForm(
   }
 
   if (submitButton) {
-    submitButton.disabled = true;
+    submitButton.disabled =
+      true;
 
     submitButton.textContent =
       editTripId
@@ -1006,14 +1163,24 @@ async function submitTripForm(
       outside_member_count:
         outsideMemberCount,
 
+      is_recruiting:
+        isRecruiting,
+
+      recruiting_message:
+        isRecruiting
+          ? recruitingMessage
+          : null,
+
       status:
         "submitted",
 
       submitted_by:
-        loginMember.authUserId || null,
+        loginMember.authUserId ||
+        null,
 
       submitted_at:
-        new Date().toISOString(),
+        new Date()
+          .toISOString(),
 
       approved_by:
         null,
@@ -1079,7 +1246,8 @@ async function submitTripForm(
 
   } finally {
     if (submitButton) {
-      submitButton.disabled = false;
+      submitButton.disabled =
+        false;
 
       submitButton.textContent =
         editTripId

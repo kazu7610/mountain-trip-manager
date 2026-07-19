@@ -383,6 +383,16 @@ async function loadHomeTrips() {
       "cancelled-trip-list"
     );
 
+  const recruitingSection =
+    document.getElementById(
+      "recruiting-section"
+    );
+
+  const recruitingTripList =
+    document.getElementById(
+      "recruiting-trip-list"
+    );
+
   const todayTripList =
     document.getElementById(
       "today-trip-list"
@@ -396,6 +406,8 @@ async function loadHomeTrips() {
   if (
     !cancelledTripSection ||
     !cancelledTripList ||
+    !recruitingSection ||
+    !recruitingTripList ||
     !todayTripList ||
     !todayDescentList
   ) {
@@ -410,6 +422,12 @@ async function loadHomeTrips() {
     const today =
       getTodayString();
 
+    const loginMember =
+      getPortalMember();
+
+    /*
+     * 本日の山行・下山・中止のお知らせを取得
+     */
     const response =
       await portalFetch(
         "/rest/v1/trips" +
@@ -448,32 +466,28 @@ async function loadHomeTrips() {
           memberNames
         );
 
-        const comments =
-  await loadTripComments(
-    trip.id
-  );
+      const comments =
+        await loadTripComments(
+          trip.id
+        );
 
-      const loginMember =
-  getPortalMember();
+      const isParticipant =
+        memberNames.some(
+          (member) =>
+            member.memberId ===
+            Number(loginMember?.id)
+        );
 
-const isParticipant =
-  memberNames.some(
-    (member) =>
-      member.memberId ===
-      Number(loginMember?.id)
-  );
-
-const item = {
-  ...trip,
-  memberNames,
-  leaderName,
-  isParticipant,
-  comments
-};
+      const item = {
+        ...trip,
+        memberNames,
+        leaderName,
+        isParticipant,
+        comments
+      };
 
       /*
-       * 中止済みは、
-       * ホーム上部の中止のお知らせへ表示する。
+       * 中止済みはホーム上部へ表示
        */
       if (
         trip.status === "cancelled"
@@ -484,8 +498,7 @@ const item = {
       }
 
       /*
-       * 承認済みの山行は、
-       * 本日の山行へ表示する。
+       * 承認済みは本日の山行へ表示
        */
       if (
         trip.status === "approved"
@@ -494,9 +507,7 @@ const item = {
       }
 
       /*
-       * 下山日が今日で、
-       * 中止されていない山行を
-       * 本日の下山へ表示する。
+       * 下山日が今日の山行を表示
        */
       if (
         trip.descent_date === today
@@ -505,10 +516,6 @@ const item = {
       }
     }
 
-    /*
-     * 中止のお知らせがある場合だけ、
-     * セクションを表示する。
-     */
     if (
       cancelledTrips.length > 0
     ) {
@@ -537,6 +544,195 @@ const item = {
       todayDescents
     );
 
+    /*
+     * 募集中の承認済み山行を取得
+     */
+    const recruitingResponse =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=*" +
+        "&status=eq.approved" +
+        "&is_recruiting=eq.true" +
+        `&descent_date=gte.${today}` +
+        "&order=entry_date.asc,descent_time.asc"
+      );
+
+    if (!recruitingResponse.ok) {
+      const errorText =
+        await recruitingResponse.text();
+
+      throw new Error(
+        "山行募集の取得に失敗しました。" +
+        ` ${recruitingResponse.status} ${errorText}`
+      );
+    }
+
+    const recruitingTrips =
+      await recruitingResponse.json();
+
+    if (
+      recruitingTrips.length === 0
+    ) {
+      recruitingSection.hidden =
+        true;
+
+      recruitingTripList.innerHTML =
+        "";
+
+      return;
+    }
+
+    recruitingSection.hidden =
+      false;
+
+    recruitingTripList.innerHTML =
+      "";
+
+    for (
+      const trip of recruitingTrips
+    ) {
+      const memberNames =
+        await loadTripMemberNames(
+          trip.id
+        );
+
+      const leaderName =
+        getLeaderName(
+          memberNames
+        );
+
+      const applications =
+        await loadTripApplications(
+          trip.id
+        );
+
+      const isParticipant =
+        memberNames.some(
+          (member) =>
+            member.memberId ===
+            Number(loginMember?.id)
+        );
+
+      const myApplication =
+        applications.find(
+          (application) =>
+            Number(
+              application.member_id
+            ) ===
+            Number(loginMember?.id)
+        );
+
+      let applicationButtonHtml = "";
+
+      if (isParticipant) {
+        applicationButtonHtml = `
+          <button
+            class="detail-button"
+            type="button"
+            disabled
+          >
+            参加者として登録済み
+          </button>
+        `;
+      } else if (myApplication) {
+        applicationButtonHtml = `
+          <button
+            class="detail-button"
+            type="button"
+            onclick="cancelTripApplication(${trip.id})"
+          >
+            参加希望を取り消す
+          </button>
+        `;
+      } else {
+        applicationButtonHtml = `
+          <button
+            class="detail-button"
+            type="button"
+            onclick="submitTripApplication(${trip.id})"
+          >
+            参加を希望する
+          </button>
+        `;
+      }
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+      card.className =
+        "trip-card recruiting";
+
+      card.innerHTML = `
+        <div class="compact-title-row">
+
+          <h3 class="trip-title">
+            ${escapeHtml(
+              trip.mountain_area
+            )}
+            ${escapeHtml(
+              trip.mountain_name
+            )}
+          </h3>
+
+          <span class="trip-leader">
+            ${escapeHtml(
+              leaderName
+            )}
+          </span>
+
+        </div>
+
+        <div class="status-row">
+
+          <span class="status-badge status-recruiting">
+            参加者募集中
+          </span>
+
+          <span class="trip-date">
+            ${formatTripPeriod(
+              trip.entry_date,
+              trip.descent_date
+            )}
+          </span>
+
+        </div>
+
+        <p class="trip-info">
+          ${escapeHtml(
+            trip.recruiting_message ||
+            "募集コメントはありません。"
+          )}
+        </p>
+
+        <p class="trip-info">
+          参加希望
+          <strong>
+            ${applications.length}名
+          </strong>
+        </p>
+
+        <div class="button-row">
+
+          <button
+            class="detail-button"
+            type="button"
+            onclick="location.href='trip-detail.html?id=${trip.id}'"
+          >
+            詳細を見る
+          </button>
+
+          ${applicationButtonHtml}
+
+        </div>
+      `;
+
+      recruitingTripList.appendChild(
+        card
+      );
+    }
+
   } catch (error) {
     console.error(error);
 
@@ -544,6 +740,12 @@ const item = {
       true;
 
     cancelledTripList.innerHTML =
+      "";
+
+    recruitingSection.hidden =
+      true;
+
+    recruitingTripList.innerHTML =
       "";
 
     todayTripList.innerHTML = `
@@ -627,6 +829,188 @@ async function loadTripComments(
   }
 
   return await response.json();
+}
+
+/* =========================================
+   山行参加希望者を読み込む
+========================================= */
+
+async function loadTripApplications(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_applications" +
+      "?select=*" +
+      `&trip_id=eq.${tripId}` +
+      "&order=created_at.asc"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "参加希望者の取得に失敗しました。",
+      await response.text()
+    );
+
+    return [];
+  }
+
+  return await response.json();
+}
+
+/* =========================================
+   山行へ参加希望を登録
+========================================= */
+
+async function submitTripApplication(
+  tripId
+) {
+  const loginMember =
+    getPortalMember();
+
+  if (!loginMember?.id) {
+    alert(
+      "ログイン情報を確認できません。もう一度ログインしてください。"
+    );
+
+    location.href =
+      "login.html";
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "この山行への参加を希望しますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_applications",
+        {
+          method:
+            "POST",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              trip_id:
+                Number(tripId),
+
+              member_id:
+                Number(loginMember.id),
+
+              member_name:
+                loginMember.name ||
+                "氏名不明"
+            })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "参加希望の登録に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "参加希望を登録しました。"
+    );
+
+    await loadHomeTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "参加希望を登録できませんでした。"
+    );
+  }
+}
+
+/* =========================================
+   山行への参加希望を取り消す
+========================================= */
+
+async function cancelTripApplication(
+  tripId
+) {
+  const loginMember =
+    getPortalMember();
+
+  if (!loginMember?.id) {
+    alert(
+      "ログイン情報を確認できません。もう一度ログインしてください。"
+    );
+
+    location.href =
+      "login.html";
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "この山行への参加希望を取り消しますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_applications" +
+        `?trip_id=eq.${Number(tripId)}` +
+        `&member_id=eq.${Number(loginMember.id)}`,
+        {
+          method:
+            "DELETE",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          }
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "参加希望の取り消しに失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "参加希望を取り消しました。"
+    );
+
+    await loadHomeTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "参加希望を取り消せませんでした。"
+    );
+  }
 }
 
 /* =========================================

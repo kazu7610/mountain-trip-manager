@@ -105,7 +105,12 @@ async function loadTripDetail() {
         tripId
       );
 
-       const loginMember =
+    const applications =
+      await loadTripApplications(
+        tripId
+      );
+
+    const loginMember =
       getPortalMember();
 
     const isParticipant =
@@ -139,6 +144,7 @@ async function loadTripDetail() {
       detailContainer,
       trip,
       members,
+      applications,
       isParticipant,
       isLeader,
       isSubmitter,
@@ -198,6 +204,34 @@ async function loadTripMembers(
 }
 
 /* =========================================
+   山行参加希望者を読み込む
+========================================= */
+
+async function loadTripApplications(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_applications" +
+      "?select=*" +
+      `&trip_id=eq.${tripId}` +
+      "&order=created_at.asc"
+    );
+
+  if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    throw new Error(
+      "参加希望者の取得に失敗しました。" +
+      ` ${response.status} ${errorText}`
+    );
+  }
+
+  return await response.json();
+}
+
+/* =========================================
    申請中の変更・中止連絡を取得
 ========================================= */
 
@@ -237,6 +271,7 @@ function renderTripDetail(
   container,
   trip,
   members,
+  applications,
   isParticipant,
   isLeader,
   isSubmitter,
@@ -255,13 +290,77 @@ function renderTripDetail(
       isParticipant
     );
 
-      const requestActionHtml =
+  const requestActionHtml =
     createRequestActionHtml(
       trip,
       isLeader,
       isSubmitter,
       pendingRequest
     );
+
+  let recruitingHtml = "";
+
+  if (trip.is_recruiting === true) {
+    let applicationMemberHtml = "";
+
+    if (
+      Array.isArray(applications) &&
+      applications.length > 0
+    ) {
+      applicationMemberHtml =
+        applications
+          .map(
+            (application) => `
+              <div class="member-item">
+                ${escapeHtml(
+                  application.member_name ||
+                  "氏名不明"
+                )}
+              </div>
+            `
+          )
+          .join("");
+    } else {
+      applicationMemberHtml = `
+        <p class="detail-value">
+          まだ参加希望者はいません。
+        </p>
+      `;
+    }
+
+    recruitingHtml = `
+      <section class="detail-row">
+
+        <p class="detail-label">
+          山行募集
+        </p>
+
+        <p class="detail-value">
+          ${escapeHtml(
+            trip.recruiting_message ||
+            "募集コメントはありません。"
+          )}
+        </p>
+
+      </section>
+
+      <section class="detail-row">
+
+        <p class="detail-label">
+          参加希望者
+        </p>
+
+        <p class="detail-value">
+          ${applications.length}名
+        </p>
+
+        <div class="member-list">
+          ${applicationMemberHtml}
+        </div>
+
+      </section>
+    `;
+  }
 
   container.innerHTML = `
     <article class="detail-card">
@@ -349,13 +448,15 @@ function renderTripDetail(
 
         </section>
 
+        ${recruitingHtml}
+
       </div>
 
     </article>
 
-        ${descentActionHtml}
+    ${descentActionHtml}
 
-        ${requestActionHtml}
+    ${requestActionHtml}
 
     <div class="button-row">
 
@@ -379,17 +480,17 @@ function renderTripDetail(
   `;
 
   const descentButton =
-  document.getElementById(
-    "descent-button"
-  );
-
-if (descentButton) {
-  descentButton.onclick =
-    () => reportDescent(
-      trip.id,
-      descentButton
+    document.getElementById(
+      "descent-button"
     );
-}
+
+  if (descentButton) {
+    descentButton.onclick =
+      () => reportDescent(
+        trip.id,
+        descentButton
+      );
+  }
 
   const changeRequestButton =
     document.getElementById(
