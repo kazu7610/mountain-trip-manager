@@ -9,6 +9,14 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_rIp7lS9MjRQzoHaEdB_uWQ_xp2Otry3";
 
+
+/* =========================================
+   ログイン画面へ移動中かどうか
+========================================= */
+
+let portalLoginRedirecting = false;
+
+
 /* =========================================
    保存済みログイン情報を取得
 ========================================= */
@@ -41,6 +49,7 @@ function getPortalAuthSession() {
     return null;
   }
 }
+
 
 /* =========================================
    ログイン中の会員情報を取得
@@ -75,6 +84,68 @@ function getPortalMember() {
   }
 }
 
+
+/* =========================================
+   ログイン情報だけ削除
+========================================= */
+
+function clearPortalLoginInfo() {
+  localStorage.removeItem(
+    "ponkotsu_session"
+  );
+
+  localStorage.removeItem(
+    "ponkotsu_member"
+  );
+}
+
+
+/* =========================================
+   ログイン期限切れ判定
+========================================= */
+
+function isPortalSessionExpired(
+  session
+) {
+  const expiresAt =
+    Number(session?.expires_at);
+
+  if (
+    !Number.isFinite(expiresAt) ||
+    expiresAt <= 0
+  ) {
+    return false;
+  }
+
+  return (
+    Date.now() >=
+    expiresAt * 1000
+  );
+}
+
+
+/* =========================================
+   ログイン期限切れ時の処理
+========================================= */
+
+function handlePortalSessionExpired() {
+  if (portalLoginRedirecting) {
+    return;
+  }
+
+  portalLoginRedirecting = true;
+
+  clearPortalLoginInfo();
+
+  alert(
+    "ログインの有効期限が切れました。\n再度ログインしてください。"
+  );
+
+  window.location.href =
+    "login.html";
+}
+
+
 /* =========================================
    ログイン確認
 ========================================= */
@@ -96,8 +167,17 @@ function requirePortalLogin() {
     return false;
   }
 
+  if (
+    isPortalSessionExpired(session)
+  ) {
+    handlePortalSessionExpired();
+
+    return false;
+  }
+
   return true;
 }
+
 
 /* =========================================
    ログアウト
@@ -113,17 +193,16 @@ function logoutPortal() {
     return;
   }
 
-  localStorage.removeItem(
-    "ponkotsu_session"
-  );
-
-  localStorage.removeItem(
-    "ponkotsu_member"
-  );
+  /*
+    通知登録とService Workerは削除しない。
+    ログイン情報だけを削除する。
+  */
+  clearPortalLoginInfo();
 
   window.location.href =
     "login.html";
 }
+
 
 /* =========================================
    Supabase通信
@@ -135,6 +214,17 @@ async function portalFetch(
 ) {
   const session =
     getPortalAuthSession();
+
+  if (
+    session?.access_token &&
+    isPortalSessionExpired(session)
+  ) {
+    handlePortalSessionExpired();
+
+    throw new Error(
+      "ログインの有効期限が切れています。"
+    );
+  }
 
   const headers = {
     apikey: SUPABASE_KEY,
@@ -158,6 +248,14 @@ async function portalFetch(
         headers
       }
     );
+
+  if (response.status === 401) {
+    handlePortalSessionExpired();
+
+    throw new Error(
+      "ログインの有効期限が切れています。"
+    );
+  }
 
   return response;
 }

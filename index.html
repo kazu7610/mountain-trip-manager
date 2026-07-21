@@ -734,6 +734,24 @@
   cursor: wait;
 }
 
+.notification-enabled-status {
+  padding: 6px 9px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.65);
+
+  border-radius: 9px;
+
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+
+  background:
+    rgba(255, 255, 255, 0.14);
+}
+
   </style>
 
   <link
@@ -773,6 +791,15 @@
         ログイン確認中...
       </p>
 
+      <span
+  id="notification-enabled-status"
+  class="notification-enabled-status"
+  hidden
+>
+  🔔 通知有効中
+</span>
+
+
       <button
         id="logout-button"
         class="logout-button"
@@ -809,6 +836,8 @@
   id="enable-notification-button"
   class="create-button"
   type="button"
+  hidden
+
 >
   🔔 通知を有効にする
 </button>
@@ -1028,7 +1057,7 @@
 
 <script src="portal-auth.js?v=3"></script>
 <script src="push-notifications.js?v=4"></script>
-<script src="index.js?v=292"></script>
+<script src="index.js?v=293"></script>
 
 <script>
   if (

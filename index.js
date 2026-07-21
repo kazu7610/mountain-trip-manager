@@ -50,6 +50,11 @@ async function initializeHomeLogin() {
       "enable-notification-button"
     );
 
+  const notificationEnabledStatus =
+    document.getElementById(
+      "notification-enabled-status"
+    );
+
   if (!member) {
     window.location.href =
       "login.html";
@@ -74,20 +79,16 @@ async function initializeHomeLogin() {
       member.role !== "admin";
   }
 
-  if (!notificationButton) {
+  if (
+    !notificationButton ||
+    !notificationEnabledStatus
+  ) {
     console.error(
-      "通知ボタンが見つかりません。"
+      "通知表示の要素が見つかりません。"
     );
 
     return;
   }
-
-  /*
-   * 動作確認のため、
-   * 通知ボタンは必ず表示する
-   */
-  notificationButton.hidden =
-    false;
 
   notificationButton.addEventListener(
     "click",
@@ -98,11 +99,11 @@ async function initializeHomeLogin() {
         );
 
       if (enabled) {
-        notificationButton.textContent =
-          "🔔 通知は有効です";
-
-        notificationButton.disabled =
+        notificationButton.hidden =
           true;
+
+        notificationEnabledStatus.hidden =
+          false;
       }
     }
   );
@@ -112,17 +113,24 @@ async function initializeHomeLogin() {
       await isPushNotificationEnabled();
 
     if (isEnabled) {
-      notificationButton.textContent =
-        "🔔 通知は有効です";
-
-      notificationButton.disabled =
+      notificationButton.hidden =
         true;
+
+      notificationEnabledStatus.hidden =
+        false;
+
     } else {
-      notificationButton.textContent =
-        "🔔 通知を有効にする";
+      notificationButton.hidden =
+        false;
 
       notificationButton.disabled =
         false;
+
+      notificationButton.textContent =
+        "🔔 通知を有効にする";
+
+      notificationEnabledStatus.hidden =
+        true;
     }
 
   } catch (error) {
@@ -131,11 +139,17 @@ async function initializeHomeLogin() {
       error
     );
 
-    notificationButton.textContent =
-      "🔔 通知を有効にする";
+    notificationButton.hidden =
+      false;
 
     notificationButton.disabled =
       false;
+
+    notificationButton.textContent =
+      "🔔 通知を有効にする";
+
+    notificationEnabledStatus.hidden =
+      true;
   }
 }
 
