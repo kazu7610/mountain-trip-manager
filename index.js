@@ -872,7 +872,8 @@ async function loadTripMemberNames(
   const rows =
     await response.json();
 
-  return rows.map(
+  return rows
+  .map(
     (row) => ({
       memberId:
         Number(row.member_id),
@@ -884,8 +885,13 @@ async function loadTripMemberNames(
       isLeader:
         row.is_leader === true
     })
+  )
+  .sort(
+    (a, b) =>
+      Number(b.isLeader) -
+      Number(a.isLeader)
   );
-}
+  
 
 /* =========================================
    山行コメントを読み込む

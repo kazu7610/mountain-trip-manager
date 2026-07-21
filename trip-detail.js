@@ -188,7 +188,8 @@ async function loadTripMembers(
   const rows =
     await response.json();
 
-  return rows.map(
+  return rows
+  .map(
     (row) => ({
       id:
         Number(row.member_id),
@@ -200,6 +201,11 @@ async function loadTripMembers(
       isLeader:
         row.is_leader === true
     })
+  )
+  .sort(
+    (a, b) =>
+      Number(b.isLeader) -
+      Number(a.isLeader)
   );
 }
 
