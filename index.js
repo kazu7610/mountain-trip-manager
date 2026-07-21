@@ -891,7 +891,8 @@ async function loadTripMemberNames(
       Number(b.isLeader) -
       Number(a.isLeader)
   );
-  
+}  
+
 
 /* =========================================
    山行コメントを読み込む
