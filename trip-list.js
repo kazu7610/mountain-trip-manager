@@ -247,16 +247,22 @@ async function loadTripMembers(
   const rows =
     await response.json();
 
-  return rows.map(
-    (row) => ({
-      name:
-        row.members?.name ||
-        "不明",
+  return rows
+    .map(
+      (row) => ({
+        name:
+          row.members?.name ||
+          "不明",
 
-      isLeader:
-        row.is_leader === true
-    })
-  );
+        isLeader:
+          row.is_leader === true
+      })
+    )
+    .sort(
+      (a, b) =>
+        Number(b.isLeader) -
+        Number(a.isLeader)
+    );
 }
 
 /* =========================================
