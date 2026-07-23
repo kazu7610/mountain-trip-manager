@@ -1776,10 +1776,24 @@ function createTodayDescentCard(
     trip.status ===
     "descended";
 
+  const plannedDescent =
+    new Date(
+      `${trip.descent_date}T${trip.descent_time}`
+    );
+
+  const isOverdue =
+    !isDescended &&
+    !Number.isNaN(
+      plannedDescent.getTime()
+    ) &&
+    new Date() > plannedDescent;
+
   card.className =
     isDescended
       ? "trip-card descent-completed"
-      : "trip-card descent";
+      : isOverdue
+        ? "trip-card descent descent-overdue"
+        : "trip-card descent";
 
   const statusLabel =
     isDescended
@@ -1801,6 +1815,15 @@ function createTodayDescentCard(
           )}
         </span>
       `;
+
+  const overdueHtml =
+    isOverdue
+      ? `
+        <div class="descent-overdue-message">
+          下山予定時刻が過ぎています
+        </div>
+      `
+      : "";
 
   card.innerHTML = `
     <div class="compact-title-row">
@@ -1831,6 +1854,8 @@ function createTodayDescentCard(
       ${timeText}
 
     </div>
+
+    ${overdueHtml}
 
     <div class="button-row">
 
