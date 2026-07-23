@@ -292,6 +292,24 @@ function createTripCard(
       trip.outside_member_count
     );
 
+      const member =
+    getPortalMember();
+
+  const isAdmin =
+    member?.role === "admin";
+
+  const deleteButtonHtml =
+    isAdmin
+      ? `
+        <button
+          class="force-delete-button"
+          type="button"
+        >
+          強制削除
+        </button>
+      `
+      : "";
+
   const cancelMessage =
     trip.status === "cancelled"
       ? `
@@ -363,9 +381,168 @@ function createTripCard(
     >
       詳細を見る
     </button>
+    ${deleteButtonHtml}
   `;
 
+    const deleteButton =
+    card.querySelector(
+      ".force-delete-button"
+    );
+
+  if (deleteButton) {
+    deleteButton.addEventListener(
+      "click",
+      () =>
+        forceDeleteTrip(
+          trip,
+          deleteButton
+        )
+    );
+  }
+
   return card;
+}
+
+/* =========================================
+   管理者による山行強制削除
+========================================= */
+
+async function forceDeleteTrip(
+  trip,
+  deleteButton
+) {
+  const member =
+    getPortalMember();
+
+  if (
+    !member ||
+    member.role !== "admin"
+  ) {
+    alert(
+      "この操作は管理者だけが実行できます。"
+    );
+
+    return;
+  }
+
+  const tripName =
+    `${trip.mountain_area || ""} ${trip.mountain_name || ""}`
+      .trim();
+
+  const firstConfirmed =
+    confirm(
+      `「${tripName}」を強制削除しますか？\n\n関連する参加者・コメント・申請も削除されます。`
+    );
+
+  if (!firstConfirmed) {
+    return;
+  }
+
+  const secondConfirmed =
+    confirm(
+      "この操作は元に戻せません。\n本当に完全削除しますか？"
+    );
+
+  if (!secondConfirmed) {
+    return;
+  }
+
+  deleteButton.disabled =
+    true;
+
+  deleteButton.textContent =
+    "削除中...";
+
+  try {
+    await deleteTripRelatedRows(
+      "trip_comments",
+      trip.id
+    );
+
+    await deleteTripRelatedRows(
+      "trip_requests",
+      trip.id
+    );
+
+    await deleteTripRelatedRows(
+      "trip_members",
+      trip.id
+    );
+
+    const tripResponse =
+      await portalFetch(
+        `/rest/v1/trips?id=eq.${trip.id}`,
+        {
+          method: "DELETE",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          }
+        }
+      );
+
+    if (!tripResponse.ok) {
+      const errorText =
+        await tripResponse.text();
+
+      throw new Error(
+        "山行届本体の削除に失敗しました。" +
+        ` ${tripResponse.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "山行届を完全に削除しました。"
+    );
+
+    await loadTripList();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "山行届を削除できませんでした。"
+    );
+
+    deleteButton.disabled =
+      false;
+
+    deleteButton.textContent =
+      "強制削除";
+  }
+}
+
+/* =========================================
+   山行に関連するデータを削除
+========================================= */
+
+async function deleteTripRelatedRows(
+  tableName,
+  tripId
+) {
+  const response =
+    await portalFetch(
+      `/rest/v1/${tableName}?trip_id=eq.${tripId}`,
+      {
+        method: "DELETE",
+
+        headers: {
+          Prefer:
+            "return=minimal"
+        }
+      }
+    );
+
+  if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    throw new Error(
+      `${tableName} の削除に失敗しました。` +
+      ` ${response.status} ${errorText}`
+    );
+  }
 }
 
 /* =========================================
