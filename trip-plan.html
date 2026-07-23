@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    詳細計画書｜ポンコツ倶楽部
+  </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+
+      color: #17364d;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dff5ff 0%,
+          #eefaff 210px,
+          #f8fcff 480px,
+          #edf4f8 100%
+        );
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font-family: inherit;
+    }
+
+    .header {
+      padding: 28px 18px 34px;
+
+      color: white;
+      text-align: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          #0b5f99 0%,
+          #2793c8 55%,
+          #8fd9f2 100%
+        );
+    }
+
+    .header h1 {
+      margin: 0;
+
+      font-size: 26px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+
+      font-size: 13px;
+      opacity: 0.92;
+    }
+
+    .container {
+      width: min(
+        calc(100% - 24px),
+        900px
+      );
+
+      margin: 0 auto;
+      padding: 20px 0 50px;
+    }
+
+    .back-link {
+      display: inline-block;
+
+      margin-bottom: 16px;
+
+      color: #176a99;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .plan-section {
+      margin-bottom: 16px;
+      padding: 18px;
+
+      border:
+        1px solid
+        rgba(
+          87,
+          155,
+          194,
+          0.24
+        );
+
+      border-radius: 16px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.97
+        );
+
+      box-shadow:
+        0 5px 17px
+        rgba(
+          34,
+          91,
+          125,
+          0.08
+        );
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+
+      color: #173d58;
+      font-size: 20px;
+    }
+
+    .placeholder {
+      margin: 0;
+
+      color: #6d8798;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
+
+      gap: 12px;
+
+      margin-top: 20px;
+    }
+
+    .secondary-button,
+    .primary-button {
+      width: 100%;
+
+      padding: 13px 12px;
+
+      border-radius: 12px;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .secondary-button {
+      border:
+        1px solid
+        #78b8d7;
+
+      color: #176a99;
+      background: white;
+    }
+
+    .primary-button {
+      border: none;
+
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0f73ad,
+          #2ba9d7
+        );
+    }
+
+    @media (
+      max-width: 600px
+    ) {
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+
+    <h1>
+      詳細計画書
+    </h1>
+
+    <p>
+      Detailed Mountain Plan
+    </p>
+
+  </header>
+
+  <main class="container">
+
+    <a
+      class="back-link"
+      href="javascript:history.back()"
+    >
+      ← 一覧へ戻る
+    </a>
+
+    <section class="plan-section">
+
+  <h2 class="section-title">
+    山行基本情報
+  </h2>
+
+  <div id="plan-trip-info">
+
+    <p class="placeholder">
+      山行情報を読み込んでいます...
+    </p>
+
+  </div>
+
+</section>
+
+    <section class="plan-section">
+
+      <h2 class="section-title">
+        参加者
+      </h2>
+
+      <p class="placeholder">
+        代表者・参加者・担当・緊急連絡先を入力します。
+      </p>
+
+    </section>
+
+    <section class="plan-section">
+
+      <h2 class="section-title">
+        行動予定
+      </h2>
+
+      <p class="placeholder">
+        日ごとの時刻・行動内容・備考を入力します。
+      </p>
+
+    </section>
+
+    <section class="plan-section">
+
+      <h2 class="section-title">
+        食事計画
+      </h2>
+
+      <p class="placeholder">
+        朝食・夕食・行動食・非常食を入力します。
+      </p>
+
+    </section>
+
+    <section class="plan-section">
+
+      <h2 class="section-title">
+        共同装備
+      </h2>
+
+      <p class="placeholder">
+        装備名・規格・数量・担当者を入力します。
+      </p>
+
+    </section>
+
+    <div class="button-row">
+
+      <button
+        class="secondary-button"
+        type="button"
+      >
+        一時保存
+      </button>
+
+      <button
+        class="primary-button"
+        type="button"
+      >
+        PDFを作成
+      </button>
+
+    </div>
+
+  </main>
+
+  <script src="portal-auth.js?v=3"></script>
+<script src="trip-plan.js?v=6"></script>
+
+</body>
+</html>

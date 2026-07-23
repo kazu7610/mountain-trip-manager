@@ -1261,7 +1261,9 @@ async function submitTripForm(
     );
 
     location.href =
-      "index.html";
+  createDetailedPlan
+    ? "trip-plan.html"
+    : "index.html";
 
   } catch (error) {
     console.error(error);
