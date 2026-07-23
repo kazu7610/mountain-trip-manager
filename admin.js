@@ -735,6 +735,27 @@ function createApprovedTripCard(
       trip.outside_member_count
     );
 
+      const plannedDescent =
+    new Date(
+      `${trip.descent_date}T${trip.descent_time}`
+    );
+
+  const isOverdue =
+    trip.status === "approved" &&
+    !Number.isNaN(
+      plannedDescent.getTime()
+    ) &&
+    new Date() > plannedDescent;
+
+  const overdueHtml =
+    isOverdue
+      ? `
+        <div class="overdue-message" style="color: red; font-weight: bold;">
+  下山予定時刻が過ぎています
+</div>
+      `
+      : "";
+
   let commentsHtml = "";
 
   if (
@@ -801,6 +822,8 @@ function createApprovedTripCard(
       trip,
       memberText
     )}
+
+        ${overdueHtml}
 
     <div class="admin-comment-list">
       ${commentsHtml}

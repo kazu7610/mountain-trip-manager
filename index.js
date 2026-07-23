@@ -1366,6 +1366,20 @@ function createTodayTripCard(
       `
       : "";
 
+        const adminCommentButtonHtml =
+    !isCancelled &&
+    trip.status === "approved" &&
+    isAdmin
+      ? `
+        <button
+          class="admin-comment-button"
+          type="button"
+        >
+          管理者コメント
+        </button>
+      `
+      : "";
+
   const completeButtonHtml =
     isCancelled &&
     isAdmin
@@ -1416,7 +1430,7 @@ function createTodayTripCard(
       </button>
 
       ${commentButtonHtml}
-
+      ${adminCommentButtonHtml}
       ${completeButtonHtml}
 
     </div>
@@ -1437,6 +1451,22 @@ function createTodayTripCard(
         )
     );
   }
+
+    const adminCommentButton =
+    card.querySelector(
+      ".admin-comment-button"
+    );
+
+  if (adminCommentButton) {
+  adminCommentButton.addEventListener(
+    "click",
+    () =>
+      submitTripComment(
+        trip.id,
+        adminCommentButton
+      )
+  );
+}
 
   const completeButton =
     card.querySelector(
@@ -1544,7 +1574,10 @@ async function submitTripComment(
     const memberRows =
       await memberResponse.json();
 
-    if (memberRows.length === 0) {
+    if (
+  memberRows.length === 0 &&
+  member.role !== "admin"
+) {
       alert(
         "この山行の参加者ではないため、状況を連絡できません。"
       );
