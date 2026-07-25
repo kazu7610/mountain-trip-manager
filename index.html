@@ -383,7 +383,7 @@
 .trip-comment-message {
   margin-top: 10px;
 
-  color: #c62828;
+  color: #000;
 
   font-size: 15px;
 
@@ -784,6 +784,42 @@
     rgba(255, 255, 255, 0.14);
 }
 
+/* =====================================
+   下山後コメントボタン
+===================================== */
+
+.button-row .detail-button,
+.button-row .descent-comment-button {
+  flex: 1;
+  width: auto;
+}
+
+.descent-comment-button {
+  padding: 11px 10px;
+
+  border:
+    1px solid
+    #1e88d8;
+
+  border-radius: 10px;
+
+  color: #0b5f99;
+  font-size: 14px;
+  font-weight: bold;
+
+  background: #fff;
+
+  cursor: pointer;
+}
+.descent-comment-button:hover {
+  background: #eef8ff;
+}
+
+.descent-comment-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
   </style>
 
   <link
@@ -1089,7 +1125,7 @@
 
 <script src="portal-auth.js?v=3"></script>
 <script src="push-notifications.js?v=4"></script>
-<script src="index.js?v=299"></script>
+<script src="index.js?v=300"></script>
 
 <script>
   if (

@@ -208,6 +208,10 @@ async function loadDetailedPlanTrip() {
       trip
     );
 
+    await loadDetailedPlanEquipment(
+      trip
+    );
+
   } catch (error) {
     console.error(error);
 
@@ -1407,6 +1411,7 @@ function updateMealSummary() {
   summaryList.innerHTML =
     summaryRows.join("");
 }
+
 
 /* =========================================
    緊急時連絡先を読み込む
@@ -3366,7 +3371,7 @@ async function saveDetailedPlan(
 
   const confirmed =
     confirm(
-      "現在の担当と行動予定を一時保存しますか？"
+      "現在の詳細計画書を一時保存しますか？"
     );
 
   if (!confirmed) {
@@ -3394,7 +3399,11 @@ async function saveDetailedPlan(
 
     await saveDetailedPlanMeals(
       tripId
-  );
+    );
+
+    await saveDetailedPlanEquipment(
+      tripId
+    );
 
     alert(
       "詳細計画書を一時保存しました。"
@@ -3417,7 +3426,11 @@ async function saveDetailedPlan(
 
       await loadDetailedPlanMeals(
         currentDetailedTrip
-   );
+      );
+
+      await loadDetailedPlanEquipment(
+        currentDetailedTrip
+      );
     }
 
   } catch (error) {
@@ -3864,6 +3877,7 @@ async function saveDetailedPlanMeals(
     );
   }
 }
+
 
 
 /* =========================================

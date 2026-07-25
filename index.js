@@ -1305,6 +1305,7 @@ function createTodayTripCard(
         </div>
       `
       : "";
+  
 
   const comments =
     Array.isArray(
@@ -1674,6 +1675,151 @@ async function submitTripComment(
 }
 
 /* =========================================
+   下山後コメントを送信
+========================================= */
+
+async function submitDescentComment(
+  tripId,
+  commentButton
+) {
+  const member =
+    getPortalMember();
+
+  if (
+    !member?.id ||
+    !member?.name
+  ) {
+    alert(
+      "ログイン情報を確認できません。"
+    );
+
+    location.href =
+      "login.html";
+
+    return;
+  }
+
+  const message =
+    prompt(
+      "下山後のコメントを入力してください。\n\n例：お疲れさまでした！"
+    );
+
+  if (message === null) {
+    return;
+  }
+
+  const trimmedMessage =
+    message.trim();
+
+  if (!trimmedMessage) {
+    alert(
+      "コメントを入力してください。"
+    );
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "このコメントを全員に表示しますか？\n\n" +
+      trimmedMessage
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  commentButton.disabled =
+    true;
+
+  commentButton.textContent =
+    "送信中...";
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_comments",
+        {
+          method:
+            "POST",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              trip_id:
+                Number(tripId),
+
+              member_id:
+                Number(member.id),
+
+              member_name:
+                member.name,
+
+              message:
+                trimmedMessage
+            })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "コメントの保存に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    try {
+      await notifyAllMembersExceptSender({
+        title:
+          "下山後コメント",
+
+        body:
+          `${member.name}さん：${trimmedMessage}`,
+
+        url:
+          `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+        badge:
+          1
+      });
+
+    } catch (notificationError) {
+      console.error(
+        "下山後コメントの通知を送信できませんでした。",
+        notificationError
+      );
+    }
+
+    alert(
+      "コメントを送信しました。"
+    );
+
+    await loadHomeTrips();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "コメントを送信できませんでした。"
+    );
+
+  } finally {
+    commentButton.disabled =
+      false;
+
+    commentButton.textContent =
+      "ひとこと";
+  }
+}
+
+/* =========================================
    中止確認して完了
 ========================================= */
 
@@ -1825,6 +1971,64 @@ function createTodayDescentCard(
       `
       : "";
 
+     const comments =
+  Array.isArray(
+    trip.comments
+  )
+    ? trip.comments
+    : [];
+
+const commentsHtml =
+  comments
+    .map(
+      (comment) => {
+        const commentTime =
+          comment.created_at
+            ? new Date(
+                comment.created_at
+              ).toLocaleTimeString(
+                "ja-JP",
+                {
+                  hour:
+                    "2-digit",
+
+                  minute:
+                    "2-digit"
+                }
+              )
+            : "時刻不明";
+
+        return `
+          <div class="trip-comment-message">
+            ${escapeHtml(
+              commentTime
+            )}：
+            ${escapeHtml(
+              comment.message ||
+              ""
+            )}：
+            ${escapeHtml(
+              comment.member_name ||
+              "氏名不明"
+            )}
+          </div>
+        `;
+      }
+    )
+    .join(""); 
+
+  const descentCommentButtonHtml =
+    isDescended
+      ? `
+        <button
+          class="descent-comment-button"
+          type="button"
+        >
+          ひとこと
+        </button>
+      `
+      : "";
+
   card.innerHTML = `
     <div class="compact-title-row">
 
@@ -1856,6 +2060,7 @@ function createTodayDescentCard(
     </div>
 
     ${overdueHtml}
+    ${commentsHtml}
 
     <div class="button-row">
 
@@ -1867,8 +2072,26 @@ function createTodayDescentCard(
         詳細を見る
       </button>
 
+      ${descentCommentButtonHtml}
+
     </div>
   `;
+
+  const descentCommentButton =
+    card.querySelector(
+      ".descent-comment-button"
+    );
+
+  if (descentCommentButton) {
+    descentCommentButton.addEventListener(
+      "click",
+      () =>
+        submitDescentComment(
+          trip.id,
+          descentCommentButton
+        )
+    );
+  }
 
   return card;
 }
