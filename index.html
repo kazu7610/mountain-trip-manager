@@ -1131,6 +1131,25 @@
   if (
     "serviceWorker" in navigator
   ) {
+    let serviceWorkerRefreshing =
+  false;
+
+navigator.serviceWorker
+  .addEventListener(
+    "controllerchange",
+    () => {
+      if (
+        serviceWorkerRefreshing
+      ) {
+        return;
+      }
+
+      serviceWorkerRefreshing =
+        true;
+
+      window.location.reload();
+    }
+  );
     window.addEventListener(
       "load",
       () => {
