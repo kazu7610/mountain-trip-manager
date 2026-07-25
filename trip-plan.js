@@ -46,13 +46,13 @@ function getDetailedPlanTripId() {
 
 function setupPlanButtons() {
   const saveButton =
-    document.querySelector(
-      ".secondary-button"
+    document.getElementById(
+      "save-plan-button"
     );
 
   const pdfButton =
-    document.querySelector(
-      ".primary-button"
+    document.getElementById(
+      "create-pdf-button"
     );
 
   if (saveButton) {
@@ -68,13 +68,42 @@ function setupPlanButtons() {
   if (pdfButton) {
     pdfButton.addEventListener(
       "click",
-      () => {
-        alert(
-          "PDF作成機能は、このあと作成します。"
-        );
-      }
+      () =>
+        openDetailedPlanPdfPreview(
+          pdfButton
+        )
     );
   }
+}
+
+/* =========================================
+   PDFプレビュー画面を開く
+========================================= */
+
+function openDetailedPlanPdfPreview(
+  pdfButton
+) {
+  const tripId =
+    getDetailedPlanTripId();
+
+  if (!tripId) {
+    alert(
+      "PDFを作成する山行を確認できません。"
+    );
+
+    return;
+  }
+
+  pdfButton.disabled =
+    true;
+
+  pdfButton.textContent =
+    "PDF準備中...";
+
+  location.href =
+    `trip-plan-pdf.html?id=${encodeURIComponent(
+      tripId
+    )}`;
 }
 
 /* =========================================

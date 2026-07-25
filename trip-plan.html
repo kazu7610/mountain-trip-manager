@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
 
@@ -12,8 +13,10 @@
     詳細計画書｜ポンコツ倶楽部
   </title>
 
-  <link rel="stylesheet" href="trip-plan.css?v=1">
-
+  <link
+    rel="stylesheet"
+    href="trip-plan.css?v=1"
+  >
 </head>
 
 <body>
@@ -93,43 +96,43 @@
 
     <section class="plan-section">
 
-  <h2 class="section-title">
-    緊急時連絡先
-  </h2>
+      <h2 class="section-title">
+        緊急時連絡先
+      </h2>
 
-  <p class="section-note">
-    山域・山名に合う警察署などを選択します。必要な場合は手入力でも追加できます。
-  </p>
+      <p class="section-note">
+        山域・山名に合う警察署などを選択します。必要な場合は手入力でも追加できます。
+      </p>
 
-  <div id="plan-emergency-contacts">
+      <div id="plan-emergency-contacts">
 
-    <p class="placeholder">
-      緊急時連絡先を読み込んでいます...
-    </p>
+        <p class="placeholder">
+          緊急時連絡先を読み込んでいます...
+        </p>
 
-  </div>
+      </div>
 
-</section>
+    </section>
 
     <section class="plan-section">
 
-  <h2 class="section-title">
-    食事計画
-  </h2>
+      <h2 class="section-title">
+        食事計画
+      </h2>
 
-  <p class="section-note">
-    日ごとに朝食・夕食・行動食・非常食を入力します。「無」の指定もできます。
-  </p>
+      <p class="section-note">
+        日ごとに朝食・夕食・行動食・非常食を入力します。「無」の指定もできます。
+      </p>
 
-  <div id="plan-meals">
+      <div id="plan-meals">
 
-    <p class="placeholder">
-      食事計画を読み込んでいます...
-    </p>
+        <p class="placeholder">
+          食事計画を読み込んでいます...
+        </p>
 
-  </div>
+      </div>
 
-</section>
+    </section>
 
     <section class="plan-section">
 
@@ -142,9 +145,11 @@
       </p>
 
       <div id="plan-equipment">
+
         <p class="placeholder">
           共同装備を読み込んでいます...
         </p>
+
       </div>
 
     </section>
@@ -152,6 +157,7 @@
     <div class="button-row">
 
       <button
+        id="save-plan-button"
         class="secondary-button"
         type="button"
       >
@@ -159,6 +165,7 @@
       </button>
 
       <button
+        id="create-pdf-button"
         class="primary-button"
         type="button"
       >
@@ -174,4 +181,5 @@
   <script src="trip-plan.js?v=18"></script>
 
 </body>
+
 </html>

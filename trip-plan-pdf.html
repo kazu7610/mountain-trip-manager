@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    詳細計画書PDF｜ポンコツ倶楽部
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="trip-plan-pdf.css?v=1"
+  >
+</head>
+
+<body>
+
+  <div class="pdf-toolbar">
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="history.back()"
+    >
+      ← 入力画面へ戻る
+    </button>
+
+    <button
+      id="print-pdf-button"
+      class="print-button"
+      type="button"
+    >
+      PDFとして保存
+    </button>
+
+  </div>
+
+  <main
+    id="pdf-page"
+    class="pdf-page"
+  >
+
+    <p class="pdf-loading">
+      計画書を読み込んでいます...
+    </p>
+
+  </main>
+
+  <script src="portal-auth.js?v=3"></script>
+  <script src="trip-plan-pdf.js?v=1"></script>
+
+</body>
+
+</html>

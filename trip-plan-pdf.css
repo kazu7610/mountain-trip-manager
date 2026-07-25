@@ -1,0 +1,466 @@
+/* =========================================
+   PDF画面 全体
+========================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  background: #e9eef2;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Kaku Gothic ProN",
+    "Yu Gothic",
+    Meiryo,
+    sans-serif;
+
+  color: #000;
+}
+
+/* =========================================
+   上部操作ボタン
+========================================= */
+
+.pdf-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 12px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.96
+    );
+
+  border-bottom:
+    1px solid
+    #cbd5dc;
+}
+
+.back-button,
+.print-button {
+  min-width: 140px;
+
+  padding:
+    10px
+    16px;
+
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+.back-button {
+  border:
+    1px solid
+    #6aaed6;
+
+  color: #0b5f99;
+  background: #fff;
+}
+
+.print-button {
+  border: none;
+
+  color: #fff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #0f73ad,
+      #2ba9d7
+    );
+}
+
+/* =========================================
+   A4縦 PDFページ
+========================================= */
+
+.pdf-page {
+  width: 210mm;
+  height: 297mm;
+
+  margin:
+    18px
+    auto;
+
+  padding: 8mm;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  box-shadow:
+    0 4px 20px
+    rgba(
+      0,
+      0,
+      0,
+      0.18
+    );
+}
+
+/* =========================================
+   読み込み中表示
+========================================= */
+
+.pdf-loading {
+  margin-top: 30mm;
+
+  text-align: center;
+
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* =========================================
+   書類タイトル
+========================================= */
+
+.pdf-document-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 5mm;
+
+  border-bottom:
+    2px solid
+    #000;
+}
+
+.pdf-document-title {
+  margin:
+    0
+    0
+    2mm;
+
+  font-size: 22px;
+}
+
+.pdf-document-subtitle {
+  margin:
+    0
+    0
+    2mm;
+
+  font-size: 10px;
+}
+
+/* =========================================
+   各項目
+========================================= */
+
+.pdf-section {
+  margin-bottom: 4mm;
+}
+
+.pdf-section-title {
+  margin:
+    0
+    0
+    2mm;
+
+  padding:
+    1.5mm
+    2mm;
+
+  border-left:
+    4px solid
+    #000;
+
+  font-size: 13px;
+}
+
+/* =========================================
+   山行基本情報
+   3列 × 2行
+========================================= */
+
+.pdf-basic-grid {
+  display: grid;
+
+  grid-template-columns:
+    20mm
+    minmax(0, 1fr)
+    20mm
+    minmax(0, 1fr)
+    20mm
+    minmax(0, 1fr);
+
+  border-top:
+    1px solid
+    #000;
+
+  border-left:
+    1px solid
+    #000;
+}
+
+.pdf-basic-label,
+.pdf-basic-value {
+  min-height: 9mm;
+
+  padding:
+    2mm
+    2mm;
+
+  border-right:
+    1px solid
+    #000;
+
+  border-bottom:
+    1px solid
+    #000;
+
+  font-size: 9px;
+
+  display: flex;
+  align-items: center;
+}
+
+.pdf-basic-label {
+  justify-content: center;
+
+  font-weight: bold;
+
+  background: #f3f3f3;
+}
+
+.pdf-basic-value {
+  justify-content: flex-start;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   下部2列
+========================================= */
+
+.pdf-bottom-grid {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  gap: 3mm;
+}
+
+/* =========================================
+   仮表示
+========================================= */
+
+#pdf-members,
+#pdf-actions,
+#pdf-emergency-contacts,
+#pdf-meals,
+#pdf-equipment {
+  min-height: 10mm;
+
+  padding: 2mm;
+
+  font-size: 10px;
+}
+
+/* =========================================
+   印刷・PDF保存
+========================================= */
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+
+    background: #fff;
+  }
+
+  .pdf-toolbar {
+    display: none;
+  }
+
+  .pdf-page {
+    width: 210mm;
+    height: 297mm;
+
+    margin: 0;
+    padding: 8mm;
+
+    box-shadow: none;
+
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+}
+
+/* =========================================
+   PDF 参加者一覧
+========================================= */
+
+.pdf-member-table {
+  display: grid;
+
+  width: 100%;
+
+  grid-template-columns:
+    10mm
+    24mm
+    8mm
+    8mm
+    11mm
+    minmax(30mm, 1.35fr)
+    minmax(21mm, 0.9fr)
+    minmax(25mm, 1fr)
+    minmax(21mm, 0.9fr)
+    minmax(14mm, 0.7fr);
+
+  border-top:
+    1px solid
+    #000;
+
+  border-left:
+    1px solid
+    #000;
+}
+
+.pdf-member-header,
+.pdf-member-cell,
+.pdf-member-role {
+  min-width: 0;
+  min-height: 9mm;
+
+  border-right:
+    1px solid
+    #000;
+
+  border-bottom:
+    1px solid
+    #000;
+
+  font-size: 7px;
+}
+
+.pdf-member-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1mm;
+
+  text-align: center;
+
+  font-weight: bold;
+
+  background: #f3f3f3;
+}
+
+.pdf-member-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    1mm
+    1.2mm;
+
+  text-align: center;
+
+  overflow-wrap: anywhere;
+}
+
+.pdf-member-name {
+  font-size: 7.5px;
+  font-weight: bold;
+}
+
+.pdf-member-address {
+  justify-content: flex-start;
+
+  text-align: left;
+
+  line-height: 1.25;
+}
+
+/* 血液型は改行しない */
+.pdf-member-header:nth-child(5),
+.pdf-member-cell:nth-child(10n + 5) {
+  white-space: nowrap;
+}
+
+/* 担当だけ上下2段 */
+.pdf-member-role {
+  display: grid;
+
+  grid-template-rows:
+    1fr
+    1fr;
+}
+
+.pdf-member-role-top,
+.pdf-member-role-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.5mm;
+
+  text-align: center;
+
+  font-size: 7px;
+  font-weight: bold;
+}
+
+.pdf-member-role-top {
+  border-bottom:
+    1px solid
+    #000;
+}
+
+/* =========================================
+   スマホ表示
+========================================= */
+
+@media (
+  max-width: 700px
+) {
+  body {
+    overflow-x: auto;
+  }
+
+  .pdf-toolbar {
+    justify-content: flex-start;
+
+    min-width: 210mm;
+  }
+
+  .pdf-page {
+    margin:
+      12px
+      8px;
+  }
+}
