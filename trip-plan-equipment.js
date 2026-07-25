@@ -478,16 +478,36 @@ function renderSharedEquipment() {
 ========================================= */
 
 function getDetailedPlanMemberNames() {
+  const memberNames =
+    Array.from(
+      document.querySelectorAll(
+        ".plan-member-name"
+      )
+    )
+      .map(
+        (element) =>
+          element.textContent.trim()
+      )
+      .filter(Boolean);
+
+  const guestNames =
+    Array.from(
+      document.querySelectorAll(
+        ".guest-name-input"
+      )
+    )
+      .map(
+        (input) =>
+          input.value.trim()
+      )
+      .filter(Boolean);
+
   return Array.from(
-    document.querySelectorAll(
-      ".plan-member-name"
-    )
-  )
-    .map(
-      (element) =>
-        element.textContent.trim()
-    )
-    .filter(Boolean);
+    new Set([
+      ...memberNames,
+      ...guestNames
+    ])
+  );
 }
 
 /* =========================================

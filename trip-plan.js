@@ -225,6 +225,14 @@ async function loadDetailedPlanTrip() {
       trip.id
     );
 
+    await loadDetailedPlanGuestMembers(
+  trip.id
+);
+
+    await loadClubEmergencyContact(
+  trip
+);
+
     await loadDetailedPlanActions(
       trip
     );
@@ -251,6 +259,689 @@ async function loadDetailedPlanTrip() {
     `;
   }
 }
+
+/* =========================================
+   会の緊急連絡先を読み込む
+========================================= */
+
+async function loadClubEmergencyContact(
+  trip
+) {
+  const contactElement =
+    document.getElementById(
+      "plan-club-emergency-contact"
+    );
+
+  if (!contactElement) {
+    console.error(
+      "会の緊急連絡先の表示場所が見つかりません。"
+    );
+
+    return;
+  }
+
+  contactElement.innerHTML = `
+    <p class="placeholder">
+      会員情報を読み込んでいます...
+    </p>
+  `;
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/members" +
+        "?select=id,name,mobile_phone" +
+        "&active=eq.true" +
+        "&order=name.asc"
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "会員情報の取得に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    const members =
+      await response.json();
+
+    const memberOptions = [
+      `
+        <option value="">
+          会員を選択してください
+        </option>
+      `,
+
+      ...members.map(
+        (member) => `
+          <option
+            value="${escapeHtml(
+              member.id
+            )}"
+            data-name="${escapeHtml(
+              member.name || ""
+            )}"
+            data-phone="${escapeHtml(
+              member.mobile_phone || ""
+            )}"
+            ${
+              Number(
+                trip.club_emergency_member_id
+              ) ===
+              Number(member.id)
+                ? "selected"
+                : ""
+            }
+          >
+            ${escapeHtml(
+              member.name || "氏名未登録"
+            )}
+          </option>
+        `
+      )
+    ].join("");
+
+    contactElement.innerHTML = `
+      <div class="plan-member-detail">
+
+        <div class="plan-member-label">
+          緊急時連絡先
+        </div>
+
+        <div class="plan-member-value">
+
+          <select
+            id="club-emergency-member-select"
+            class="emergency-search-input"
+          >
+            ${memberOptions}
+          </select>
+
+        </div>
+
+      </div>
+
+      <div class="plan-member-detail">
+
+        <div class="plan-member-label">
+          電話番号
+        </div>
+
+        <div class="plan-member-value">
+
+          <input
+            id="club-emergency-phone"
+            class="emergency-search-input"
+            type="text"
+            readonly
+            value="${escapeHtml(
+              trip.club_emergency_phone || ""
+            )}"
+            placeholder="会員を選択すると表示されます"
+          >
+
+        </div>
+
+      </div>
+    `;
+
+    const memberSelect =
+      document.getElementById(
+        "club-emergency-member-select"
+      );
+
+    const phoneInput =
+      document.getElementById(
+        "club-emergency-phone"
+      );
+
+    if (
+      memberSelect &&
+      phoneInput
+    ) {
+      memberSelect.addEventListener(
+        "change",
+        () => {
+          const selectedOption =
+            memberSelect.options[
+              memberSelect.selectedIndex
+            ];
+
+          phoneInput.value =
+            selectedOption?.dataset.phone ||
+            "";
+        }
+      );
+
+      if (
+        memberSelect.value &&
+        !phoneInput.value
+      ) {
+        const selectedOption =
+          memberSelect.options[
+            memberSelect.selectedIndex
+          ];
+
+        phoneInput.value =
+          selectedOption?.dataset.phone ||
+          "";
+      }
+    }
+
+  } catch (error) {
+    console.error(error);
+
+    contactElement.innerHTML = `
+      <p class="placeholder">
+        会員情報を読み込めませんでした。
+      </p>
+    `;
+  }
+}
+
+/* =========================================
+   会員外参加者を読み込む
+========================================= */
+
+async function loadDetailedPlanGuestMembers(
+  tripId
+) {
+  const guestElement =
+    document.getElementById(
+      "plan-guest-members"
+    );
+
+  const addButton =
+    document.getElementById(
+      "add-guest-member-button"
+    );
+
+  if (!guestElement) {
+    return;
+  }
+
+  guestElement.innerHTML = `
+    <p class="placeholder">
+      会員外参加者を読み込んでいます...
+    </p>
+  `;
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_guest_members" +
+        "?select=*" +
+        `&trip_id=eq.${encodeURIComponent(
+          tripId
+        )}` +
+        "&order=guest_order.asc,id.asc"
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "会員外参加者の取得に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    const rows =
+      await response.json();
+
+    guestElement.innerHTML =
+      rows
+        .map(
+          (row, index) =>
+            createGuestMemberHtml(
+              row,
+              index
+            )
+        )
+        .join("");
+
+    if (rows.length === 0) {
+      guestElement.innerHTML = `
+        <p class="placeholder">
+          会員外参加者は登録されていません。
+        </p>
+      `;
+    }
+
+    if (addButton) {
+      addButton.onclick =
+        () => {
+          const placeholder =
+            guestElement.querySelector(
+              ".placeholder"
+            );
+
+          placeholder?.remove();
+
+          const index =
+            guestElement.querySelectorAll(
+              ".guest-member-card"
+            ).length;
+
+          guestElement.insertAdjacentHTML(
+            "beforeend",
+            createGuestMemberHtml(
+              {},
+              index
+            )
+          );
+
+          setupGuestMemberRemoveButtons();
+          setupGuestBirthDateEvents();
+        };
+    }
+
+    setupGuestMemberRemoveButtons();
+    setupGuestBirthDateEvents();
+
+  } catch (error) {
+    console.error(error);
+
+    guestElement.innerHTML = `
+      <p class="placeholder">
+        会員外参加者を読み込めませんでした。
+      </p>
+    `;
+  }
+}
+
+/* =========================================
+   会員外参加者の年齢自動計算
+========================================= */
+
+function setupGuestBirthDateEvents() {
+  document
+    .querySelectorAll(
+      ".guest-member-card"
+    )
+    .forEach(
+      (card) => {
+        const birthDateInput =
+          card.querySelector(
+            ".guest-birth-date-input"
+          );
+
+        const ageInput =
+          card.querySelector(
+            ".guest-age-input"
+          );
+
+        if (
+          !birthDateInput ||
+          !ageInput
+        ) {
+          return;
+        }
+
+        const updateAge =
+          () => {
+            const age =
+              calculateAge(
+                birthDateInput.value
+              );
+
+            ageInput.value =
+              age === null
+                ? ""
+                : age;
+          };
+
+        birthDateInput.onchange =
+          updateAge;
+
+        birthDateInput.oninput =
+          updateAge;
+
+        updateAge();
+      }
+    );
+}
+
+/* =========================================
+   会員外参加者1名分
+========================================= */
+
+function createGuestMemberHtml(
+  guest,
+  index
+) {
+  const roles =
+    Array.isArray(
+      guest.roles
+    )
+      ? guest.roles
+      : [];
+
+  return `
+    <article
+      class="guest-member-card"
+      data-guest-id="${escapeHtml(
+        guest.id || ""
+      )}"
+    >
+
+      <div class="plan-member-heading">
+
+        <strong>
+          会員外参加者 ${index + 1}
+        </strong>
+
+        <button
+          class="emergency-remove-button guest-member-remove-button"
+          type="button"
+        >
+          削除
+        </button>
+
+      </div>
+
+      <div class="plan-member-detail">
+
+        <div class="plan-member-label">
+          氏名
+        </div>
+
+        <input
+          class="emergency-search-input guest-name-input"
+          type="text"
+          value="${escapeHtml(
+            guest.name || ""
+          )}"
+        >
+
+      </div>
+
+      <div class="plan-member-detail">
+
+        <div class="plan-member-label">
+          担当
+        </div>
+
+        <div class="plan-role-options">
+
+          ${createGuestRoleOptionHtml(
+            "CL",
+            roles
+          )}
+
+          ${createGuestRoleOptionHtml(
+            "SL",
+            roles
+          )}
+
+          ${createGuestRoleOptionHtml(
+            "車出",
+            roles
+          )}
+
+          ${createGuestRoleOptionHtml(
+            "食担",
+            roles
+          )}
+
+        </div>
+
+      </div>
+
+      ${createGuestInputRow(
+  "生年月日",
+  "date",
+  "guest-birth-date-input",
+  guest.birth_date || ""
+)}
+
+<div class="plan-member-detail">
+
+  <div class="plan-member-label">
+    年齢
+  </div>
+
+  <input
+    class="emergency-search-input guest-age-input"
+    type="text"
+    readonly
+    value="${escapeHtml(
+      guest.birth_date
+        ? calculateAge(
+            guest.birth_date
+          ) ?? ""
+        : ""
+    )}"
+  >
+
+</div>
+
+      ${createGuestSelectRow(
+  "性別",
+  "guest-gender-input",
+  [
+    "",
+    "男性",
+    "女性"
+  ],
+  guest.gender || ""
+)}
+
+${createGuestSelectRow(
+  "血液型",
+  "guest-blood-type-input",
+  [
+    "",
+    "A型",
+    "B型",
+    "O型",
+    "AB型",
+    "不明"
+  ],
+  guest.blood_type || ""
+)}
+
+      ${createGuestInputRow(
+        "住所",
+        "text",
+        "guest-address-input",
+        guest.address || ""
+      )}
+
+      ${createGuestInputRow(
+        "携帯番号",
+        "text",
+        "guest-mobile-phone-input",
+        guest.mobile_phone || ""
+      )}
+
+      ${createGuestInputRow(
+        "緊急連絡先氏名",
+        "text",
+        "guest-emergency-name-input",
+        guest.emergency_name || ""
+      )}
+
+      ${createGuestInputRow(
+        "緊急電話",
+        "text",
+        "guest-emergency-phone-input",
+        guest.emergency_phone || ""
+      )}
+
+      ${createGuestInputRow(
+        "保険",
+        "text",
+        "guest-insurance-input",
+        guest.insurance || ""
+      )}
+
+    </article>
+  `;
+}
+
+/* =========================================
+   会員外参加者の入力欄
+========================================= */
+
+function createGuestInputRow(
+  label,
+  type,
+  className,
+  value
+) {
+  return `
+    <div class="plan-member-detail">
+
+      <div class="plan-member-label">
+        ${escapeHtml(label)}
+      </div>
+
+      <input
+        class="emergency-search-input ${escapeHtml(
+          className
+        )}"
+        type="${escapeHtml(type)}"
+        value="${escapeHtml(value)}"
+      >
+
+    </div>
+  `;
+}
+
+/* =========================================
+   会員外参加者のプルダウン
+========================================= */
+
+function createGuestSelectRow(
+  label,
+  className,
+  options,
+  selectedValue
+) {
+  const optionHtml =
+    options
+      .map(
+        (option) => {
+          const optionLabel =
+            option === ""
+              ? "選択してください"
+              : option;
+
+          const selected =
+            option === selectedValue
+              ? "selected"
+              : "";
+
+          return `
+            <option
+              value="${escapeHtml(option)}"
+              ${selected}
+            >
+              ${escapeHtml(optionLabel)}
+            </option>
+          `;
+        }
+      )
+      .join("");
+
+  return `
+    <div class="plan-member-detail">
+
+      <div class="plan-member-label">
+        ${escapeHtml(label)}
+      </div>
+
+      <select
+        class="emergency-search-input ${escapeHtml(
+          className
+        )}"
+      >
+        ${optionHtml}
+      </select>
+
+    </div>
+  `;
+}
+
+/* =========================================
+   会員外参加者の担当
+========================================= */
+
+function createGuestRoleOptionHtml(
+  roleName,
+  selectedRoles
+) {
+  const checked =
+    selectedRoles.includes(
+      roleName
+    )
+      ? "checked"
+      : "";
+
+  return `
+    <label class="plan-role-option">
+
+      <input
+        type="checkbox"
+        class="guest-role-checkbox"
+        value="${escapeHtml(
+          roleName
+        )}"
+        ${checked}
+      >
+
+      ${escapeHtml(roleName)}
+
+    </label>
+  `;
+}
+
+/* =========================================
+   会員外参加者の削除ボタン
+========================================= */
+
+function setupGuestMemberRemoveButtons() {
+  document
+    .querySelectorAll(
+      ".guest-member-remove-button"
+    )
+    .forEach(
+      (button) => {
+        button.onclick =
+          () => {
+            button
+              .closest(
+                ".guest-member-card"
+              )
+              ?.remove();
+
+            const guestElement =
+              document.getElementById(
+                "plan-guest-members"
+              );
+
+            if (
+              guestElement &&
+              guestElement.querySelectorAll(
+                ".guest-member-card"
+              ).length === 0
+            ) {
+              guestElement.innerHTML = `
+                <p class="placeholder">
+                  会員外参加者は登録されていません。
+                </p>
+              `;
+            }
+          };
+      }
+    );
+}
+
 
 /* =========================================
    参加者を読み込む
@@ -701,17 +1392,37 @@ async function loadDetailedPlanMeals(
     const savedRows =
       await response.json();
 
-    const members =
-      Array.from(
-        document.querySelectorAll(
-          ".plan-member-name"
-        )
-      )
-        .map(
-          (element) =>
-            element.textContent.trim()
-        )
-        .filter(Boolean);
+    const memberNames =
+  Array.from(
+    document.querySelectorAll(
+      ".plan-member-name"
+    )
+  )
+    .map(
+      (element) =>
+        element.textContent.trim()
+    )
+    .filter(Boolean);
+
+const guestNames =
+  Array.from(
+    document.querySelectorAll(
+      ".guest-name-input"
+    )
+  )
+    .map(
+      (input) =>
+        input.value.trim()
+    )
+    .filter(Boolean);
+
+const members =
+  Array.from(
+    new Set([
+      ...memberNames,
+      ...guestNames
+    ])
+  );
 
     const participantCount =
       members.length +
@@ -3418,6 +4129,10 @@ async function saveDetailedPlan(
       tripId
     );
 
+    await saveDetailedPlanGuestMembers(
+  tripId
+);
+
     await saveDetailedPlanActions(
       tripId
     );
@@ -3425,6 +4140,10 @@ async function saveDetailedPlan(
     await saveDetailedPlanEmergencyContacts(
       tripId
     );
+
+    await saveClubEmergencyContact(
+  tripId
+);
 
     await saveDetailedPlanMeals(
       tripId
@@ -3444,6 +4163,10 @@ async function saveDetailedPlan(
       await loadDetailedPlanMembers(
         tripId
       );
+
+      await loadDetailedPlanGuestMembers(
+  tripId
+);
 
       await loadDetailedPlanEmergencyContacts(
       currentDetailedTrip
@@ -3475,6 +4198,309 @@ async function saveDetailedPlan(
 
     saveButton.textContent =
       "一時保存";
+  }
+}
+
+/* =========================================
+   会の緊急連絡先を保存
+========================================= */
+
+async function saveClubEmergencyContact(
+  tripId
+) {
+  const memberSelect =
+    document.getElementById(
+      "club-emergency-member-select"
+    );
+
+  const phoneInput =
+    document.getElementById(
+      "club-emergency-phone"
+    );
+
+  if (!memberSelect) {
+    return;
+  }
+
+  const selectedOption =
+    memberSelect.options[
+      memberSelect.selectedIndex
+    ];
+
+  const memberId =
+    memberSelect.value
+      ? Number(memberSelect.value)
+      : null;
+
+  const memberName =
+    selectedOption?.dataset.name ||
+    "";
+
+  const phoneNumber =
+    phoneInput?.value.trim() ||
+    "";
+
+  const response =
+    await portalFetch(
+      "/rest/v1/trips" +
+      `?id=eq.${encodeURIComponent(
+        tripId
+      )}`,
+      {
+        method:
+          "PATCH",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          Prefer:
+            "return=representation"
+        },
+
+        body:
+          JSON.stringify({
+            club_emergency_member_id:
+              memberId,
+
+            club_emergency_name:
+              memberName,
+
+            club_emergency_phone:
+              phoneNumber
+          })
+      }
+    );
+
+  if (!response.ok) {
+    const errorText =
+      await response.text();
+
+    throw new Error(
+      "会の緊急連絡先の保存に失敗しました。" +
+      ` ${response.status} ${errorText}`
+    );
+  }
+
+  const updatedTrips =
+    await response.json();
+
+  if (
+    currentDetailedTrip &&
+    updatedTrips[0]
+  ) {
+    currentDetailedTrip = {
+      ...currentDetailedTrip,
+      ...updatedTrips[0]
+    };
+  }
+}
+
+/* =========================================
+   会員外参加者を保存
+========================================= */
+
+async function saveDetailedPlanGuestMembers(
+  tripId
+) {
+  const guestCards =
+    Array.from(
+      document.querySelectorAll(
+        ".guest-member-card"
+      )
+    );
+
+  const saveRows = [];
+
+  guestCards.forEach(
+    (card, index) => {
+      const name =
+        card
+          .querySelector(
+            ".guest-name-input"
+          )
+          ?.value
+          .trim() ||
+        "";
+
+      if (!name) {
+        return;
+      }
+
+      const roles =
+        Array.from(
+          card.querySelectorAll(
+            ".guest-role-checkbox:checked"
+          )
+        ).map(
+          (checkbox) =>
+            checkbox.value
+        );
+
+      const birthDate =
+        card
+          .querySelector(
+            ".guest-birth-date-input"
+          )
+          ?.value ||
+        null;
+
+      const ageValue =
+        card
+          .querySelector(
+            ".guest-age-input"
+          )
+          ?.value ||
+        "";
+
+      const age =
+        ageValue === ""
+          ? null
+          : Number(ageValue);
+
+      saveRows.push({
+        trip_id:
+          Number(tripId),
+
+        name:
+          name,
+
+        birth_date:
+          birthDate,
+
+        age:
+          Number.isNaN(age)
+            ? null
+            : age,
+
+        gender:
+          card
+            .querySelector(
+              ".guest-gender-input"
+            )
+            ?.value
+            .trim() ||
+          "",
+
+        blood_type:
+          card
+            .querySelector(
+              ".guest-blood-type-input"
+            )
+            ?.value
+            .trim() ||
+          "",
+
+        address:
+          card
+            .querySelector(
+              ".guest-address-input"
+            )
+            ?.value
+            .trim() ||
+          "",
+
+        mobile_phone:
+          card
+            .querySelector(
+              ".guest-mobile-phone-input"
+            )
+            ?.value
+            .trim() ||
+          "",
+
+        emergency_name:
+          card
+            .querySelector(
+              ".guest-emergency-name-input"
+            )
+            ?.value
+            .trim() ||
+          "",
+
+        emergency_phone:
+          card
+            .querySelector(
+              ".guest-emergency-phone-input"
+            )
+            ?.value
+            .trim() ||
+          "",
+
+        insurance:
+          card
+            .querySelector(
+              ".guest-insurance-input"
+            )
+            ?.value
+            .trim() ||
+          "",
+
+        roles:
+          roles,
+
+        guest_order:
+          index
+      });
+    }
+  );
+
+  const deleteResponse =
+    await portalFetch(
+      "/rest/v1/trip_guest_members" +
+      `?trip_id=eq.${encodeURIComponent(
+        tripId
+      )}`,
+      {
+        method:
+          "DELETE"
+      }
+    );
+
+  if (!deleteResponse.ok) {
+    const errorText =
+      await deleteResponse.text();
+
+    throw new Error(
+      "会員外参加者の削除に失敗しました。" +
+      ` ${deleteResponse.status} ${errorText}`
+    );
+  }
+
+  if (saveRows.length === 0) {
+    return;
+  }
+
+  const insertResponse =
+    await portalFetch(
+      "/rest/v1/trip_guest_members",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          Prefer:
+            "return=representation"
+        },
+
+        body:
+          JSON.stringify(
+            saveRows
+          )
+      }
+    );
+
+  if (!insertResponse.ok) {
+    const errorText =
+      await insertResponse.text();
+
+    throw new Error(
+      "会員外参加者の保存に失敗しました。" +
+      ` ${insertResponse.status} ${errorText}`
+    );
   }
 }
 

@@ -191,6 +191,30 @@ body {
 }
 
 /* =========================================
+   上部2列
+========================================= */
+
+.pdf-top-grid {
+  display: grid;
+
+  grid-template-columns:
+    1.25fr
+    0.75fr;
+
+  gap: 3mm;
+}
+
+.pdf-top-grid .pdf-section {
+  min-width: 0;
+}
+
+.pdf-basic-grid-half {
+  grid-template-columns:
+    14mm
+    minmax(0, 1fr);
+}
+
+/* =========================================
    山行基本情報
    3列 × 2行
 ========================================= */
@@ -362,7 +386,7 @@ body {
     1px solid
     #000;
 
-  font-size: 7px;
+  font-size: 9px;
 }
 
 .pdf-member-header {
@@ -394,7 +418,7 @@ body {
 }
 
 .pdf-member-name {
-  font-size: 7.5px;
+  font-size: 9px;
   font-weight: bold;
 }
 
@@ -431,7 +455,7 @@ body {
 
   text-align: center;
 
-  font-size: 7px;
+  font-size: 9px;
   font-weight: bold;
 }
 
@@ -439,6 +463,508 @@ body {
   border-bottom:
     1px solid
     #000;
+}
+
+/* =========================================
+   PDF 行動予定
+========================================= */
+
+.pdf-action-day {
+  display: grid;
+
+  grid-template-columns:
+    24mm
+    1fr;
+
+  min-height: 8mm;
+
+  border:
+    1px solid
+    #000;
+
+  border-bottom: none;
+}
+
+.pdf-action-day:last-child {
+  border-bottom:
+    1px solid
+    #000;
+}
+
+.pdf-action-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    1.5mm
+    1mm;
+
+  border-right:
+    1px solid
+    #000;
+
+  font-size: 9px;
+  font-weight: bold;
+
+  text-align: center;
+
+  background: #f3f3f3;
+}
+
+.pdf-action-content {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+
+  gap:
+    1mm
+    3mm;
+
+  min-width: 0;
+
+  padding:
+    1.5mm
+    2mm;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.pdf-action-item {
+  display: inline-flex;
+  align-items: baseline;
+
+  gap: 1mm;
+
+  white-space: nowrap;
+}
+
+.pdf-action-item-time {
+  font-weight: bold;
+}
+
+.pdf-action-item-text {
+  font-weight: normal;
+}
+
+/* =========================================
+   PDF 緊急時連絡先
+========================================= */
+
+.pdf-emergency-table {
+  display: grid;
+
+  grid-template-columns:
+    14mm
+    1fr
+    30mm
+    1.2fr;
+
+  border-top:
+    1px solid
+    #000;
+
+  border-left:
+    1px solid
+    #000;
+}
+
+.pdf-emergency-header,
+.pdf-emergency-cell {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+
+  padding:
+    1.2mm
+    1.3mm;
+
+  border-right:
+    1px solid
+    #000;
+
+  border-bottom:
+    1px solid
+    #000;
+
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.pdf-emergency-header {
+  justify-content: center;
+
+  font-weight: bold;
+  text-align: center;
+
+  background: #f3f3f3;
+}
+
+.pdf-emergency-cell {
+  justify-content: center;
+  text-align: center;
+
+  overflow-wrap: anywhere;
+}
+
+.pdf-emergency-note {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* =========================================
+   PDF 食事計画
+========================================= */
+
+.pdf-meal-table {
+  display: grid;
+
+  grid-template-columns:
+  16mm
+  1fr
+  24mm
+  12mm;
+
+  border-top:
+    1px solid
+    #000;
+
+  border-left:
+    1px solid
+    #000;
+}
+
+.pdf-meal-header,
+.pdf-meal-cell {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+
+  padding:
+    1.2mm
+    1mm;
+
+  border-right:
+    1px solid
+    #000;
+
+  border-bottom:
+    1px solid
+    #000;
+
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+.pdf-meal-header {
+  justify-content: center;
+
+  font-weight: bold;
+  text-align: center;
+
+  background: #f3f3f3;
+}
+
+.pdf-meal-cell {
+  justify-content: center;
+  text-align: center;
+
+  overflow-wrap: anywhere;
+}
+
+.pdf-meal-content {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+/* =========================================
+   PDF 共同装備
+========================================= */
+
+.pdf-equipment-split {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr;
+
+  gap: 3mm;
+}
+
+.pdf-equipment-group {
+  min-width: 0;
+}
+
+.pdf-equipment-group-title {
+  padding:
+    1.2mm
+    1mm;
+
+  border:
+    1px solid
+    #000;
+
+  border-bottom: none;
+
+  font-size: 8px;
+  font-weight: bold;
+
+  text-align: center;
+
+  background: #f3f3f3;
+}
+
+.pdf-equipment-table {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    10mm
+    22mm;
+
+  border-top:
+    1px solid
+    #000;
+
+  border-left:
+    1px solid
+    #000;
+}
+
+.pdf-equipment-header,
+.pdf-equipment-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+
+  padding:
+    1mm
+    0.8mm;
+
+  border-right:
+    1px solid
+    #000;
+
+  border-bottom:
+    1px solid
+    #000;
+
+  font-size: 8.5px;
+  line-height: 1.25;
+
+  text-align: center;
+
+  overflow-wrap: anywhere;
+}
+
+.pdf-equipment-header {
+  font-weight: bold;
+
+  background: #f3f3f3;
+}
+
+.pdf-equipment-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 10mm;
+
+  border:
+    1px solid
+    #000;
+
+  font-size: 7px;
+}
+
+/* =========================================
+   上部の基本情報・会の緊急連絡先
+========================================= */
+
+.pdf-basic-grid.pdf-basic-grid-half {
+  grid-template-columns:
+    12mm
+    minmax(0, 1fr)
+    12mm
+    minmax(0, 1fr)
+    12mm
+    minmax(0, 1fr);
+}
+
+.pdf-basic-grid.pdf-club-contact-grid {
+  grid-template-columns:
+    16mm
+    minmax(0, 1fr)
+    19mm
+    minmax(0, 1fr);
+}
+
+/* =========================================
+   上部レイアウト最終調整
+========================================= */
+
+.pdf-top-grid {
+  grid-template-columns:
+    1.18fr
+    0.82fr;
+
+  gap: 3mm;
+}
+
+/* 山行基本情報 */
+.pdf-basic-grid.pdf-basic-grid-half {
+  grid-template-columns:
+    14mm
+    minmax(20mm, 1fr)
+    14mm
+    minmax(20mm, 1fr)
+    15mm
+    minmax(25mm, 1.4fr);
+}
+
+/* 会の緊急連絡先 */
+.pdf-basic-grid.pdf-club-contact-grid {
+  grid-template-columns:
+    11mm
+    minmax(20mm, 1fr)
+    16mm
+    minmax(30mm, 1.25fr);
+}
+
+.pdf-basic-grid-half .pdf-basic-label,
+.pdf-club-contact-grid .pdf-basic-label,
+.pdf-basic-grid-half .pdf-basic-value,
+.pdf-club-contact-grid .pdf-basic-value {
+  white-space: nowrap;
+}
+
+/* =========================================
+   提出日・認証日
+========================================= */
+
+.pdf-basic-heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 3mm;
+}
+
+.pdf-basic-heading-row .pdf-section-title {
+  margin-bottom: 2mm;
+}
+
+.pdf-plan-dates {
+  margin-bottom: 2mm;
+
+  font-size: 9.5px;
+  line-height: 1.45;
+
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* =========================================
+   会の情報・緊急連絡先
+========================================= */
+
+.pdf-club-heading-row {
+  position: relative;
+
+  min-height: 18mm;
+}
+
+.pdf-club-heading-row .pdf-section-title {
+  position: relative;
+  top: 8mm;
+
+  margin-bottom: 0;
+}
+
+.pdf-club-information {
+  position: absolute;
+
+  top: 0;
+  left: 25mm;
+
+  font-size: 9px;
+  line-height: 1.35;
+
+  white-space: nowrap;
+}
+
+.pdf-club-information > div {
+  display: flex;
+  align-items: baseline;
+
+  gap: 0.1mm;
+}
+
+.pdf-club-information span {
+  display: inline-block;
+
+  min-width: 10mm;
+
+  font-weight: normal;
+}
+
+.pdf-club-information strong {
+  font-weight: normal;
+}
+
+.pdf-club-information .pdf-club-mobile-label {
+  min-width: auto;
+
+  margin-left: 3mm;
+}
+
+.pdf-club-contact-grid {
+  margin-top: 0;
+}
+
+.pdf-basic-grid.pdf-club-contact-grid {
+  width: calc(100% - 3mm);
+
+  grid-template-columns:
+    13mm
+    minmax(0, 0.9fr)
+    14mm
+    minmax(0, 1.4fr);
+}
+
+.pdf-club-contact-grid .pdf-basic-value {
+  min-width: 0;
+
+  padding-left: 2mm;
+  padding-right: 2mm;
+
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* =========================================
+   ヘッダー提出日・承認日
+========================================= */
+
+.pdf-header-dates {
+  margin:
+    0
+    0
+    2mm
+    auto;
+
+  font-size: 10px;
+  line-height: 1.3;
+
+  text-align: right;
+  white-space: nowrap;
 }
 
 /* =========================================

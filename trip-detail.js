@@ -343,6 +343,40 @@ function renderTripDetail(
       pendingRequest
     );
 
+    const canOpenDetailedPlanPdf =
+  hasDetailedPlan &&
+  [
+    "approved",
+    "descended",
+    "completed"
+  ].includes(
+    trip.status
+  );
+
+const detailedPlanUrl =
+  canOpenDetailedPlanPdf
+    ? (
+        "trip-plan-pdf.html?id=" +
+        encodeURIComponent(
+          trip.id
+        )
+      )
+    : (
+        "trip-plan.html?id=" +
+        encodeURIComponent(
+          trip.id
+        )
+      );
+
+const detailedPlanButtonText =
+  canOpenDetailedPlanPdf
+    ? "詳細計画書PDFを見る"
+    : (
+        hasDetailedPlan
+          ? "詳細計画書を開く"
+          : "詳細計画書を作成"
+      );
+
   let recruitingHtml = "";
 
   if (trip.is_recruiting === true) {
@@ -514,16 +548,12 @@ function renderTripDetail(
       </button>
 
       <button
-        class="plan-button"
-        type="button"
-        onclick="location.href='trip-plan.html?id=${trip.id}'"
-      >
-        ${
-          hasDetailedPlan
-            ? "詳細計画書を開く"
-            : "詳細計画書を作成"
-        }
-      </button>
+  class="plan-button"
+  type="button"
+  onclick="location.href='${detailedPlanUrl}'"
+>
+  ${detailedPlanButtonText}
+</button>
 
     </div>
   `;
