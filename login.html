@@ -349,12 +349,14 @@
             "./service-worker.js"
           )
           .then(
-            () => {
-              console.log(
-                "Service Workerを登録しました。"
-              );
-            }
-          )
+  (registration) => {
+    console.log(
+      "Service Workerを登録しました。"
+    );
+
+    registration.update();
+  }
+)
           .catch(
             (error) => {
               console.error(
