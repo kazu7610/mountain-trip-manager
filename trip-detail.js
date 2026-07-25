@@ -140,16 +140,23 @@ async function loadTripDetail() {
         tripId
       );
 
+      const hasDetailedPlan =
+  await checkDetailedPlanExists(
+    tripId
+  );
+
+
     renderTripDetail(
-      detailContainer,
-      trip,
-      members,
-      applications,
-      isParticipant,
-      isLeader,
-      isSubmitter,
-      pendingRequest
-    );
+  detailContainer,
+  trip,
+  members,
+  applications,
+  isParticipant,
+  isLeader,
+  isSubmitter,
+  pendingRequest,
+  hasDetailedPlan
+);
 
   } catch (error) {
     console.error(error);
@@ -270,6 +277,37 @@ async function loadPendingTripRequest(
 }
 
 /* =========================================
+   詳細計画書の保存有無を確認
+========================================= */
+
+async function checkDetailedPlanExists(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_plan_actions" +
+      "?select=id" +
+      `&trip_id=eq.${tripId}` +
+      "&limit=1"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "詳細計画書の確認に失敗しました。",
+      await response.text()
+    );
+
+    return false;
+  }
+
+  const rows =
+    await response.json();
+
+  return rows.length > 0;
+}
+
+
+/* =========================================
    詳細を表示
 ========================================= */
 
@@ -281,7 +319,8 @@ function renderTripDetail(
   isParticipant,
   isLeader,
   isSubmitter,
-  pendingRequest
+  pendingRequest,
+  hasDetailedPlan
 ) {
 
   const memberHtml =
@@ -477,9 +516,13 @@ function renderTripDetail(
       <button
         class="plan-button"
         type="button"
-        disabled
+        onclick="location.href='trip-plan.html?id=${trip.id}'"
       >
-        計画書なし
+        ${
+          hasDetailedPlan
+            ? "詳細計画書を開く"
+            : "詳細計画書を作成"
+        }
       </button>
 
     </div>
