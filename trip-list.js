@@ -99,6 +99,9 @@ async function loadTripList() {
     const trips =
       await response.json();
 
+      const detailedPlanTripIds =
+  await loadDetailedPlanTripIds();
+
     if (
       !Array.isArray(trips) ||
       trips.length === 0
@@ -119,6 +122,10 @@ async function loadTripList() {
     tripList.innerHTML = "";
 
     for (const trip of trips) {
+      trip.hasDetailedPlan =
+  detailedPlanTripIds.has(
+    Number(trip.id)
+  );
       const members =
         await loadTripMembers(
           trip.id
@@ -340,6 +347,10 @@ function createTripCard(
       </span>
 
     </div>
+
+    ${createDetailedPlanBadgeHtml(
+  trip
+)}
 
     <p class="trip-info">
       <strong>入山日：</strong>
@@ -694,6 +705,54 @@ function formatTime(
 
   return String(value)
     .slice(0, 5);
+}
+async function loadDetailedPlanTripIds() {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_plan_actions" +
+      "?select=trip_id"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "詳細計画書の有無を確認できませんでした。",
+      await response.text()
+    );
+
+    return new Set();
+  }
+
+  const rows =
+    await response.json();
+
+  return new Set(
+    rows.map(
+      (row) =>
+        Number(row.trip_id)
+    )
+  );
+}
+
+function createDetailedPlanBadgeHtml(
+  trip
+) {
+  if (
+    trip.hasDetailedPlan !== true
+  ) {
+    return "";
+  }
+
+  return `
+    <span
+      class="status-badge"
+      style="
+        color: #5d4b00;
+        background: #fff1b8;
+      "
+    >
+      📄 計画書あり
+    </span>
+  `;
 }
 
 /* =========================================

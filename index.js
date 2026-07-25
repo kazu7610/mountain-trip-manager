@@ -508,6 +508,9 @@ async function loadHomeTrips() {
     const loginMember =
       getPortalMember();
 
+      const detailedPlanTripIds =
+  await loadDetailedPlanTripIds();
+  
     /*
      * 本日の山行・下山・中止のお知らせを取得
      */
@@ -562,12 +565,17 @@ async function loadHomeTrips() {
         );
 
       const item = {
-        ...trip,
-        memberNames,
-        leaderName,
-        isParticipant,
-        comments
-      };
+  ...trip,
+  memberNames,
+  leaderName,
+  isParticipant,
+  comments,
+
+  hasDetailedPlan:
+    detailedPlanTripIds.has(
+      Number(trip.id)
+    )
+};
 
       /*
        * 中止済みはホーム上部へ表示
@@ -674,6 +682,12 @@ async function loadHomeTrips() {
     for (
       const trip of recruitingTrips
     ) {
+
+      trip.hasDetailedPlan =
+  detailedPlanTripIds.has(
+    Number(trip.id)
+  );
+
       const memberNames =
         await loadTripMemberNames(
           trip.id
@@ -846,6 +860,37 @@ async function loadHomeTrips() {
 }
 
 /* =========================================
+   詳細計画書がある山行IDを取得
+========================================= */
+
+async function loadDetailedPlanTripIds() {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_plan_actions" +
+      "?select=trip_id"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "詳細計画書の有無を確認できませんでした。",
+      await response.text()
+    );
+
+    return new Set();
+  }
+
+  const rows =
+    await response.json();
+
+  return new Set(
+    rows.map(
+      (row) =>
+        Number(row.trip_id)
+    )
+  );
+}
+
+/* =========================================
    山行参加者を読み込む
 ========================================= */
 
@@ -957,6 +1002,7 @@ async function submitTripApplication(
 ) {
   const loginMember =
     getPortalMember();
+
 
   if (!loginMember?.id) {
     alert(
@@ -1415,6 +1461,10 @@ function createTodayTripCard(
     </div>
 
     ${statusHtml}
+
+    ${createDetailedPlanBadgeHtml(
+  trip
+)}
 
     ${overdueHtml}
 
@@ -2049,6 +2099,10 @@ const commentsHtml =
 
     </div>
 
+    ${createDetailedPlanBadgeHtml(
+  trip
+)}
+
     <div class="status-row">
 
       <span class="status-badge ${statusClass}">
@@ -2075,6 +2129,10 @@ const commentsHtml =
       ${descentCommentButtonHtml}
 
     </div>
+
+    ${createDetailedPlanBadgeHtml(
+  trip
+)}
   `;
 
   const descentCommentButton =
@@ -2228,6 +2286,32 @@ function formatTime(
 
   return String(value)
     .slice(0, 5);
+}
+
+/* =========================================
+   詳細計画書あり表示
+========================================= */
+
+function createDetailedPlanBadgeHtml(
+  trip
+) {
+  if (
+    trip.hasDetailedPlan !== true
+  ) {
+    return "";
+  }
+
+  return `
+    <span
+      class="status-badge"
+      style="
+        color: #5d4b00;
+        background: #fff1b8;
+      "
+    >
+      📄 計画書あり
+    </span>
+  `;
 }
 
 /* =========================================
