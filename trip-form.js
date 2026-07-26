@@ -391,6 +391,10 @@ function fillTripForm(
     "route"
   ).value =
     trip.route || "";
+  document.getElementById(
+  "genre"
+).value =
+  trip.genre || "";
 
   document.getElementById(
     "outside-count"
@@ -767,6 +771,13 @@ async function saveDraftTrip(
       .value
       .trim() || null;
 
+  const genre =
+  document
+    .getElementById(
+      "genre"
+    )
+    .value || null;    
+
   const outsideMemberCount =
     Number(
       document
@@ -842,8 +853,12 @@ async function saveDraftTrip(
 
       route,
 
+      genre,
+
+    
       outside_member_count:
         outsideMemberCount,
+        
 
       is_recruiting:
         isRecruiting,
@@ -992,6 +1007,13 @@ async function submitTripForm(
       .value
       .trim();
 
+  const genre =
+  document
+    .getElementById(
+      "genre"
+    )
+    .value;    
+
   const outsideMemberCount =
     Number(
       document
@@ -1036,13 +1058,15 @@ async function submitTripForm(
     );
 
   if (
-    !entryDate ||
-    !descentDate ||
-    !descentTime ||
-    !mountainArea ||
-    !mountainName ||
-    !route
-  ) {
+  !entryDate ||
+  !descentDate ||
+  !descentTime ||
+  !mountainArea ||
+  !mountainName ||
+  !route ||
+  !genre
+) {
+
     alert(
       "必須項目をすべて入力してください。"
     );
@@ -1160,8 +1184,10 @@ async function submitTripForm(
 
       route,
 
-      outside_member_count:
-        outsideMemberCount,
+genre,
+
+outside_member_count:
+  outsideMemberCount,
 
       is_recruiting:
         isRecruiting,
