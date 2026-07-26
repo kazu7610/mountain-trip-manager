@@ -644,7 +644,7 @@ async function loadHomeTrips() {
         "?select=*" +
         "&status=eq.approved" +
         "&is_recruiting=eq.true" +
-        `&descent_date=gte.${today}` +
+        `&entry_date=gt.${today}` +
         "&order=entry_date.asc,descent_time.asc"
       );
 
