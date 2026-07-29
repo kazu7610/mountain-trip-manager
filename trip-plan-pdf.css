@@ -851,7 +851,7 @@ body {
 
 .pdf-basic-heading-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
 
   gap: 3mm;
@@ -862,12 +862,16 @@ body {
 }
 
 .pdf-plan-dates {
+  display: flex;
+  align-items: center;
+  gap: 6mm;
+
   margin-bottom: 2mm;
 
-  font-size: 9.5px;
-  line-height: 1.45;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1;
 
-  text-align: right;
   white-space: nowrap;
 }
 
@@ -989,4 +993,18 @@ body {
       12px
       8px;
   }
+}
+
+/* 電話番号・携帯番号を横並び */
+.pdf-header-club-phones {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5mm;
+
+  white-space: nowrap;
+}
+
+.pdf-header-club-phones .pdf-header-mobile-label {
+  width: auto;
+  margin-left: 3mm;
 }

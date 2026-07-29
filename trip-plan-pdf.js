@@ -162,32 +162,40 @@ function renderPdfPlan(
     山行計画書
   </h1>
 
-  <div class="pdf-header-dates">
+  <div class="pdf-header-club-information">
 
-    <div>
-      提出日　
-      ${trip.submitted_at
-        ? escapePdfHtml(
-            formatPdfDate(
-              String(
-                trip.submitted_at
-              ).slice(0, 10)
-            )
-          )
-        : "未設定"}
+    <div class="pdf-header-club-name">
+      ポンコツ倶楽部
     </div>
 
     <div>
-      承認日　
-      ${trip.approved_at
-        ? escapePdfHtml(
-            formatPdfDate(
-              String(
-                trip.approved_at
-              ).slice(0, 10)
-            )
-          )
-        : "未設定"}
+      <span>所属</span>
+      <strong>無所属</strong>
+    </div>
+
+    <div>
+      <span>住所</span>
+      <strong>
+        〒452-0946　愛知県清須市廻間3-5-3
+      </strong>
+    </div>
+
+   <div class="pdf-header-club-phones">
+
+  <span>電話</span>
+  <strong>052-401-7610</strong>
+
+  <span class="pdf-header-mobile-label">
+    携帯
+  </span>
+
+  <strong>090-9331-1080</strong>
+
+</div>
+
+    <div>
+      <span>代表者</span>
+      <strong>鈴木　和弘</strong>
     </div>
 
   </div>
@@ -204,7 +212,35 @@ function renderPdfPlan(
     山行基本情報
   </h2>
 
-  
+  <div class="pdf-plan-dates">
+
+    <span>
+      提出日
+      ${trip.submitted_at
+        ? escapePdfHtml(
+            formatPdfDate(
+              String(
+                trip.submitted_at
+              ).slice(0, 10)
+            )
+          )
+        : "未設定"}
+    </span>
+
+    <span>
+      受理日
+      ${trip.approved_at
+        ? escapePdfHtml(
+            formatPdfDate(
+              String(
+                trip.approved_at
+              ).slice(0, 10)
+            )
+          )
+        : "未設定"}
+    </span>
+
+  </div>
 
 </div>
 
@@ -252,50 +288,9 @@ function renderPdfPlan(
 
   <div class="pdf-section pdf-club-section">
 
-  <div class="pdf-club-heading-row">
-
-    <h2 class="pdf-section-title">
-      緊急連絡先
-    </h2>
-
-    <div class="pdf-club-information">
-
-      <div>
-        <span>所属</span>
-        <strong>無所属</strong>
-      </div>
-
-      <div>
-        <span>団体名</span>
-        <strong>ポンコツ倶楽部</strong>
-      </div>
-
-      <div>
-        <span>住所</span>
-        <strong>
-          〒452-0946　愛知県清須市廻間3-5-3
-        </strong>
-      </div>
-
-      <div>
-        <span>電話番号</span>
-        <strong>052-401-7610</strong>
-
-        <span class="pdf-club-mobile-label">
-          携帯
-        </span>
-
-        <strong>090-9331-1080</strong>
-      </div>
-
-      <div>
-        <span>代表者</span>
-        <strong>鈴木　和弘</strong>
-      </div>
-
-    </div>
-
-  </div>
+  <h2 class="pdf-section-title">
+  緊急連絡先
+</h2>
 
   <div class="pdf-basic-grid pdf-club-contact-grid">
 
