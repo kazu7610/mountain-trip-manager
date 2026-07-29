@@ -848,5 +848,42 @@
 <script src="push-notifications.js?v=4"></script>
 <script src="trip-form.js?v=34"></script>
 
+<script>
+  if ("serviceWorker" in navigator) {
+    let isRefreshing = false;
+
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      () => {
+        if (isRefreshing) {
+          return;
+        }
+
+        isRefreshing = true;
+        window.location.reload();
+      }
+    );
+
+    window.addEventListener(
+      "load",
+      async () => {
+        try {
+          const registration =
+            await navigator.serviceWorker.getRegistration();
+
+          if (registration) {
+            await registration.update();
+          }
+        } catch (error) {
+          console.error(
+            "Service Workerの更新確認に失敗しました。",
+            error
+          );
+        }
+      }
+    );
+  }
+</script>
+
 </body>
 </html>

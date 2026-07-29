@@ -4,7 +4,7 @@
 ========================================= */
 
 const CACHE_NAME =
-  "mountain-trip-manager-v13";
+  "mountain-trip-manager-v14";
 
 const APP_FILES = [
   "./",
