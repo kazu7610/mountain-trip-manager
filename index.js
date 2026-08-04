@@ -176,7 +176,12 @@ async function loadAdminChangeRequestNotice() {
     getPortalMember();
 
   if (
-    member?.role !== "admin"
+    ![
+  "super_admin",
+  "admin"
+].includes(
+  member?.role
+)
   ) {
     section.hidden = true;
 
@@ -1309,7 +1314,12 @@ function createTodayTripCard(
     getPortalMember();
 
   const isAdmin =
-    member?.role === "admin";
+  [
+    "super_admin",
+    "admin"
+  ].includes(
+    member?.role
+  );
 
   const isCancelled =
     trip.status === "cancelled";
@@ -1632,7 +1642,12 @@ async function submitTripComment(
 
     if (
   memberRows.length === 0 &&
-  member.role !== "admin"
+  ![
+  "super_admin",
+  "admin"
+].includes(
+  member.role
+)
 ) {
       alert(
         "この山行の参加者ではないため、状況を連絡できません。"
@@ -1886,7 +1901,12 @@ async function completeCancelledTrip(
     getPortalMember();
 
   if (
-    member?.role !== "admin"
+    ![
+  "super_admin",
+  "admin"
+].includes(
+  member?.role
+)
   ) {
     alert(
       "管理者だけが完了処理できます。"
