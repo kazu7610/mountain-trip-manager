@@ -110,6 +110,11 @@ async function loadTripDetail() {
         tripId
       );
 
+    const comments =
+      await loadTripComments(
+        tripId
+     );  
+
     const loginMember =
       getPortalMember();
 
@@ -151,6 +156,7 @@ async function loadTripDetail() {
   trip,
   members,
   applications,
+  comments,
   isParticipant,
   isLeader,
   isSubmitter,
@@ -245,6 +251,33 @@ async function loadTripApplications(
 }
 
 /* =========================================
+   山行コメントを読み込む
+========================================= */
+
+async function loadTripComments(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_comments" +
+      "?select=*" +
+      `&trip_id=eq.${tripId}` +
+      "&order=created_at.asc"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "山行コメントの取得に失敗しました。",
+      await response.text()
+    );
+
+    return [];
+  }
+
+  return await response.json();
+}
+
+/* =========================================
    申請中の変更・中止連絡を取得
 ========================================= */
 
@@ -316,6 +349,7 @@ function renderTripDetail(
   trip,
   members,
   applications,
+  comments,
   isParticipant,
   isLeader,
   isSubmitter,
@@ -376,6 +410,56 @@ const detailedPlanButtonText =
           ? "詳細計画書を開く"
           : "詳細計画書を作成"
       );
+  let commentsHtml = "";
+
+if (
+  Array.isArray(comments) &&
+  comments.length > 0
+) {
+  commentsHtml = `
+    <section class="detail-row">
+
+      <p class="detail-label">
+        コメント
+      </p>
+
+      <div class="trip-comment-list">
+
+        ${comments
+          .map(
+            (comment) => `
+              <div class="trip-comment-item">
+
+                <div class="trip-comment-name">
+                  ${escapeHtml(
+                    comment.member_name ||
+                    "氏名不明"
+                  )}
+                </div>
+
+                <div class="trip-comment-message">
+                  ${escapeHtml(
+                    comment.message ||
+                    ""
+                  )}
+                </div>
+
+                <div class="trip-comment-time">
+                  ${formatDateTime(
+                    comment.created_at
+                  )}
+                </div>
+
+              </div>
+            `
+          )
+          .join("")}
+
+      </div>
+
+    </section>
+  `;
+}
 
   let recruitingHtml = "";
 
@@ -528,6 +612,7 @@ const detailedPlanButtonText =
         </section>
 
         ${recruitingHtml}
+        ${commentsHtml}
 
       </div>
 
