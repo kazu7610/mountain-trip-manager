@@ -76,7 +76,12 @@ async function initializeHomeLogin() {
 
   if (adminButton) {
     adminButton.hidden =
-      member.role !== "admin";
+      ![
+  "super_admin",
+  "admin"
+].includes(
+  member.role
+);
   }
 
   if (

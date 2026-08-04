@@ -15,7 +15,12 @@ document.addEventListener(
 
     if (
       !member ||
-      member.role !== "admin"
+      ![
+  "super_admin",
+  "admin"
+].includes(
+  member.role
+)
     ) {
       alert(
         "この画面は管理者専用です。"
