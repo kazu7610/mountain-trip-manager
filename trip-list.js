@@ -302,11 +302,11 @@ function createTripCard(
       const member =
     getPortalMember();
 
-  const isAdmin =
-    member?.role === "admin";
+  const isSuperAdmin =
+  member?.role === "super_admin";
 
   const deleteButtonHtml =
-    isAdmin
+    isSuperAdmin
       ? `
         <button
           class="force-delete-button"
@@ -427,7 +427,7 @@ async function forceDeleteTrip(
 
   if (
     !member ||
-    member.role !== "admin"
+    member.role !== "super_admin"
   ) {
     alert(
       "この操作は管理者だけが実行できます。"
