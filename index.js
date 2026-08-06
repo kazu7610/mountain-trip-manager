@@ -9,8 +9,7 @@ document.addEventListener(
     if (!requirePortalLogin()) {
       return;
     }
-    alert("更新機能の最新版を読み込みました");
-    
+
     initializeHomeLogin();
     setupPullToRefresh();
     refreshHomeData();
