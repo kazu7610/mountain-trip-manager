@@ -470,13 +470,7 @@ async function loadRevisionTrips() {
   } catch (error) {
     console.error(error);
 
-    revisionSection.hidden = false;
-
-    revisionTripList.innerHTML = `
-      <div class="error-message">
-        修正依頼の山行届を読み込めませんでした。
-      </div>
-    `;
+    throw error;
   }
 }
 
