@@ -445,7 +445,7 @@ if (
                 </div>
 
                 <div class="trip-comment-time">
-                  ${formatDateTime(
+                  ${formatCommentDate(
                     comment.created_at
                   )}
                 </div>
@@ -1550,6 +1550,61 @@ function formatTime(
 
   return String(value)
     .slice(0, 5);
+}
+
+/* =========================================
+   コメント日時表示
+========================================= */
+
+function formatCommentDate(
+  value
+) {
+  if (!value) {
+    return "";
+  }
+
+  const date =
+    new Date(value);
+
+  const now =
+    new Date();
+
+  const isToday =
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth() &&
+    date.getDate() === now.getDate();
+
+  if (isToday) {
+    return new Intl.DateTimeFormat(
+      "ja-JP",
+      {
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    ).format(date);
+  }
+
+  const isSameYear =
+    date.getFullYear() === now.getFullYear();
+
+  if (isSameYear) {
+    return new Intl.DateTimeFormat(
+      "ja-JP",
+      {
+        month: "numeric",
+        day: "numeric"
+      }
+    ).format(date);
+  }
+
+  return new Intl.DateTimeFormat(
+    "ja-JP",
+    {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric"
+    }
+  ).format(date);
 }
 
 /* =========================================
