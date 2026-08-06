@@ -9,7 +9,8 @@ document.addEventListener(
     if (!requirePortalLogin()) {
       return;
     }
-
+    alert("更新機能の最新版を読み込みました");
+    
     initializeHomeLogin();
     setupPullToRefresh();
     refreshHomeData();
@@ -30,6 +31,45 @@ async function refreshHomeData() {
     loadSubmittedCount(),
     loadHomeTrips()
   ]);
+}
+
+function showPullRefreshStatus(
+  message,
+  isError = false
+) {
+  const statusElement =
+    document.getElementById(
+      "pull-refresh-status"
+    );
+
+  if (!statusElement) {
+    return;
+  }
+
+  statusElement.textContent =
+    message;
+
+  statusElement.hidden =
+    false;
+
+  statusElement.style.color =
+    isError
+      ? "#bd3838"
+      : "#176a99";
+}
+
+function hidePullRefreshStatus() {
+  const statusElement =
+    document.getElementById(
+      "pull-refresh-status"
+    );
+
+  if (!statusElement) {
+    return;
+  }
+
+  statusElement.hidden =
+    true;
 }
 
 /* =========================================
@@ -110,14 +150,45 @@ function setupPullToRefresh() {
         return;
       }
 
+      
+
       isRefreshingHome = true;
 
-      try {
-        await refreshHomeData();
+showPullRefreshStatus(
+  "最新情報を取得中…"
+);
 
-      } finally {
-        isRefreshingHome = false;
-      }
+try {
+  await refreshHomeData();
+
+  showPullRefreshStatus(
+    "最新情報に更新しました"
+  );
+
+  setTimeout(
+    hidePullRefreshStatus,
+    1800
+  );
+
+} catch (error) {
+  console.error(
+    "ホーム画面の更新に失敗しました。",
+    error
+  );
+
+  showPullRefreshStatus(
+    "通信に失敗しました。現在の表示を残しています。",
+    true
+  );
+
+  setTimeout(
+    hidePullRefreshStatus,
+    3000
+  );
+
+} finally {
+  isRefreshingHome = false;
+}
     }
   );
 }
