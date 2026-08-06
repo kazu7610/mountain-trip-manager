@@ -614,6 +614,9 @@ async function loadApprovalWaitingCount() {
           : 0;
     }
 
+    countElement.innerHTML =
+  `${count}<span>件</span>`;
+
   } catch (error) {
     console.error(error);
 
