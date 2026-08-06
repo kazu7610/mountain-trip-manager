@@ -620,14 +620,10 @@ async function loadApprovalWaitingCount() {
           : 0;
     }
 
-    countElement.innerHTML =
-      `${count}<span>件</span>`;
-
   } catch (error) {
     console.error(error);
 
-    countElement.innerHTML =
-      `？<span>件</span>`;
+    throw error;
   }
 }
 
@@ -1010,33 +1006,13 @@ async function loadHomeTrips() {
       );
     }
 
-  } catch (error) {
-    console.error(error);
+ } catch (error) {
+  console.error(
+    "ホーム画面の山行情報を読み込めませんでした。",
+    error
+  );
 
-    cancelledTripSection.hidden =
-      true;
-
-    cancelledTripList.innerHTML =
-      "";
-
-    recruitingSection.hidden =
-      true;
-
-    recruitingTripList.innerHTML =
-      "";
-
-    todayTripList.innerHTML = `
-      <div class="error-message">
-        本日の山行を読み込めませんでした。
-      </div>
-    `;
-
-    todayDescentList.innerHTML = `
-      <div class="error-message">
-        本日の下山予定を読み込めませんでした。
-      </div>
-    `;
-  }
+  throw error;
 }
 
 /* =========================================
@@ -2579,8 +2555,7 @@ async function loadSubmittedCount() {
       error
     );
 
-    countElement.innerHTML =
-      `－<span>件</span>`;
+    throw error;
   }
 }
 
