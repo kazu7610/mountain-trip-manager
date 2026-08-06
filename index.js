@@ -11,16 +11,116 @@ document.addEventListener(
     }
 
     initializeHomeLogin();
-
-    loadDraftTrips();
-    loadRevisionTrips();
-    loadRejectedChangeRequests();
-    loadAdminChangeRequestNotice();
-    loadApprovalWaitingCount();
-    loadSubmittedCount();
-    loadHomeTrips();
+    setupPullToRefresh();
+    refreshHomeData();
   }
 );
+
+/* =========================================
+   ホーム画面の情報をまとめて更新
+========================================= */
+
+async function refreshHomeData() {
+  await Promise.all([
+    loadDraftTrips(),
+    loadRevisionTrips(),
+    loadRejectedChangeRequests(),
+    loadAdminChangeRequestNotice(),
+    loadApprovalWaitingCount(),
+    loadSubmittedCount(),
+    loadHomeTrips()
+  ]);
+}
+
+/* =========================================
+   下に引っ張って更新
+========================================= */
+
+let pullStartY = 0;
+let pullCurrentY = 0;
+let isPulling = false;
+let isRefreshingHome = false;
+
+function setupPullToRefresh() {
+  document.addEventListener(
+    "touchstart",
+    (event) => {
+      if (
+        window.scrollY !== 0 ||
+        event.touches.length !== 1 ||
+        isRefreshingHome
+      ) {
+        return;
+      }
+
+      pullStartY =
+        event.touches[0].clientY;
+
+      pullCurrentY =
+        pullStartY;
+
+      isPulling = true;
+    },
+    {
+      passive: true
+    }
+  );
+
+  document.addEventListener(
+    "touchmove",
+    (event) => {
+      if (
+        !isPulling ||
+        event.touches.length !== 1
+      ) {
+        return;
+      }
+
+      pullCurrentY =
+        event.touches[0].clientY;
+
+      if (
+        pullCurrentY <
+        pullStartY
+      ) {
+        isPulling = false;
+      }
+    },
+    {
+      passive: true
+    }
+  );
+
+  document.addEventListener(
+    "touchend",
+    async () => {
+      if (!isPulling) {
+        return;
+      }
+
+      const pullDistance =
+        pullCurrentY -
+        pullStartY;
+
+      isPulling = false;
+      pullStartY = 0;
+      pullCurrentY = 0;
+
+      if (pullDistance < 80) {
+        return;
+      }
+
+      isRefreshingHome = true;
+
+      try {
+        await refreshHomeData();
+
+      } finally {
+        isRefreshingHome = false;
+      }
+    }
+  );
+}
 
 /* =========================================
    ホーム画面のログイン表示

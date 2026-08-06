@@ -153,6 +153,40 @@
         rgba(255, 255, 255, 0.24);
     }
 
+    .pull-refresh-status {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  width: fit-content;
+  max-width: calc(100% - 24px);
+
+  margin:
+    10px auto
+    -6px;
+
+  padding:
+    9px 14px;
+
+  border:
+    1px solid
+    rgba(78, 151, 191, 0.35);
+
+  border-radius: 20px;
+
+  color: #176a99;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+
+  background:
+    rgba(255, 255, 255, 0.96);
+
+  box-shadow:
+    0 4px 12px
+    rgba(34, 91, 125, 0.12);
+}
+
     .container {
       width: min(calc(100% - 24px), 760px);
       margin: 0 auto;
@@ -880,6 +914,16 @@
 
   </header>
 
+  <div
+  id="pull-refresh-status"
+  class="pull-refresh-status"
+  role="status"
+  aria-live="polite"
+  hidden
+>
+  最新情報を取得中…
+</div>
+
   <main class="container">
 
         <button
@@ -1125,7 +1169,7 @@
 
 <script src="portal-auth.js?v=4"></script>
 <script src="push-notifications.js?v=4"></script>
-<script src="index.js?v=306"></script>
+<script src="index.js?v=307"></script>
 
 <script>
   if (
