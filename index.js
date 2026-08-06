@@ -1014,6 +1014,7 @@ async function loadHomeTrips() {
 
   throw error;
 }
+}
 
 /* =========================================
    詳細計画書がある山行IDを取得
