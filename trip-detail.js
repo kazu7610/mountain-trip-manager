@@ -377,6 +377,20 @@ function renderTripDetail(
       pendingRequest
     );
 
+  const participantCommentButtonHtml =
+  isParticipant &&
+  trip.status === "approved"
+    ? `
+        <button
+          id="participant-comment-button"
+          class="participant-comment-button"
+          type="button"
+        >
+          コメントを書く
+        </button>
+      `
+    : "";  
+
     const canOpenDetailedPlanPdf =
   hasDetailedPlan &&
   [
@@ -416,6 +430,12 @@ if (
   Array.isArray(comments) &&
   comments.length > 0
 ) {
+  const loginMember =
+    getPortalMember();
+
+  const canDeleteAllComments =
+  loginMember?.role === "super_admin";
+
   commentsHtml = `
     <section class="detail-row">
 
@@ -427,31 +447,50 @@ if (
 
         ${comments
           .map(
-            (comment) => `
-              <div class="trip-comment-item">
+            (comment) => {
+              const canDeleteComment =
+                canDeleteAllComments ||
+                Number(comment.member_id) ===
+                  Number(loginMember?.id);
 
-                <div class="trip-comment-name">
-                  ${escapeHtml(
-                    comment.member_name ||
-                    "氏名不明"
-                  )}
+              return `
+                <div class="trip-comment-item">
+
+                  <div class="trip-comment-name">
+                    ${escapeHtml(
+                      comment.member_name ||
+                      "氏名不明"
+                    )}
+                  </div>
+
+                  <div class="trip-comment-message">${escapeHtml(comment.message || "")}</div>
+
+                  <div class="trip-comment-time">
+                    ${formatCommentDate(
+                      comment.created_at
+                    )}
+                  </div>
+
+                  ${
+                    canDeleteComment
+                      ? `
+                        <button
+                          type="button"
+                          class="comment-delete-button"
+                          onclick="deleteTripComment(
+                            ${Number(comment.id)},
+                            ${Number(trip.id)}
+                          )"
+                        >
+                          削除
+                        </button>
+                      `
+                      : ""
+                  }
+
                 </div>
-
-                <div class="trip-comment-message">
-                  ${escapeHtml(
-                    comment.message ||
-                    ""
-                  )}
-                </div>
-
-                <div class="trip-comment-time">
-                  ${formatCommentDate(
-                    comment.created_at
-                  )}
-                </div>
-
-              </div>
-            `
+              `;
+            }
           )
           .join("")}
 
@@ -460,7 +499,6 @@ if (
     </section>
   `;
 }
-
   let recruitingHtml = "";
 
   if (trip.is_recruiting === true) {
@@ -618,29 +656,35 @@ if (
 
     </article>
 
-    ${descentActionHtml}
+    ${participantCommentButtonHtml}
 
-    ${requestActionHtml}
+${requestActionHtml}
 
-    <div class="button-row">
+<div class="button-row">
 
-      <button
-        class="home-button"
-        type="button"
-        onclick="location.href='index.html'"
-      >
-        ホームへ戻る
-      </button>
+  <button
+    class="plan-button"
+    type="button"
+    onclick="location.href='${detailedPlanUrl}'"
+  >
+    ${detailedPlanButtonText}
+  </button>
 
-      <button
-  class="plan-button"
-  type="button"
-  onclick="location.href='${detailedPlanUrl}'"
->
-  ${detailedPlanButtonText}
-</button>
+</div>
 
-    </div>
+${descentActionHtml}
+
+<div class="button-row">
+
+  <button
+    class="home-button"
+    type="button"
+    onclick="location.href='index.html'"
+  >
+    ホームへ戻る
+  </button>
+
+</div>
   `;
 
   const descentButton =
@@ -655,6 +699,22 @@ if (
         descentButton
       );
   }
+
+  const participantCommentButton =
+  document.getElementById(
+    "participant-comment-button"
+  );
+
+if (participantCommentButton) {
+  participantCommentButton.addEventListener(
+    "click",
+    () =>
+      submitParticipantComment(
+        trip.id,
+        participantCommentButton
+      )
+  );
+}
 
   const changeRequestButton =
     document.getElementById(
@@ -824,6 +884,124 @@ function createDescentActionHtml(
       下山しました
     </button>
   `;
+}
+
+async function submitParticipantComment(
+  tripId,
+  commentButton
+) {
+  const member =
+    getPortalMember();
+
+  if (
+    !member?.id ||
+    !member?.name
+  ) {
+    alert(
+      "ログイン情報を確認できません。"
+    );
+
+    location.href =
+      "login.html";
+
+    return;
+  }
+
+  const message =
+    prompt(
+      "コメントを入力してください。\n\n例：ありがとうございます！行ってきます！"
+    );
+
+  if (message === null) {
+    return;
+  }
+
+  const trimmedMessage =
+    message.trim();
+
+  if (!trimmedMessage) {
+    alert(
+      "コメントを入力してください。"
+    );
+
+    return;
+  }
+
+  const confirmed =
+    confirm(
+      "このコメントを投稿しますか？\n\n" +
+      trimmedMessage
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  commentButton.disabled =
+    true;
+
+  commentButton.textContent =
+    "送信中...";
+
+  try {
+    const response =
+      await portalFetch(
+        "/rest/v1/trip_comments",
+        {
+          method: "POST",
+
+          headers: {
+            Prefer:
+              "return=minimal"
+          },
+
+          body:
+            JSON.stringify({
+              trip_id:
+                Number(tripId),
+
+              member_id:
+                Number(member.id),
+
+              member_name:
+                member.name,
+
+              message:
+                trimmedMessage
+            })
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "コメントの保存に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    alert(
+      "コメントを投稿しました。"
+    );
+
+    await loadTripDetail();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "コメントを投稿できませんでした。"
+    );
+
+  } finally {
+    commentButton.disabled =
+      false;
+
+    commentButton.textContent =
+      "コメントを書く";
+  }
 }
 
 /* =========================================
@@ -1550,6 +1728,53 @@ function formatTime(
 
   return String(value)
     .slice(0, 5);
+}
+
+async function deleteTripComment(
+  commentId,
+  tripId
+) {
+  const confirmed =
+    confirm(
+      "このコメントを削除しますか？"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response =
+      await portalFetch(
+        `/rest/v1/trip_comments?id=eq.${commentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Prefer:
+              "return=minimal"
+          }
+        }
+      );
+
+    if (!response.ok) {
+      const errorText =
+        await response.text();
+
+      throw new Error(
+        "コメント削除に失敗しました。" +
+        ` ${response.status} ${errorText}`
+      );
+    }
+
+    await loadTripDetail();
+
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      "コメントを削除できませんでした。"
+    );
+  }
 }
 
 /* =========================================

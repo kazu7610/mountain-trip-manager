@@ -131,10 +131,16 @@ async function loadTripList() {
           trip.id
         );
 
+      const hasComments =
+        await hasTripComments(
+          trip.id
+       );  
+
       const card =
         createTripCard(
           trip,
-          members
+           members,
+           hasComments
         );
 
       tripList.appendChild(
@@ -272,13 +278,40 @@ async function loadTripMembers(
     );
 }
 
+async function hasTripComments(
+  tripId
+) {
+  const response =
+    await portalFetch(
+      "/rest/v1/trip_comments" +
+      "?select=id" +
+      `&trip_id=eq.${tripId}` +
+      "&limit=1"
+    );
+
+  if (!response.ok) {
+    console.error(
+      "コメント有無の確認に失敗しました。",
+      await response.text()
+    );
+
+    return false;
+  }
+
+  const rows =
+    await response.json();
+
+  return rows.length > 0;
+}
+
 /* =========================================
    山行届カードを作成
 ========================================= */
 
 function createTripCard(
   trip,
-  members
+  members,
+  hasComments
 ) {
   const card =
     document.createElement(
@@ -316,6 +349,15 @@ function createTripCard(
         </button>
       `
       : "";
+
+  const commentNoticeHtml =
+  hasComments
+    ? `
+        <div class="comment-notice">
+          コメントあり
+        </div>
+      `
+    : "";    
 
   const cancelMessage =
     trip.status === "cancelled"
@@ -382,6 +424,8 @@ function createTripCard(
         memberText
       )}
     </p>
+
+    ${commentNoticeHtml}
 
     ${cancelMessage}
 

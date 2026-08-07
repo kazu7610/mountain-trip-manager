@@ -329,17 +329,13 @@
     }
 
     .plan-button {
-      border: none;
+  border:
+    1px solid
+    #78b8d7;
 
-      color: white;
-
-      background:
-        linear-gradient(
-          135deg,
-          #5c76bb,
-          #8398d4
-        );
-    }
+  color: #176a99;
+  background: #ffffff;
+}
 
     .plan-button:disabled {
       opacity: 0.5;
@@ -347,27 +343,22 @@
     }
 
     .descent-button {
-      width: 100%;
+  width: 100%;
 
-      margin-top: 12px;
-      padding: 14px 10px;
+  margin-top: 12px;
+  padding: 14px 10px;
 
-      border: none;
-      border-radius: 12px;
+  border: none;
+  border-radius: 12px;
 
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
 
-      background:
-        linear-gradient(
-          135deg,
-          #1678b2,
-          #35afd5
-        );
+  background: #73bfa2;
 
-      cursor: pointer;
-    }
+  cursor: pointer;
+}
 
     .descent-button:disabled {
       opacity: 0.6;
@@ -433,40 +424,72 @@
 
       background: #e6f8f5;
     }
-.trip-comment-list {
-  display: grid;
-  gap: 10px;
-}
 
-.trip-comment-item {
-  padding: 12px 13px;
+    .trip-comment-list {
+      display: grid;
+      gap: 10px;
+    }
 
-  border-radius: 12px;
+    .trip-comment-item {
+  position: relative;
+
+  padding: 8px 10px;
+
+  border-radius: 10px;
 
   background: #fff4d6;
 }
 
-.trip-comment-name {
-  color: #755800;
-  font-size: 14px;
-  font-weight: bold;
-}
+    .trip-comment-name {
+      color: #755800;
+      font-size: 14px;
+      font-weight: bold;
+    }
 
-.trip-comment-message {
-  margin-top: 5px;
+   .trip-comment-message {
+  margin: 3px 0 0;
+  padding: 0;
 
   color: #4d4a3f;
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.4;
   white-space: pre-wrap;
 }
 
 .trip-comment-time {
-  margin-top: 7px;
+  margin: 4px 0 0;
+  padding: 0;
 
   color: #8a8170;
   font-size: 12px;
+  line-height: 1.2;
 }
+
+    .comment-delete-button {
+      display: block;
+      margin-top: 8px;
+      margin-left: auto;
+      padding: 5px 10px;
+
+      border:
+        1px solid
+        #e4a0a0;
+
+      border-radius: 8px;
+
+      color: #a53a3a;
+      font-size: 12px;
+      font-weight: bold;
+
+      background: #fffafa;
+
+      cursor: pointer;
+    }
+
+    .comment-delete-button:hover {
+      background: #fff0f0;
+    }
+
     @media (
       max-width: 520px
     ) {
@@ -479,6 +502,49 @@
         font-size: 21px;
       }
     }
+  .participant-comment-button {
+  width: 100%;
+
+  margin-top: 12px;
+  padding: 14px 10px;
+
+  border:
+    1px solid
+    #c8a96b;
+
+  border-radius: 12px;
+
+  color: #755800;
+  font-size: 16px;
+  font-weight: bold;
+
+  background: #ffffff;
+
+  cursor: pointer;
+}
+
+.participant-comment-button {
+  width: 100%;
+
+  margin-top: 12px;
+  padding: 14px 10px;
+
+  border:
+    1px solid
+    #c8a96b;
+
+  border-radius: 12px;
+
+  color: #755800;
+  font-size: 16px;
+  font-weight: bold;
+
+  background: #ffffff;
+
+  cursor: pointer;
+}
+
+
   </style>
 </head>
 
@@ -499,11 +565,11 @@
   <main class="container">
 
     <a
-  class="back-link"
-  href="javascript:history.back()"
->
-  ← 一覧へ戻る
-</a>
+      class="back-link"
+      href="javascript:history.back()"
+    >
+      ← 一覧へ戻る
+    </a>
 
     <div id="trip-detail">
 
@@ -516,8 +582,8 @@
   </main>
 
   <script src="portal-auth.js?v=4"></script>
-<script src="push-notifications.js?v=4"></script>
-<script src="trip-detail.js?v=52"></script>
+  <script src="push-notifications.js?v=4"></script>
+  <script src="trip-detail.js?v=55"></script>
 
 </body>
 </html>
