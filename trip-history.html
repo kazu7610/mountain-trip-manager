@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    山行履歴｜ポンコツ倶楽部
+  </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        sans-serif;
+
+      color: #17364d;
+
+      background:
+        linear-gradient(
+          180deg,
+          #dff5ff 0%,
+          #eefaff 210px,
+          #f8fcff 480px,
+          #edf4f8 100%
+        );
+    }
+
+    button,
+    select,
+    input {
+      font-family: inherit;
+    }
+
+    .container {
+      width: min(
+        calc(100% - 24px),
+        760px
+      );
+
+      margin: 0 auto;
+      padding: 24px 0 42px;
+    }
+
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      margin: 0 2px 18px;
+
+      font-size: 26px;
+    }
+
+    .page-title::before {
+      content: "";
+
+      width: 5px;
+      height: 28px;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          #1282bc,
+          #76cfe9
+        );
+    }
+
+    .history-card {
+      padding: 16px;
+
+      border:
+        1px solid
+        rgba(83, 159, 200, 0.25);
+
+      border-radius: 16px;
+
+      background:
+        rgba(255, 255, 255, 0.96);
+
+      box-shadow:
+        0 5px 16px
+        rgba(34, 91, 125, 0.09);
+    }
+
+    .annual-button {
+      width: 100%;
+
+      padding: 14px;
+
+      border: none;
+      border-radius: 12px;
+
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #2aa8d3
+        );
+
+      box-shadow:
+        0 5px 12px
+        rgba(34, 91, 125, 0.13);
+
+      cursor: pointer;
+    }
+
+    .back-button {
+      width: 100%;
+
+      margin-top: 10px;
+      padding: 12px;
+
+      border:
+        1px solid
+        #78b8d7;
+
+      border-radius: 12px;
+
+      color: #176a99;
+      font-size: 15px;
+      font-weight: bold;
+
+      background: white;
+
+      cursor: pointer;
+    }
+
+    .history-count {
+      margin: 18px 0 14px;
+
+      color: #17364d;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .history-filter-row {
+      display: grid;
+      grid-template-columns:
+        1fr 1fr;
+      gap: 10px;
+
+      margin-bottom: 10px;
+    }
+
+    .history-select,
+    .history-search {
+      width: 100%;
+
+      padding: 11px 12px;
+
+      border:
+        1px solid
+        #9fc9df;
+
+      border-radius: 10px;
+
+      color: #17364d;
+      font-size: 14px;
+
+      background: white;
+    }
+
+    .history-search {
+      margin-bottom: 8px;
+    }
+
+    .history-list {
+      margin-top: 8px;
+    }
+
+    .history-empty {
+      padding: 20px 10px;
+
+      color: #71899a;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .history-trip-row {
+      width: 100%;
+
+      display: grid;
+
+      grid-template-columns:
+        48px
+        minmax(0, 1fr)
+        auto
+        18px;
+
+      align-items: center;
+
+      gap: 8px;
+
+      margin-top: 8px;
+      padding: 11px 12px;
+
+      border:
+        1px solid
+        rgba(83, 159, 200, 0.28);
+
+      border-radius: 11px;
+
+      color: #17364d;
+
+      background:
+        rgba(255, 255, 255, 0.96);
+
+      box-shadow:
+        0 3px 10px
+        rgba(34, 91, 125, 0.07);
+
+      text-align: left;
+
+      cursor: pointer;
+    }
+
+    .history-trip-date {
+      color: #557185;
+
+      font-size: 13px;
+      font-weight: bold;
+
+      white-space: nowrap;
+    }
+
+    .history-trip-title {
+      min-width: 0;
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .history-trip-status {
+      color: #176a99;
+
+      font-size: 11px;
+      font-weight: bold;
+
+      white-space: nowrap;
+    }
+
+    .history-trip-arrow {
+      color: #78a8c3;
+
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    @media (
+      max-width: 420px
+    ) {
+      .container {
+        width:
+          min(
+            calc(100% - 18px),
+            760px
+          );
+      }
+
+      .page-title {
+        font-size: 24px;
+      }
+
+      .history-card {
+        padding: 15px;
+      }
+
+      .history-trip-row {
+        grid-template-columns:
+          43px
+          minmax(0, 1fr)
+          auto
+          15px;
+
+        gap: 6px;
+
+        padding:
+          10px 9px;
+      }
+
+      .history-trip-title {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <h1 class="page-title">
+      山行履歴
+    </h1>
+
+    <section class="history-card">
+
+      <button
+        class="annual-button"
+        type="button"
+        onclick="location.href='annual-stats.html'"
+      >
+        年間山行実績
+      </button>
+
+      <button
+        class="back-button"
+        type="button"
+        onclick="location.href='index.html'"
+      >
+        ホームへ戻る
+      </button>
+
+
+      <p class="history-count">
+        2026年度 0件
+      </p>
+
+
+      <div class="history-filter-row">
+
+        <select
+          id="history-year-select"
+          class="history-select"
+        >
+          <option value="2026">
+            2026年度
+          </option>
+        </select>
+
+
+        <select
+          id="history-month-select"
+          class="history-select"
+        >
+          <option value="">
+            すべて
+          </option>
+
+          <option value="4">4月</option>
+          <option value="5">5月</option>
+          <option value="6">6月</option>
+          <option value="7">7月</option>
+          <option value="8">8月</option>
+          <option value="9">9月</option>
+          <option value="10">10月</option>
+          <option value="11">11月</option>
+          <option value="12">12月</option>
+          <option value="1">1月</option>
+          <option value="2">2月</option>
+          <option value="3">3月</option>
+
+        </select>
+
+      </div>
+
+
+      <input
+        class="history-search"
+        id="history-search-input"
+        type="search"
+        placeholder="山名・山域・ルートで検索"
+      >
+
+
+      <div class="history-list">
+
+        <div class="history-empty">
+          山行履歴を読み込んでいます...
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script src="portal-auth.js?v=4"></script>
+  <script src="trip-history.js?v=2"></script>
+
+</body>
+
+</html>
