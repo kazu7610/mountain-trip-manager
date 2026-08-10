@@ -189,27 +189,55 @@ if (!loginMember?.id) {
   return;
 }
 
-const participantResponse =
+const leaderResponse =
   await portalFetch(
     "/rest/v1/trip_members" +
-    "?select=member_id" +
+    "?select=member_id,is_leader" +
     `&trip_id=eq.${trip.id}` +
     `&member_id=eq.${Number(loginMember.id)}` +
     "&limit=1"
   );
 
-if (!participantResponse.ok) {
+if (!leaderResponse.ok) {
   throw new Error(
-    "参加者情報を確認できませんでした。"
+    "CL情報を確認できませんでした。"
   );
 }
 
-const participantRows =
-  await participantResponse.json();
+const leaderRows =
+  await leaderResponse.json();
 
-if (participantRows.length === 0) {
+const isLeader =
+  leaderRows.length > 0 &&
+  leaderRows[0].is_leader === true;
+
+if (!isLeader) {
   alert(
-    "詳細計画書の作成・編集は、この山行の参加者のみ利用できます。"
+    "詳細計画書の作成・編集はCLのみ行えます。"
+  );
+
+  location.href =
+    `trip-detail.html?id=${trip.id}`;
+
+  return;
+}
+
+const entryDate =
+  trip.entry_date
+    ? new Date(
+        `${trip.entry_date}T00:00:00`
+      )
+    : null;
+
+const now =
+  new Date();
+
+if (
+  !entryDate ||
+  now >= entryDate
+) {
+  alert(
+    "入山日以降は詳細計画書を編集できません。"
   );
 
   location.href =
@@ -3504,15 +3532,34 @@ function renderActionDays(
   }
 
   actionsElement.innerHTML =
-    dayPlans
-      .map(
-        (dayPlan) =>
-          createActionDayHtml(
-            dayPlan,
-            trip
-          )
-      )
-      .join("");
+  dayPlans
+    .map(
+      (dayPlan) =>
+        createActionDayHtml(
+          dayPlan,
+          trip
+        )
+    )
+    .join("") +
+  `
+    <div class="plan-action-special-note">
+
+      <label class="plan-action-note-label">
+        特記事項
+      </label>
+
+      <textarea
+        id="plan-special-notes"
+        class="plan-action-note"
+        rows="3"
+        maxlength="500"
+        placeholder="例：PT構成、行動上の注意事項など"
+      >${escapeHtml(
+        trip.plan_special_notes || ""
+      )}</textarea>
+
+    </div>
+  `;
 
   setupActionDayEvents(
     trip
@@ -4138,6 +4185,91 @@ async function saveDetailedPlan(
   const tripId =
     getDetailedPlanTripId();
 
+if (!currentDetailedTrip) {
+  alert(
+    "山行情報を確認できません。"
+  );
+
+  return;
+}
+
+const loginMember =
+  getPortalMember();
+
+if (!loginMember?.id) {
+  alert(
+    "ログイン情報を確認できません。"
+  );
+
+  return;
+}
+
+const leaderResponse =
+  await portalFetch(
+    "/rest/v1/trip_members" +
+    "?select=member_id,is_leader" +
+    `&trip_id=eq.${Number(tripId)}` +
+    `&member_id=eq.${Number(loginMember.id)}` +
+    "&limit=1"
+  );
+
+if (!leaderResponse.ok) {
+  alert(
+    "CL情報を確認できません。"
+  );
+
+  return;
+}
+
+const leaderRows =
+  await leaderResponse.json();
+
+const isLeader =
+  leaderRows.length > 0 &&
+  leaderRows[0].is_leader === true;
+
+if (!isLeader) {
+  alert(
+    "詳細計画書を保存できるのはCLのみです。"
+  );
+
+  return;
+}
+
+const entryDate =
+  currentDetailedTrip.entry_date
+    ? new Date(
+        `${currentDetailedTrip.entry_date}T00:00:00`
+      )
+    : null;
+
+const now =
+  new Date();
+
+if (
+  !entryDate ||
+  now >= entryDate
+) {
+  alert(
+    "入山日以降は詳細計画書を保存できません。"
+  );
+
+  location.href =
+    `trip-detail.html?id=${Number(tripId)}`;
+
+  return;
+}    
+
+  const specialNotesElement =
+  document.getElementById(
+    "plan-special-notes"
+  );
+
+const specialNotes =
+  specialNotesElement
+    ? specialNotesElement.value.trim()
+    : "";  
+
   if (!tripId) {
     alert(
       "保存対象の山行を確認できません。"
@@ -4168,7 +4300,38 @@ async function saveDetailedPlan(
     "保存中...";
 
   try {
-    await saveDetailedPlanRoles(
+
+  const specialNotesResponse =
+  await portalFetch(
+    `/rest/v1/trips?id=eq.${Number(tripId)}`,
+    {
+      method:
+        "PATCH",
+
+      headers: {
+        Prefer:
+          "return=minimal"
+      },
+
+      body:
+        JSON.stringify({
+          plan_special_notes:
+            specialNotes
+        })
+    }
+  );
+
+if (!specialNotesResponse.ok) {
+  const errorText =
+    await specialNotesResponse.text();
+
+  throw new Error(
+    "特記事項の保存に失敗しました。" +
+    ` ${specialNotesResponse.status} ${errorText}`
+  );
+}
+
+     await saveDetailedPlanRoles(
       tripId
     );
 
@@ -4200,33 +4363,13 @@ async function saveDetailedPlan(
       "詳細計画書を一時保存しました。"
     );
 
-    if (
-      currentDetailedTrip
-    ) {
-      await loadDetailedPlanMembers(
-        tripId
-      );
+    location.href =
+  `trip-plan-pdf.html?id=${encodeURIComponent(
+    tripId
+  )}`;
 
-      await loadDetailedPlanGuestMembers(
-  tripId
-);
+return;
 
-      await loadDetailedPlanEmergencyContacts(
-      currentDetailedTrip
-     );
-
-      await loadDetailedPlanActions(
-        currentDetailedTrip
-      );
-
-      await loadDetailedPlanMeals(
-        currentDetailedTrip
-      );
-
-      await loadDetailedPlanEquipment(
-        currentDetailedTrip
-      );
-    }
 
   } catch (error) {
     console.error(error);

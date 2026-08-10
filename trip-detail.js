@@ -391,44 +391,53 @@ function renderTripDetail(
       `
     : "";  
 
-    const canOpenDetailedPlanPdf =
+   const today =
+  new Date();
+
+const entryDate =
+  trip.entry_date
+    ? new Date(`${trip.entry_date}T00:00:00`)
+    : null;
+
+const isBeforeEntryDate =
+  entryDate &&
+  today < entryDate;
+
+const canEditDetailedPlan =
+  isLeader &&
+  isBeforeEntryDate;
+
+const canOpenDetailedPlanPdf =
   hasDetailedPlan &&
-  [
-    "approved",
-    "descended",
-    "completed"
-  ].includes(
-    trip.status
-  );
+  !canEditDetailedPlan;
 
 const detailedPlanUrl =
-  canOpenDetailedPlanPdf
+  canEditDetailedPlan
     ? (
-        "trip-plan-pdf.html?id=" +
+        "trip-plan.html?id=" +
         encodeURIComponent(
           trip.id
         )
       )
     : (
-        "trip-plan.html?id=" +
+        "trip-plan-pdf.html?id=" +
         encodeURIComponent(
           trip.id
         )
       );
-
 const detailedPlanButtonText =
-  canOpenDetailedPlanPdf
-    ? "詳細計画書PDFを見る"
-    : (
+  canEditDetailedPlan
+    ? (
         hasDetailedPlan
-          ? "詳細計画書を開く"
+          ? "詳細計画書を編集"
           : "詳細計画書を作成"
-      );
+      )
+    : "詳細計画書PDFを見る";
   let commentsHtml = "";
 
   const detailedPlanButtonHtml =
-  canOpenDetailedPlanPdf ||
-  isParticipant
+  canEditDetailedPlan ||
+  canOpenDetailedPlanPdf
     ? `
         <div class="button-row">
 

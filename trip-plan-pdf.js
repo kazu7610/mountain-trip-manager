@@ -317,6 +317,19 @@ function renderPdfPlan(
         読み込み準備中
       </div>
 
+      ${
+  trip.plan_special_notes
+    ? `
+        <div class="pdf-action-special-note">
+          <strong>※特記事項：</strong>
+          ${escapePdfHtml(
+            trip.plan_special_notes
+          )}
+        </div>
+      `
+    : ""
+}
+
     </section>
 
     <section class="pdf-bottom-grid">

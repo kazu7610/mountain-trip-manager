@@ -1062,3 +1062,12 @@ table th,
 table td {
   font-size: 9px;
 }
+.pdf-action-special-note {
+  margin-top: 6px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.pdf-action-special-note strong {
+  font-size: 10px;
+}

@@ -1591,3 +1591,31 @@
 .equipment-person-option {
   white-space: nowrap;
 }
+
+.plan-action-special-note {
+  margin-top: 14px;
+}
+
+.plan-action-note-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #24536d;
+}
+
+.plan-action-note {
+  width: 100%;
+  min-height: 72px;
+  padding: 10px 12px;
+
+  border: 1px solid #b9d9e9;
+  border-radius: 10px;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  resize: vertical;
+  box-sizing: border-box;
+}
+

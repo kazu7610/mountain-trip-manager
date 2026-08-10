@@ -105,7 +105,25 @@ const sharedEquipmentMaster = {
   "登攀": {
     "ロープ": {
       type: "rope"
-    },
+    }, 
+
+    "支点セット": {
+  type: "select",
+  options: [
+    "一般",
+    "手入力"
+  ],
+  defaultValue: "一般"
+},
+
+"ビレイセット": {
+  type: "select",
+  options: [
+    "一般",
+    "手入力"
+  ],
+  defaultValue: "一般"
+},
 
     "ヌンチャク": {
       type: "select",
@@ -140,6 +158,10 @@ const sharedEquipmentMaster = {
         "手入力"
       ]
     },
+
+    "自由入力": {
+  type: "free"
+},
 
     "アイススクリュー": {
       type: "select",
