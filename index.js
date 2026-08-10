@@ -1513,31 +1513,64 @@ function createTodayTripCard(
   
 
   const comments =
-    Array.isArray(
-      trip.comments
-    )
-      ? trip.comments
-      : [];
+  Array.isArray(
+    trip.comments
+  )
+    ? trip.comments.filter(
+        (comment) => {
+          if (!trip.descended_at) {
+            return true;
+          }
+
+          return (
+            new Date(
+              comment.created_at
+            ) <
+            new Date(
+              trip.descended_at
+            )
+          );
+        }
+      )
+    : [];
 
   const commentsHtml =
     comments
       .map(
         (comment) => {
-          const commentTime =
-            comment.created_at
-              ? new Date(
-                  comment.created_at
-                ).toLocaleTimeString(
-                  "ja-JP",
-                  {
-                    hour:
-                      "2-digit",
+          const commentDate =
+  comment.created_at
+    ? new Date(
+        comment.created_at
+      )
+    : null;
 
-                    minute:
-                      "2-digit"
-                  }
-                )
-              : "時刻不明";
+const today =
+  new Date();
+
+const isToday =
+  commentDate &&
+  commentDate.getFullYear() ===
+    today.getFullYear() &&
+  commentDate.getMonth() ===
+    today.getMonth() &&
+  commentDate.getDate() ===
+    today.getDate();
+
+const commentTime =
+  !commentDate
+    ? "日時不明"
+    : isToday
+      ? commentDate.toLocaleTimeString(
+          "ja-JP",
+          {
+            hour:
+              "2-digit",
+            minute:
+              "2-digit"
+          }
+        )
+      : `${commentDate.getMonth() + 1}/${commentDate.getDate()}`;
 
           return `
             <div class="trip-comment-message">
@@ -2194,28 +2227,62 @@ function createTodayDescentCard(
   Array.isArray(
     trip.comments
   )
-    ? trip.comments
+    ? trip.comments.filter(
+        (comment) => {
+          if (!trip.descended_at) {
+            return false;
+          }
+
+          return (
+            new Date(
+              comment.created_at
+            ) >
+            new Date(
+              trip.descended_at
+            )
+          );
+        }
+      )
     : [];
 
-const commentsHtml =
+    const commentsHtml =
   comments
     .map(
       (comment) => {
-        const commentTime =
-          comment.created_at
-            ? new Date(
-                comment.created_at
-              ).toLocaleTimeString(
-                "ja-JP",
-                {
-                  hour:
-                    "2-digit",
 
-                  minute:
-                    "2-digit"
-                }
-              )
-            : "時刻不明";
+const commentDate =
+  comment.created_at
+    ? new Date(
+        comment.created_at
+      )
+    : null;
+
+const today =
+  new Date();
+
+const isToday =
+  commentDate &&
+  commentDate.getFullYear() ===
+    today.getFullYear() &&
+  commentDate.getMonth() ===
+    today.getMonth() &&
+  commentDate.getDate() ===
+    today.getDate();
+
+const commentTime =
+  !commentDate
+    ? "日時不明"
+    : isToday
+      ? commentDate.toLocaleTimeString(
+          "ja-JP",
+          {
+            hour:
+              "2-digit",
+            minute:
+              "2-digit"
+          }
+        )
+      : `${commentDate.getMonth() + 1}/${commentDate.getDate()}`;
 
         return `
           <div class="trip-comment-message">

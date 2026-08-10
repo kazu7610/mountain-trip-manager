@@ -426,6 +426,24 @@ const detailedPlanButtonText =
       );
   let commentsHtml = "";
 
+  const detailedPlanButtonHtml =
+  canOpenDetailedPlanPdf ||
+  isParticipant
+    ? `
+        <div class="button-row">
+
+          <button
+            class="plan-button"
+            type="button"
+            onclick="location.href='${detailedPlanUrl}'"
+          >
+            ${detailedPlanButtonText}
+          </button>
+
+        </div>
+      `
+    : "";
+
 if (
   Array.isArray(comments) &&
   comments.length > 0
@@ -660,17 +678,7 @@ if (
 
 ${requestActionHtml}
 
-<div class="button-row">
-
-  <button
-    class="plan-button"
-    type="button"
-    onclick="location.href='${detailedPlanUrl}'"
-  >
-    ${detailedPlanButtonText}
-  </button>
-
-</div>
+<${detailedPlanButtonHtml}
 
 ${descentActionHtml}
 
@@ -981,6 +989,30 @@ async function submitParticipantComment(
         ` ${response.status} ${errorText}`
       );
     }
+
+    try {
+  await notifyTripParticipantsAndAdmins({
+    tripId,
+
+    title:
+      "山行コメント",
+
+    body:
+      `${member.name}さん：${trimmedMessage}`,
+
+    url:
+      `/mountain-trip-manager/trip-detail.html?id=${tripId}`,
+
+    badge:
+      1
+  });
+
+} catch (notificationError) {
+  console.error(
+    "山行コメントのPush通知を送信できませんでした。",
+    notificationError
+  );
+}
 
     alert(
       "コメントを投稿しました。"

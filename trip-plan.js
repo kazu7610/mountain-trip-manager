@@ -175,6 +175,49 @@ async function loadDetailedPlanTrip() {
       );
     }
 
+    const loginMember =
+  getPortalMember();
+
+if (!loginMember?.id) {
+  alert(
+    "ログイン情報を確認できません。"
+  );
+
+  location.href =
+    "login.html";
+
+  return;
+}
+
+const participantResponse =
+  await portalFetch(
+    "/rest/v1/trip_members" +
+    "?select=member_id" +
+    `&trip_id=eq.${trip.id}` +
+    `&member_id=eq.${Number(loginMember.id)}` +
+    "&limit=1"
+  );
+
+if (!participantResponse.ok) {
+  throw new Error(
+    "参加者情報を確認できませんでした。"
+  );
+}
+
+const participantRows =
+  await participantResponse.json();
+
+if (participantRows.length === 0) {
+  alert(
+    "詳細計画書の作成・編集は、この山行の参加者のみ利用できます。"
+  );
+
+  location.href =
+    `trip-detail.html?id=${trip.id}`;
+
+  return;
+}
+
     currentDetailedTrip =
       trip;
 

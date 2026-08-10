@@ -507,6 +507,91 @@ async function notifyAllMembersExceptSender({
 }
 
 /* =========================================
+   山行参加者＋管理者へ通知
+   ※送信者本人は除外
+========================================= */
+
+async function notifyTripParticipantsAndAdmins({
+  tripId,
+  title,
+  body,
+  url = "/mountain-trip-manager/index.html",
+  badge = 1
+}) {
+  const loginMember =
+    getPortalMember();
+
+  if (!loginMember?.id) {
+    throw new Error(
+      "通知送信者の会員情報を確認できません。"
+    );
+  }
+
+  const participantResponse =
+    await portalFetch(
+      "/rest/v1/trip_members" +
+      "?select=member_id" +
+      `&trip_id=eq.${Number(tripId)}`
+    );
+
+  if (!participantResponse.ok) {
+    throw new Error(
+      "山行参加者を取得できませんでした。"
+    );
+  }
+
+  const adminResponse =
+    await portalFetch(
+      "/rest/v1/members" +
+      "?select=id" +
+      "&active=eq.true" +
+      "&role=in.(admin,super_admin)"
+    );
+
+  if (!adminResponse.ok) {
+    throw new Error(
+      "管理者を取得できませんでした。"
+    );
+  }
+
+  const participantRows =
+    await participantResponse.json();
+
+  const adminRows =
+    await adminResponse.json();
+
+  const targetMemberIds =
+    [
+      ...participantRows.map(
+        (row) =>
+          Number(row.member_id)
+      ),
+
+      ...adminRows.map(
+        (row) =>
+          Number(row.id)
+      )
+    ]
+      .filter(
+        (memberId) =>
+          Number.isInteger(memberId) &&
+          memberId > 0 &&
+          memberId !==
+            Number(loginMember.id)
+      );
+
+  return await sendPushNotification({
+    memberIds:
+      targetMemberIds,
+
+    title,
+    body,
+    url,
+    badge
+  });
+}
+
+/* =========================================
    アプリを開いた時にバッジを消す
 ========================================= */
 
