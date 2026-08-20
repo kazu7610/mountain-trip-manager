@@ -168,8 +168,7 @@
     }
 
     .form-note {
-      margin:
-        0 0 22px;
+      margin: 0 0 22px;
 
       color: #718a9a;
 
@@ -236,10 +235,7 @@
 
     .button-row {
       display: grid;
-
-      grid-template-columns:
-        1fr;
-
+      grid-template-columns: 1fr;
       gap: 10px;
 
       margin-top: 26px;
@@ -266,6 +262,121 @@
         );
 
       cursor: pointer;
+    }
+
+    .next-button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .secondary-button {
+      background:
+        linear-gradient(
+          135deg,
+          #7895a6,
+          #9eb3bf
+        );
+    }
+
+    .rules-agree-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+
+      margin-top: 18px;
+
+      font-size: 14px;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    .rules-agree-label input {
+      width: 20px;
+      height: 20px;
+
+      margin-top: 1px;
+
+      flex-shrink: 0;
+    }
+
+    .message {
+      display: none;
+
+      margin-top: 18px;
+      padding: 13px;
+
+      border-radius: 11px;
+
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .message.error {
+      display: block;
+
+      color: #9b2f2f;
+      background: #fff0f0;
+      border: 1px solid #efb4b4;
+    }
+
+    .success-card {
+      padding: 28px 20px;
+
+      border:
+        1px solid
+        rgba(
+          87,
+          155,
+          194,
+          0.22
+        );
+
+      border-radius: 18px;
+
+      text-align: center;
+
+      background: white;
+
+      box-shadow:
+        0 5px 17px
+        rgba(
+          34,
+          91,
+          125,
+          0.08
+        );
+    }
+
+    .success-icon {
+      margin-bottom: 12px;
+
+      font-size: 46px;
+    }
+
+    .success-card h2 {
+      margin: 0 0 14px;
+
+      color: #176a99;
+
+      font-size: 22px;
+    }
+
+    .success-card p {
+      margin: 0 0 22px;
+
+      color: #627c8c;
+
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    @media (
+      min-width: 560px
+    ) {
+      .button-row.two-buttons {
+        grid-template-columns:
+          1fr 1fr;
+      }
     }
   </style>
 
@@ -298,12 +409,18 @@
   <main class="container">
 
     <a
+      id="login-back-link"
       class="back-link"
       href="login.html"
     >
       ← ログイン画面へ戻る
     </a>
 
+
+    <!-- =====================================
+         STEP 1
+         入会情報入力
+    ====================================== -->
     <form
       id="join-request-form"
       class="form-card"
@@ -312,6 +429,7 @@
       <p class="form-note">
         ポンコツ倶楽部への入会申請に必要な情報を入力してください。
       </p>
+
 
       <section class="form-section">
 
@@ -337,6 +455,7 @@
 
       </section>
 
+
       <section class="form-section">
 
         <label
@@ -360,6 +479,7 @@
 
       </section>
 
+
       <section class="form-section">
 
         <label
@@ -380,6 +500,7 @@
         >
 
       </section>
+
 
       <section class="form-section">
 
@@ -405,6 +526,7 @@
 
       </section>
 
+
       <section class="form-section">
 
         <label
@@ -429,6 +551,7 @@
 
       </section>
 
+
       <div class="button-row">
 
         <button
@@ -443,148 +566,537 @@
 
     </form>
 
-  <section
-  id="join-rules-step"
-  class="form-card"
-  style="display:none; margin-top:16px;"
->
 
-  <h2 class="form-label">
-    会則の確認
-  </h2>
-
-  <p class="form-note">
-    入会申請の前に、ポンコツ倶楽部の会則をご確認ください。
-  </p>
-
- <div id="rules-pdf-area">
-
-  <iframe
-    src="club-rules.pdf"
-    title="ポンコツ倶楽部 会則"
-    style="
-      width:100%;
-      height:520px;
-      border:1px solid #c5dce8;
-      border-radius:12px;
-      background:white;
-    "
-  >
-  </iframe>
-
-</div>
-
-  <label
-    style="
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      margin-top:18px;
-      font-size:14px;
-      font-weight:bold;
-      line-height:1.5;
-    "
-  >
-
-    <input
-      id="rules-agree"
-      type="checkbox"
+    <!-- =====================================
+         STEP 2
+         会則確認
+    ====================================== -->
+    <section
+      id="join-rules-step"
+      class="form-card"
       style="
-        width:20px;
-        height:20px;
-        margin-top:1px;
+        display:none;
+        margin-top:16px;
       "
     >
 
-    <span>
-      会則を確認し、内容に同意します。
-    </span>
+      <h2 class="form-label">
+        会則の確認
+      </h2>
 
-  </label>
+      <p class="form-note">
+        入会申請の前に、ポンコツ倶楽部の会則をご確認ください。
+      </p>
 
-  <div class="button-row">
 
-    <button
-      id="join-back-button"
-      class="next-button"
-      type="button"
+      <div id="rules-pdf-area">
+
+        <iframe
+          src="club-rules.pdf"
+          title="ポンコツ倶楽部 会則"
+          style="
+            width:100%;
+            height:520px;
+            border:1px solid #c5dce8;
+            border-radius:12px;
+            background:white;
+          "
+        >
+        </iframe>
+
+      </div>
+
+
+      <label
+        class="rules-agree-label"
+      >
+
+        <input
+          id="rules-agree"
+          type="checkbox"
+        >
+
+        <span>
+          会則を確認し、内容に同意します。
+        </span>
+
+      </label>
+
+
+      <div
+        class="button-row two-buttons"
+      >
+
+        <button
+          id="join-back-button"
+          class="
+            next-button
+            secondary-button
+          "
+          type="button"
+        >
+          入力画面へ戻る
+        </button>
+
+        <button
+          id="join-submit-button"
+          class="next-button"
+          type="button"
+          disabled
+        >
+          入会申請する
+        </button>
+
+      </div>
+
+
+      <div
+        id="join-message"
+        class="message"
+      ></div>
+
+    </section>
+
+
+    <!-- =====================================
+         STEP 3
+         申請完了
+    ====================================== -->
+    <section
+      id="join-complete-step"
+      class="success-card"
+      style="display:none;"
     >
-      入力画面へ戻る
-    </button>
 
-    <button
-      id="join-submit-button"
-      class="next-button"
-      type="button"
-      disabled
-    >
-      入会申請する
-    </button>
+      <div class="success-icon">
+        ✅
+      </div>
 
-  </div>
+      <h2>
+        入会申請を受け付けました
+      </h2>
 
-</section>  
+      <p>
+        申請内容を確認後、管理者からご連絡します。<br>
+        承認されるまでしばらくお待ちください。
+      </p>
+
+      <button
+        id="complete-login-button"
+        class="next-button"
+        type="button"
+      >
+        ログイン画面へ戻る
+      </button>
+
+    </section>
 
   </main>
 
-</body>
 
-<script>
-  const joinForm =
-    document.getElementById(
-      "join-request-form"
-    );
+  <!-- =====================================
+       ポンコツ倶楽部
+       Supabase共通接続
+  ====================================== -->
+  <script src="portal-auth.js?v=4"></script>
 
-  const rulesStep =
-    document.getElementById(
-      "join-rules-step"
-    );
 
-  const nextButton =
-    document.getElementById(
-      "join-next-button"
-    );
+  <script>
 
-  const backButton =
-    document.getElementById(
-      "join-back-button"
-    );
+    /* =====================================
+       会則バージョン
+    ====================================== */
 
-  nextButton.addEventListener(
-    "click",
-    () => {
-      if (!joinForm.reportValidity()) {
-        return;
+    const RULES_VERSION =
+      "2026年度版";
+
+
+    /* =====================================
+       要素取得
+    ====================================== */
+
+    const joinForm =
+      document.getElementById(
+        "join-request-form"
+      );
+
+    const rulesStep =
+      document.getElementById(
+        "join-rules-step"
+      );
+
+    const completeStep =
+      document.getElementById(
+        "join-complete-step"
+      );
+
+    const nextButton =
+      document.getElementById(
+        "join-next-button"
+      );
+
+    const backButton =
+      document.getElementById(
+        "join-back-button"
+      );
+
+    const rulesAgree =
+      document.getElementById(
+        "rules-agree"
+      );
+
+    const joinSubmitButton =
+      document.getElementById(
+        "join-submit-button"
+      );
+
+    const joinMessage =
+      document.getElementById(
+        "join-message"
+      );
+
+    const loginBackLink =
+      document.getElementById(
+        "login-back-link"
+      );
+
+    const completeLoginButton =
+      document.getElementById(
+        "complete-login-button"
+      );
+
+
+    /* =====================================
+       入力画面 → 会則画面
+    ====================================== */
+
+    nextButton.addEventListener(
+      "click",
+      () => {
+
+        if (
+          !joinForm.reportValidity()
+        ) {
+          return;
+        }
+
+        clearMessage();
+
+        joinForm.style.display =
+          "none";
+
+        rulesStep.style.display =
+          "block";
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
       }
+    );
 
-      joinForm.style.display =
-        "none";
 
-      rulesStep.style.display =
-        "block";
+    /* =====================================
+       会則画面 → 入力画面
+    ====================================== */
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+    backButton.addEventListener(
+      "click",
+      () => {
+
+        clearMessage();
+
+        rulesStep.style.display =
+          "none";
+
+        joinForm.style.display =
+          "block";
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
+    );
+
+
+    /* =====================================
+       会則同意チェック
+    ====================================== */
+
+    rulesAgree.addEventListener(
+      "change",
+      () => {
+
+        joinSubmitButton.disabled =
+          !rulesAgree.checked;
+      }
+    );
+
+
+    /* =====================================
+       入会申請
+    ====================================== */
+
+    joinSubmitButton.addEventListener(
+      "click",
+      async () => {
+
+        if (
+          !rulesAgree.checked
+        ) {
+          showError(
+            "会則への同意が必要です。"
+          );
+
+          return;
+        }
+
+        if (
+          !joinForm.reportValidity()
+        ) {
+          showError(
+            "入力内容を確認してください。"
+          );
+
+          return;
+        }
+
+
+        const name =
+          document
+            .getElementById(
+              "join-name"
+            )
+            .value
+            .trim();
+
+        const furigana =
+          document
+            .getElementById(
+              "join-kana"
+            )
+            .value
+            .trim();
+
+        const birthDate =
+          document
+            .getElementById(
+              "join-birth-date"
+            )
+            .value;
+
+        const phone =
+          document
+            .getElementById(
+              "join-phone"
+            )
+            .value
+            .trim();
+
+        const email =
+          document
+            .getElementById(
+              "join-email"
+            )
+            .value
+            .trim();
+
+
+        if (
+          !name ||
+          !furigana ||
+          !birthDate ||
+          !phone ||
+          !email
+        ) {
+          showError(
+            "必須項目をすべて入力してください。"
+          );
+
+          return;
+        }
+
+
+        const originalText =
+          joinSubmitButton.textContent;
+
+
+        try {
+
+          clearMessage();
+
+          joinSubmitButton.disabled =
+            true;
+
+          backButton.disabled =
+            true;
+
+          joinSubmitButton.textContent =
+            "送信中...";
+
+
+          const requestData = {
+            name:
+              name,
+
+            furigana:
+              furigana,
+
+            birth_date:
+              birthDate,
+
+            phone:
+              phone,
+
+            email:
+              email,
+
+            rules_agreed:
+              true,
+
+            rules_agreed_at:
+              new Date()
+                .toISOString(),
+
+            rules_version:
+              RULES_VERSION,
+
+            status:
+              "pending"
+          };
+
+
+          const response =
+            await portalFetch(
+              "/rest/v1/join_requests",
+              {
+                method:
+                  "POST",
+
+                headers: {
+                  Prefer:
+                    "return=minimal"
+                },
+
+                body:
+                  JSON.stringify(
+                    requestData
+                  )
+              }
+            );
+
+
+          if (
+            !response.ok
+          ) {
+
+            const errorText =
+              await response.text();
+
+            console.error(
+              "入会申請保存エラー:",
+              response.status,
+              errorText
+            );
+
+            throw new Error(
+              "申請データの保存に失敗しました。"
+            );
+          }
+
+
+          rulesStep.style.display =
+            "none";
+
+          completeStep.style.display =
+            "block";
+
+          loginBackLink.style.display =
+            "none";
+
+
+          joinForm.reset();
+
+          rulesAgree.checked =
+            false;
+
+
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+
+
+        } catch (error) {
+
+          console.error(
+            "入会申請エラー:",
+            error
+          );
+
+          showError(
+            "入会申請を送信できませんでした。時間をおいて、もう一度お試しください。"
+          );
+
+          joinSubmitButton.disabled =
+            !rulesAgree.checked;
+
+          backButton.disabled =
+            false;
+
+          joinSubmitButton.textContent =
+            originalText;
+        }
+      }
+    );
+
+
+    /* =====================================
+       完了 → ログイン画面
+    ====================================== */
+
+    completeLoginButton.addEventListener(
+      "click",
+      () => {
+
+        window.location.href =
+          "login.html";
+      }
+    );
+
+
+    /* =====================================
+       エラー表示
+    ====================================== */
+
+    function showError(
+      message
+    ) {
+
+      joinMessage.textContent =
+        message;
+
+      joinMessage.className =
+        "message error";
     }
-  );
 
-  backButton.addEventListener(
-    "click",
-    () => {
-      rulesStep.style.display =
-        "none";
 
-      joinForm.style.display =
-        "block";
+    /* =====================================
+       メッセージ消去
+    ====================================== */
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+    function clearMessage() {
+
+      joinMessage.textContent =
+        "";
+
+      joinMessage.className =
+        "message";
     }
-  );
-</script>
+
+  </script>
+
+</body>
 
 </html>

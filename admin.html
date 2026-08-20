@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
 
@@ -64,6 +65,7 @@
 
     .header::before {
       content: "";
+
       position: absolute;
       left: -10%;
       right: -10%;
@@ -124,6 +126,7 @@
       margin-bottom: 16px;
 
       color: #176a99;
+
       font-size: 14px;
       font-weight: bold;
       text-decoration: none;
@@ -303,6 +306,7 @@
       border-radius: 20px;
 
       color: #996000;
+
       font-size: 12px;
       font-weight: bold;
 
@@ -328,6 +332,7 @@
       margin: 9px 0 0;
 
       color: #557185;
+
       font-size: 14px;
       line-height: 1.6;
     }
@@ -343,9 +348,11 @@
       border-radius: 11px;
 
       color: #704716;
+
       font-size: 14px;
       font-weight: bold;
       line-height: 1.6;
+
       white-space: pre-wrap;
 
       background: #fff3dc;
@@ -358,6 +365,7 @@
 
     .button-row {
       display: grid;
+
       grid-template-columns:
         1fr 1fr;
 
@@ -406,6 +414,163 @@
       cursor: wait;
     }
 
+    .cancelled-card {
+      border-color: #e3a2ab;
+      background: #fff4f5;
+    }
+
+    .cancelled-badge {
+      color: #a23d4b;
+      background: #ffe1e5;
+    }
+
+    .cancelled-message {
+      margin-top: 14px;
+      padding: 15px 12px;
+
+      border-radius: 12px;
+
+      color: #a23d4b;
+
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+
+      background: #ffe1e5;
+    }
+
+    .cancelled-complete-button {
+      background: #c75b6a;
+    }
+
+    .cancelled-complete-button:hover {
+      background: #ad4857;
+    }
+
+    .admin-comment-list {
+      margin-top: 14px;
+    }
+
+    .admin-comment-item {
+      margin-top: 10px;
+      padding: 12px;
+
+      border-radius: 11px;
+
+      color: #704716;
+
+      font-size: 14px;
+      line-height: 1.6;
+
+      background: #fff3dc;
+    }
+
+    .admin-comment-item strong {
+      color: #5d3a16;
+    }
+
+    .admin-comment-time {
+      display: block;
+
+      margin-top: 6px;
+
+      color: #6f8798;
+      font-size: 12px;
+    }
+
+    .admin-reply-box {
+      margin-top: 14px;
+      padding: 14px;
+
+      border-radius: 12px;
+
+      background: #f3f9fc;
+    }
+
+    .admin-reply-box strong {
+      display: block;
+
+      margin-bottom: 9px;
+    }
+
+    .admin-reply-input {
+      width: 100%;
+      min-height: 90px;
+
+      padding: 11px;
+
+      border:
+        1px solid
+        #a9cadc;
+
+      border-radius: 10px;
+
+      color: #17364d;
+
+      font-size: 15px;
+      line-height: 1.5;
+
+      background: white;
+
+      resize: vertical;
+    }
+
+    .admin-reply-input:focus {
+      outline: none;
+
+      border-color: #2b97c7;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          43,
+          151,
+          199,
+          0.12
+        );
+    }
+
+    .admin-reply-box .button-row {
+      margin-top: 10px;
+    }
+
+    .member-admin-area {
+      margin-top: 36px;
+      padding-top: 22px;
+
+      border-top:
+        1px solid
+        rgba(
+          87,
+          155,
+          194,
+          0.25
+        );
+    }
+
+    .member-admin-button {
+      width: 100%;
+
+      padding: 14px 12px;
+
+      border: none;
+      border-radius: 12px;
+
+      color: white;
+
+      font-size: 15px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #2aa8d3
+        );
+
+      cursor: pointer;
+    }
+
     @media (
       max-width: 520px
     ) {
@@ -422,115 +587,8 @@
         margin-top: 8px;
       }
     }
-    .cancelled-card {
-  border-color: #e3a2ab;
-  background: #fff4f5;
-}
-
-.cancelled-badge {
-  color: #a23d4b;
-  background: #ffe1e5;
-}
-
-.cancelled-message {
-  margin-top: 14px;
-  padding: 15px 12px;
-
-  border-radius: 12px;
-
-  color: #a23d4b;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-
-  background: #ffe1e5;
-}
-
-.cancelled-complete-button {
-  background: #c75b6a;
-}
-
-.cancelled-complete-button:hover {
-  background: #ad4857;
-}
-
-/* 管理者コメント表示 */
-.admin-comment-list {
-  margin-top: 14px;
-}
-
-.admin-comment-item {
-  margin-top: 10px;
-  padding: 12px;
-
-  border-radius: 11px;
-
-  color: #704716;
-  font-size: 14px;
-  line-height: 1.6;
-
-  background: #fff3dc;
-}
-
-.admin-comment-item strong {
-  color: #5d3a16;
-}
-
-.admin-comment-time {
-  display: block;
-
-  margin-top: 6px;
-
-  color: #6f8798;
-  font-size: 12px;
-}
-
-.admin-reply-box {
-  margin-top: 14px;
-  padding: 14px;
-
-  border-radius: 12px;
-
-  background: #f3f9fc;
-}
-
-.admin-reply-box strong {
-  display: block;
-
-  margin-bottom: 9px;
-}
-
-.admin-reply-input {
-  width: 100%;
-  min-height: 90px;
-  padding: 11px;
-
-  border: 1px solid #a9cadc;
-  border-radius: 10px;
-
-  color: #17364d;
-  font-size: 15px;
-  line-height: 1.5;
-
-  background: white;
-  resize: vertical;
-}
-
-.admin-reply-input:focus {
-  outline: none;
-
-  border-color: #2b97c7;
-
-  box-shadow:
-    0 0 0 3px
-    rgba(43, 151, 199, 0.12);
-}
-
-.admin-reply-box .button-row {
-  margin-top: 10px;
-}
-
   </style>
+
 </head>
 
 <body>
@@ -556,6 +614,7 @@
       ← ホームへ戻る
     </a>
 
+
     <div id="trip-list">
 
       <div class="loading-card">
@@ -564,11 +623,29 @@
 
     </div>
 
+
+    <div class="member-admin-area">
+
+      <button
+        type="button"
+        class="member-admin-button"
+        onclick="
+          location.href=
+            'join-request-admin.html'
+        "
+      >
+        👤 入会申請
+      </button>
+
+    </div>
+
   </main>
 
+
   <script src="portal-auth.js?v=4"></script>
-<script src="push-notifications.js?v=4"></script>
-<script src="admin.js?v=12"></script>
+  <script src="push-notifications.js?v=4"></script>
+  <script src="admin.js?v=12"></script>
 
 </body>
+
 </html>
