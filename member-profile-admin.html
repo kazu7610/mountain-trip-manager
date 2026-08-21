@@ -620,6 +620,45 @@
         この会員情報を保存する
       </button>
 
+            <div class="section-title">
+        パスワード再設定
+      </div>
+
+
+      <div class="field">
+        <label for="reset-password">
+          新しいパスワード（6文字以上）
+        </label>
+
+        <input
+          id="reset-password"
+          type="password"
+          autocomplete="new-password"
+        >
+      </div>
+
+
+      <div class="field">
+        <label for="reset-password-confirm">
+          新しいパスワード（確認）
+        </label>
+
+        <input
+          id="reset-password-confirm"
+          type="password"
+          autocomplete="new-password"
+        >
+      </div>
+
+
+      <button
+        id="reset-password-button"
+        type="button"
+        class="save-button"
+      >
+        この会員のPWを再設定する
+      </button>
+
     </div>
 
   </div>
@@ -1181,6 +1220,172 @@
     saveMemberProfile
   );
 
+const resetPasswordButton =
+  document.getElementById(
+    "reset-password-button"
+  );
+
+
+resetPasswordButton.addEventListener(
+  "click",
+  resetMemberPassword
+);
+
+async function resetMemberPassword() {
+
+  if (!selectedMemberId) {
+    alert(
+      "会員を選択してください。"
+    );
+    return;
+  }
+
+  const password =
+    document.getElementById(
+      "reset-password"
+    ).value;
+
+  const passwordConfirm =
+    document.getElementById(
+      "reset-password-confirm"
+    ).value;
+
+  if (
+    password.length < 6
+  ) {
+    alert(
+      "新しいパスワードは6文字以上にしてください。"
+    );
+    return;
+  }
+
+  if (
+    password !==
+    passwordConfirm
+  ) {
+    alert(
+      "新しいパスワードが一致していません。"
+    );
+    return;
+  }
+
+  const memberName =
+    document.getElementById(
+      "name"
+    ).value;
+
+  const confirmed =
+    confirm(
+      `${memberName} さんのPWを再設定しますか？`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+    const originalText =
+    resetPasswordButton.textContent;
+
+  try {
+
+    resetPasswordButton.disabled =
+      true;
+
+    resetPasswordButton.textContent =
+      "再設定中...";
+
+    const session =
+      getPortalAuthSession();
+
+    if (
+      !session ||
+      !session.access_token
+    ) {
+      throw new Error(
+        "ログイン情報を確認できません。"
+      );
+    }
+
+    const response =
+      await fetch(
+        `${SUPABASE_URL}` +
+        "/functions/v1/rapid-service",
+        {
+          method:
+            "POST",
+
+          headers: {
+            apikey:
+              SUPABASE_KEY,
+
+            Authorization:
+              `Bearer ${session.access_token}`,
+
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              action:
+                "reset_password",
+
+              member_id:
+                selectedMemberId,
+
+              password:
+                password
+            })
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ||
+        "PWを再設定できませんでした。"
+      );
+    }
+
+    document.getElementById(
+      "reset-password"
+    ).value =
+      "";
+
+    document.getElementById(
+      "reset-password-confirm"
+    ).value =
+      "";
+
+    alert(
+      result.message ||
+      `${memberName} さんのPWを再設定しました。`
+    );
+
+  } catch (error) {
+
+    console.error(
+      "PW再設定エラー:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "PWを再設定できませんでした。"
+    );
+
+  } finally {
+
+    resetPasswordButton.disabled =
+      false;
+
+    resetPasswordButton.textContent =
+      originalText;
+  }
+  
+}
 
   async function saveMemberProfile() {
 

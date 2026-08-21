@@ -579,6 +579,59 @@
       >
         保存する
       </button>
+
+            <div class="section-title">
+        パスワード変更
+      </div>
+
+
+      <div class="field">
+        <label for="current-password">
+          現在のパスワード
+        </label>
+
+        <input
+          id="current-password"
+          type="password"
+          autocomplete="current-password"
+        >
+      </div>
+
+
+      <div class="field">
+        <label for="new-password">
+          新しいパスワード （6文字以上）
+        </label>
+
+        <input
+          id="new-password"
+          type="password"
+          autocomplete="new-password"
+        >
+      </div>
+
+
+      <div class="field">
+        <label for="new-password-confirm">
+          新しいパスワード（確認）
+        </label>
+
+        <input
+          id="new-password-confirm"
+          type="password"
+          autocomplete="new-password"
+        >
+      </div>
+
+
+      <button
+        id="change-password-button"
+        type="button"
+        class="save-button"
+      >
+        パスワードを変更する
+      </button>
+
     `;
 
 
@@ -612,6 +665,11 @@
       document.getElementById(
         "save-button"
       );
+
+    const changePasswordButton =
+  document.getElementById(
+    "change-password-button"
+  );  
 
 
     birthDateInput.addEventListener(
@@ -655,6 +713,293 @@
       "click",
       saveProfile
     );
+
+    changePasswordButton.addEventListener(
+  "click",
+  changePassword
+);
+
+async function changePassword() {
+
+  const currentPasswordInput =
+    document.getElementById(
+      "current-password"
+    );
+
+  const newPasswordInput =
+    document.getElementById(
+      "new-password"
+    );
+
+  const newPasswordConfirmInput =
+    document.getElementById(
+      "new-password-confirm"
+    );
+
+  const changePasswordButton =
+    document.getElementById(
+      "change-password-button"
+    );
+
+
+  const currentPassword =
+    currentPasswordInput.value;
+
+  const newPassword =
+    newPasswordInput.value;
+
+  const newPasswordConfirm =
+    newPasswordConfirmInput.value;
+
+
+  if (!currentPassword) {
+
+    alert(
+      "現在のパスワードを入力してください。"
+    );
+
+    currentPasswordInput.focus();
+
+    return;
+  }
+
+
+  if (
+    newPassword.length < 6
+  ) {
+
+    alert(
+      "新しいパスワードは6文字以上にしてください。"
+    );
+
+    newPasswordInput.focus();
+
+    return;
+  }
+
+
+  if (
+    newPassword !==
+    newPasswordConfirm
+  ) {
+
+    alert(
+      "新しいパスワードが一致していません。"
+    );
+
+    newPasswordConfirmInput.focus();
+
+    return;
+  }
+
+
+  if (
+    currentPassword ===
+    newPassword
+  ) {
+
+    alert(
+      "現在のパスワードとは違うパスワードを設定してください。"
+    );
+
+    newPasswordInput.focus();
+
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      "パスワードを変更しますか？"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const originalText =
+    changePasswordButton.textContent;
+
+
+  try {
+
+    changePasswordButton.disabled =
+      true;
+
+    changePasswordButton.textContent =
+      "確認中...";
+
+
+    const email =
+      `member-${loginMember.id}` +
+      "@ponkotsu-club.local";
+
+
+    const loginResponse =
+      await fetch(
+        `${SUPABASE_URL}` +
+        "/auth/v1/token" +
+        "?grant_type=password",
+        {
+          method:
+            "POST",
+
+          headers: {
+            apikey:
+              SUPABASE_KEY,
+
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              email:
+                email,
+
+              password:
+                currentPassword
+            })
+        }
+      );
+
+
+    const loginResult =
+      await loginResponse.json();
+
+
+    if (!loginResponse.ok) {
+
+      alert(
+        "現在のパスワードが違います。"
+      );
+
+      currentPasswordInput.focus();
+
+      return;
+    }
+
+
+    changePasswordButton.textContent =
+      "変更中...";
+
+
+    const updateResponse =
+      await fetch(
+        `${SUPABASE_URL}` +
+        "/auth/v1/user",
+        {
+          method:
+            "PUT",
+
+          headers: {
+            apikey:
+              SUPABASE_KEY,
+
+            Authorization:
+              `Bearer ${loginResult.access_token}`,
+
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              password:
+                newPassword
+            })
+        }
+      );
+
+
+    const updateResult =
+      await updateResponse.json();
+
+
+    if (!updateResponse.ok) {
+
+      throw new Error(
+        updateResult.message ||
+        updateResult.msg ||
+        "パスワードを変更できませんでした。"
+      );
+    }
+
+
+    const newSession = {
+
+      access_token:
+        loginResult.access_token,
+
+      refresh_token:
+        loginResult.refresh_token,
+
+      expires_in:
+        loginResult.expires_in,
+
+      expires_at:
+        Math.floor(
+          Date.now() / 1000
+        ) +
+        Number(
+          loginResult.expires_in ||
+          3600
+        ),
+
+      user:
+        loginResult.user
+    };
+
+
+    localStorage.setItem(
+      "ponkotsu_session",
+      JSON.stringify(
+        newSession
+      )
+    );
+
+
+    currentPasswordInput.value =
+      "";
+
+    newPasswordInput.value =
+      "";
+
+    newPasswordConfirmInput.value =
+      "";
+
+
+    alert(
+      "パスワードを変更しました。"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "パスワード変更エラー:",
+      error
+    );
+
+
+    alert(
+      error.message ||
+      "パスワードを変更できませんでした。"
+    );
+
+
+  } finally {
+
+    changePasswordButton.disabled =
+      false;
+
+    changePasswordButton.textContent =
+      originalText;
+  }
+}
+
   }
 
 
