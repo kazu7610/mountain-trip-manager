@@ -5,16 +5,116 @@
 
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
+  async () => {
+
     if (!requirePortalLogin()) {
       return;
     }
 
-    initializeHomeLogin();
+
+    const profileReady =
+      await checkProfileCompleted();
+
+
+    if (!profileReady) {
+      return;
+    }
+
+
+    await initializeHomeLogin();
+
     setupPullToRefresh();
-    refreshHomeData();
+
+    await refreshHomeData();
   }
 );
+
+/* =========================================
+   会員情報の初回登録確認
+========================================= */
+
+async function checkProfileCompleted() {
+
+  const member =
+    getPortalMember();
+
+
+  if (
+    !member ||
+    !member.id
+  ) {
+
+    window.location.href =
+      "login.html";
+
+    return false;
+  }
+
+
+  try {
+
+    const response =
+      await portalFetch(
+        "/rest/v1/members" +
+        "?select=profile_completed" +
+        `&id=eq.${member.id}` +
+        "&limit=1"
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "会員情報の登録状態を確認できませんでした。"
+      );
+    }
+
+
+    const rows =
+      await response.json();
+
+
+    if (
+      !Array.isArray(rows) ||
+      rows.length === 0
+    ) {
+
+      throw new Error(
+        "会員情報が見つかりません。"
+      );
+    }
+
+
+    if (
+      rows[0].profile_completed !== true
+    ) {
+
+      window.location.href =
+        "member-profile.html";
+
+      return false;
+    }
+
+
+    return true;
+
+
+  } catch (error) {
+
+    console.error(
+      "会員情報確認エラー:",
+      error
+    );
+
+
+    alert(
+      "会員情報を確認できませんでした。"
+    );
+
+
+    return false;
+  }
+}
 
 /* =========================================
    ホーム画面の情報をまとめて更新

@@ -14,9 +14,11 @@
   </title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
+
 
     body {
       margin: 0;
@@ -41,9 +43,11 @@
         );
     }
 
+
     button {
       font-family: inherit;
     }
+
 
     .header {
       position: relative;
@@ -62,6 +66,7 @@
           #8fd9f2 100%
         );
     }
+
 
     .header::before {
       content: "";
@@ -91,6 +96,7 @@
       );
     }
 
+
     .header h1 {
       position: relative;
       z-index: 1;
@@ -99,6 +105,7 @@
 
       font-size: 25px;
     }
+
 
     .header p {
       position: relative;
@@ -110,6 +117,7 @@
       opacity: 0.92;
     }
 
+
     .container {
       width: min(
         calc(100% - 24px),
@@ -119,6 +127,7 @@
       margin: 0 auto;
       padding: 18px 0 42px;
     }
+
 
     .back-link {
       display: inline-block;
@@ -132,13 +141,16 @@
       text-decoration: none;
     }
 
+
     .admin-trip-section {
       margin-top: 28px;
     }
 
+
     .admin-trip-section:first-child {
       margin-top: 0;
     }
+
 
     .section-title {
       display: flex;
@@ -149,6 +161,7 @@
 
       font-size: 20px;
     }
+
 
     .section-title::before {
       content: "";
@@ -165,6 +178,7 @@
         );
     }
 
+
     .section-count {
       margin-left: auto;
 
@@ -177,6 +191,7 @@
 
       background: #e4f4fb;
     }
+
 
     .loading-card,
     .empty-card,
@@ -205,15 +220,18 @@
         );
     }
 
+
     .loading-card,
     .empty-card {
       color: #67889b;
     }
 
+
     .error-card {
       color: #bd3838;
       font-weight: bold;
     }
+
 
     .trip-card {
       padding: 16px;
@@ -251,13 +269,16 @@
         );
     }
 
+
     .trip-card + .trip-card {
       margin-top: 12px;
     }
 
+
     .descended-card {
       border-left-color: #3ca67a;
     }
+
 
     .change-request-card {
       border-left-color: #d98a2b;
@@ -271,6 +292,7 @@
         );
     }
 
+
     .cancel-request-card {
       border-left-color: #d05252;
 
@@ -283,12 +305,14 @@
         );
     }
 
+
     .trip-title-row {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
     }
+
 
     .trip-title {
       margin: 0;
@@ -297,6 +321,7 @@
       font-size: 19px;
       line-height: 1.45;
     }
+
 
     .status-badge {
       flex-shrink: 0;
@@ -313,20 +338,24 @@
       background: #fff0cf;
     }
 
+
     .change-request-badge {
       color: #94510a;
       background: #ffe7c2;
     }
+
 
     .cancel-request-badge {
       color: #a33d3d;
       background: #ffe0e0;
     }
 
+
     .descended-badge {
       color: #16714f;
       background: #dff6eb;
     }
+
 
     .trip-info {
       margin: 9px 0 0;
@@ -337,9 +366,11 @@
       line-height: 1.6;
     }
 
+
     .trip-info strong {
       color: #284f69;
     }
+
 
     .request-note {
       margin-top: 12px;
@@ -358,10 +389,12 @@
       background: #fff3dc;
     }
 
+
     .cancel-note {
       color: #963c3c;
       background: #ffeaea;
     }
+
 
     .button-row {
       display: grid;
@@ -373,6 +406,7 @@
 
       margin-top: 15px;
     }
+
 
     .reject-button,
     .approve-button {
@@ -386,6 +420,7 @@
       cursor: pointer;
     }
 
+
     .reject-button {
       border:
         1px solid
@@ -394,6 +429,7 @@
       color: #ad3f3f;
       background: white;
     }
+
 
     .approve-button {
       border: none;
@@ -408,21 +444,25 @@
         );
     }
 
+
     .approve-button:disabled,
     .reject-button:disabled {
       opacity: 0.6;
       cursor: wait;
     }
 
+
     .cancelled-card {
       border-color: #e3a2ab;
       background: #fff4f5;
     }
 
+
     .cancelled-badge {
       color: #a23d4b;
       background: #ffe1e5;
     }
+
 
     .cancelled-message {
       margin-top: 14px;
@@ -439,17 +479,21 @@
       background: #ffe1e5;
     }
 
+
     .cancelled-complete-button {
       background: #c75b6a;
     }
+
 
     .cancelled-complete-button:hover {
       background: #ad4857;
     }
 
+
     .admin-comment-list {
       margin-top: 14px;
     }
+
 
     .admin-comment-item {
       margin-top: 10px;
@@ -465,9 +509,11 @@
       background: #fff3dc;
     }
 
+
     .admin-comment-item strong {
       color: #5d3a16;
     }
+
 
     .admin-comment-time {
       display: block;
@@ -478,6 +524,7 @@
       font-size: 12px;
     }
 
+
     .admin-reply-box {
       margin-top: 14px;
       padding: 14px;
@@ -487,11 +534,13 @@
       background: #f3f9fc;
     }
 
+
     .admin-reply-box strong {
       display: block;
 
       margin-bottom: 9px;
     }
+
 
     .admin-reply-input {
       width: 100%;
@@ -515,6 +564,7 @@
       resize: vertical;
     }
 
+
     .admin-reply-input:focus {
       outline: none;
 
@@ -530,9 +580,11 @@
         );
     }
 
+
     .admin-reply-box .button-row {
       margin-top: 10px;
     }
+
 
     .member-admin-area {
       margin-top: 36px;
@@ -547,6 +599,7 @@
           0.25
         );
     }
+
 
     .member-admin-button {
       width: 100%;
@@ -571,27 +624,40 @@
       cursor: pointer;
     }
 
+
+    .member-admin-button
+    + .member-admin-button {
+      margin-top: 12px;
+    }
+
+
     @media (
       max-width: 520px
     ) {
+
       .button-row {
         grid-template-columns: 1fr;
       }
 
+
       .trip-title-row {
         display: block;
       }
+
 
       .status-badge {
         display: inline-block;
         margin-top: 8px;
       }
     }
+
   </style>
 
 </head>
 
+
 <body>
+
 
   <header class="header">
 
@@ -605,7 +671,9 @@
 
   </header>
 
+
   <main class="container">
+
 
     <a
       class="back-link"
@@ -626,6 +694,19 @@
 
     <div class="member-admin-area">
 
+
+      <button
+        type="button"
+        class="member-admin-button"
+        onclick="
+          location.href=
+            'member-profile-admin.html'
+        "
+      >
+        👥 会員情報管理
+      </button>
+
+
       <button
         type="button"
         class="member-admin-button"
@@ -637,14 +718,17 @@
         👤 入会申請
       </button>
 
+
     </div>
+
 
   </main>
 
 
-  <script src="portal-auth.js?v=4"></script>
-  <script src="push-notifications.js?v=4"></script>
-  <script src="admin.js?v=12"></script>
+  <script src="portal-auth.js?v=5"></script>
+  <script src="push-notifications.js?v=5"></script>
+  <script src="admin.js?v=13"></script>
+
 
 </body>
 

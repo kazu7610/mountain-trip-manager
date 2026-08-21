@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    会員情報管理｜ポンコツ倶楽部
+  </title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background:
+        linear-gradient(
+          180deg,
+          #eef7fb 0%,
+          #ffffff 100%
+        );
+
+      color: #24465a;
+    }
+
+
+    header {
+      padding: 18px 16px;
+
+      color: white;
+      text-align: center;
+
+      font-size: 20px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0d6fa8,
+          #27a7d3
+        );
+    }
+
+
+    main {
+      max-width: 720px;
+
+      margin: 0 auto;
+
+      padding:
+        18px 14px
+        40px;
+    }
+
+
+    .back-button {
+      display: inline-block;
+
+      margin-bottom: 16px;
+
+      padding: 9px 14px;
+
+      border: none;
+      border-radius: 10px;
+
+      color: #17658f;
+
+      background: #e4f3fa;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+
+    .card {
+      padding: 18px;
+
+      border-radius: 16px;
+
+      background: white;
+
+      box-shadow:
+        0 4px 18px
+        rgba(
+          40,
+          90,
+          120,
+          0.12
+        );
+    }
+
+
+    .title {
+      margin-bottom: 18px;
+
+      color: #1d648b;
+
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+
+    .member-select-area {
+      margin-bottom: 22px;
+
+      padding-bottom: 20px;
+
+      border-bottom:
+        1px solid
+        #d8e8f0;
+    }
+
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+
+    label {
+      display: block;
+
+      margin-bottom: 6px;
+
+      color: #3e6479;
+
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+
+    input,
+    select,
+    textarea {
+      box-sizing: border-box;
+
+      width: 100%;
+
+      padding: 11px 12px;
+
+      border:
+        1px solid
+        #b7d1df;
+
+      border-radius: 10px;
+
+      font-size: 16px;
+
+      background: #ffffff;
+    }
+
+
+    textarea {
+      min-height: 80px;
+
+      resize: vertical;
+    }
+
+
+    input[readonly] {
+      background: #eef3f6;
+
+      color: #5a6e79;
+    }
+
+
+    .age-box {
+      padding: 11px 12px;
+
+      border-radius: 10px;
+
+      background: #eef3f6;
+
+      color: #5a6e79;
+
+      font-size: 16px;
+    }
+
+
+    .section-title {
+      margin:
+        28px 0
+        14px;
+
+      padding-bottom: 8px;
+
+      border-bottom:
+        1px solid
+        #d8e8f0;
+
+      color: #246b92;
+
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+
+    .checkbox-row {
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      margin-top: 10px;
+
+      font-size: 15px;
+    }
+
+
+    .checkbox-row input {
+      width: auto;
+
+      transform:
+        scale(1.2);
+    }
+
+
+    .save-button {
+      width: 100%;
+
+      margin-top: 24px;
+
+      padding: 14px 12px;
+
+      border: none;
+      border-radius: 12px;
+
+      color: white;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #2aa8d3
+        );
+
+      cursor: pointer;
+    }
+
+
+    .save-button:disabled {
+      opacity: 0.6;
+
+      cursor: default;
+    }
+
+
+    .status-box {
+      margin-bottom: 18px;
+
+      padding: 10px 12px;
+
+      border-radius: 10px;
+
+      color: #557185;
+
+      background: #f2f7fa;
+
+      font-size: 14px;
+    }
+
+
+    .loading {
+      padding: 30px 10px;
+
+      text-align: center;
+
+      color: #668898;
+    }
+
+
+    .error {
+      padding: 16px;
+
+      border-radius: 12px;
+
+      background: #fff1f1;
+
+      color: #a03a3a;
+    }
+
+
+    #profile-form {
+      display: none;
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+
+<header>
+  会員情報管理
+</header>
+
+
+<main>
+
+  <button
+    type="button"
+    class="back-button"
+    onclick="
+      location.href='admin.html'
+    "
+  >
+    ← 管理者画面へ戻る
+  </button>
+
+
+  <div class="card">
+
+    <div class="title">
+      会員情報管理
+    </div>
+
+
+    <div class="member-select-area">
+
+      <div class="field">
+
+        <label for="member-select">
+          会員を選択
+        </label>
+
+        <select id="member-select">
+
+          <option value="">
+            会員を選択してください
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      会員一覧を読み込んでいます...
+    </div>
+
+
+    <div
+      id="profile-form"
+    >
+
+      <div
+        id="profile-status"
+        class="status-box"
+      >
+      </div>
+
+
+      <div class="field">
+
+        <label for="name">
+          氏名
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          readonly
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="gender">
+          性別
+        </label>
+
+        <select id="gender">
+
+          <option value="">
+            選択してください
+          </option>
+
+          <option value="男">
+            男性
+          </option>
+
+          <option value="女">
+            女性
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="blood-type">
+          血液型
+        </label>
+
+        <select id="blood-type">
+
+          <option value="">
+            選択してください
+          </option>
+
+          <option value="A">
+            A型
+          </option>
+
+          <option value="B">
+            B型
+          </option>
+
+          <option value="O">
+            O型
+          </option>
+
+          <option value="AB">
+            AB型
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="birth-date">
+          生年月日
+        </label>
+
+        <input
+          id="birth-date"
+          type="date"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          年齢
+        </label>
+
+        <div
+          id="age"
+          class="age-box"
+        >
+          -
+        </div>
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="mobile-phone">
+          携帯電話
+        </label>
+
+        <input
+          id="mobile-phone"
+          type="tel"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="home-phone">
+          自宅電話
+        </label>
+
+        <input
+          id="home-phone"
+          type="tel"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="postal-code">
+          郵便番号
+        </label>
+
+        <input
+          id="postal-code"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="address">
+          住所
+        </label>
+
+        <textarea
+          id="address"
+        ></textarea>
+
+      </div>
+
+
+      <div class="section-title">
+        緊急連絡先
+      </div>
+
+
+      <div class="field">
+
+        <label for="emergency-name">
+          氏名
+        </label>
+
+        <input
+          id="emergency-name"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="emergency-relation">
+          続柄
+        </label>
+
+        <input
+          id="emergency-relation"
+          type="text"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="emergency-phone">
+          電話番号
+        </label>
+
+        <input
+          id="emergency-phone"
+          type="tel"
+        >
+
+      </div>
+
+
+      <div class="section-title">
+        山岳保険
+      </div>
+
+
+      <div class="field">
+
+        <label for="insurance">
+          保険名
+        </label>
+
+        <input
+          id="insurance"
+          type="text"
+        >
+
+
+        <label class="checkbox-row">
+
+          <input
+            id="insurance-none"
+            type="checkbox"
+          >
+
+          未加入
+
+        </label>
+
+      </div>
+
+
+      <button
+        id="save-button"
+        type="button"
+        class="save-button"
+      >
+        この会員情報を保存する
+      </button>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<script src="portal-auth.js?v=4"></script>
+
+
+<script>
+
+  const loginMember =
+    getPortalMember();
+
+
+  const memberSelect =
+    document.getElementById(
+      "member-select"
+    );
+
+
+  const profileForm =
+    document.getElementById(
+      "profile-form"
+    );
+
+
+  const loading =
+    document.getElementById(
+      "loading"
+    );
+
+
+  let selectedMemberId =
+    null;
+
+
+  /* =========================================
+     最高管理者確認
+  ========================================= */
+
+  if (
+    !loginMember ||
+    loginMember.role !==
+      "super_admin"
+  ) {
+
+    window.location.href =
+      "index.html";
+  }
+
+
+  /* =========================================
+     初期処理
+  ========================================= */
+
+  loadMembers();
+
+
+  memberSelect.addEventListener(
+    "change",
+    async () => {
+
+      const memberId =
+        Number(
+          memberSelect.value
+        );
+
+
+      if (
+        !Number.isInteger(
+          memberId
+        ) ||
+        memberId <= 0
+      ) {
+
+        selectedMemberId =
+          null;
+
+        profileForm.style.display =
+          "none";
+
+        return;
+      }
+
+
+      selectedMemberId =
+        memberId;
+
+
+      await loadMemberProfile(
+        memberId
+      );
+    }
+  );
+
+
+  /* =========================================
+     会員一覧
+  ========================================= */
+
+  async function loadMembers() {
+
+    try {
+
+      const response =
+        await portalFetch(
+          "/rest/v1/members" +
+          "?select=id,name,active" +
+          "&active=eq.true" +
+          "&order=id.asc"
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "会員一覧を取得できませんでした。"
+        );
+      }
+
+
+      const members =
+        await response.json();
+
+
+      memberSelect.innerHTML =
+        `
+          <option value="">
+            会員を選択してください
+          </option>
+        `;
+
+
+      members.forEach(
+        (member) => {
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+
+          option.value =
+            String(
+              member.id
+            );
+
+
+          option.textContent =
+            member.name;
+
+
+          memberSelect.appendChild(
+            option
+          );
+        }
+      );
+
+
+      loading.style.display =
+        "none";
+
+
+    } catch (error) {
+
+      console.error(
+        "会員一覧取得エラー:",
+        error
+      );
+
+
+      loading.className =
+        "error";
+
+
+      loading.textContent =
+        "会員一覧を読み込めませんでした。";
+    }
+  }
+
+
+  /* =========================================
+     会員情報読込
+  ========================================= */
+
+  async function loadMemberProfile(
+    memberId
+  ) {
+
+    profileForm.style.display =
+      "none";
+
+
+    loading.style.display =
+      "block";
+
+
+    loading.className =
+      "loading";
+
+
+    loading.textContent =
+      "会員情報を読み込んでいます...";
+
+
+    try {
+
+      const response =
+        await portalFetch(
+          "/rest/v1/members" +
+          "?select=" +
+          "id,name,gender,blood_type,birth_date," +
+          "mobile_phone,home_phone,postal_code,address," +
+          "emergency_name,emergency_relation,emergency_phone," +
+          "insurance,profile_completed" +
+          `&id=eq.${memberId}` +
+          "&limit=1"
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "会員情報を取得できませんでした。"
+        );
+      }
+
+
+      const rows =
+        await response.json();
+
+
+      if (
+        !Array.isArray(rows) ||
+        rows.length === 0
+      ) {
+
+        throw new Error(
+          "会員情報が見つかりません。"
+        );
+      }
+
+
+      showMemberProfile(
+        rows[0]
+      );
+
+
+      loading.style.display =
+        "none";
+
+
+      profileForm.style.display =
+        "block";
+
+
+    } catch (error) {
+
+      console.error(
+        "会員情報取得エラー:",
+        error
+      );
+
+
+      loading.className =
+        "error";
+
+
+      loading.textContent =
+        "会員情報を読み込めませんでした。";
+    }
+  }
+
+
+  /* =========================================
+     会員情報表示
+  ========================================= */
+
+  function showMemberProfile(
+    member
+  ) {
+
+    document.getElementById(
+      "name"
+    ).value =
+      member.name || "";
+
+
+    document.getElementById(
+      "gender"
+    ).value =
+      member.gender || "";
+
+
+    document.getElementById(
+      "blood-type"
+    ).value =
+      member.blood_type || "";
+
+
+    document.getElementById(
+      "birth-date"
+    ).value =
+      member.birth_date || "";
+
+
+    document.getElementById(
+      "age"
+    ).textContent =
+      calculateAge(
+        member.birth_date
+      );
+
+
+    document.getElementById(
+      "mobile-phone"
+    ).value =
+      member.mobile_phone || "";
+
+
+    document.getElementById(
+      "home-phone"
+    ).value =
+      member.home_phone || "";
+
+
+    document.getElementById(
+      "postal-code"
+    ).value =
+      member.postal_code || "";
+
+
+    document.getElementById(
+      "address"
+    ).value =
+      member.address || "";
+
+
+    document.getElementById(
+      "emergency-name"
+    ).value =
+      member.emergency_name || "";
+
+
+    document.getElementById(
+      "emergency-relation"
+    ).value =
+      member.emergency_relation ||
+      "";
+
+
+    document.getElementById(
+      "emergency-phone"
+    ).value =
+      member.emergency_phone || "";
+
+
+    const insuranceInput =
+      document.getElementById(
+        "insurance"
+      );
+
+
+    const insuranceNone =
+      document.getElementById(
+        "insurance-none"
+      );
+
+
+    if (
+      member.insurance ===
+      "未加入"
+    ) {
+
+      insuranceInput.value =
+        "";
+
+      insuranceInput.disabled =
+        true;
+
+      insuranceNone.checked =
+        true;
+
+    } else {
+
+      insuranceInput.value =
+        member.insurance || "";
+
+      insuranceInput.disabled =
+        false;
+
+      insuranceNone.checked =
+        false;
+    }
+
+
+    document.getElementById(
+      "profile-status"
+    ).textContent =
+      member.profile_completed
+        ? "本人登録：完了"
+        : "本人登録：未完了";
+  }
+
+
+  /* =========================================
+     生年月日 → 年齢
+  ========================================= */
+
+  const birthDateInput =
+    document.getElementById(
+      "birth-date"
+    );
+
+
+  birthDateInput.addEventListener(
+    "change",
+    () => {
+
+      document.getElementById(
+        "age"
+      ).textContent =
+        calculateAge(
+          birthDateInput.value
+        );
+    }
+  );
+
+
+  function calculateAge(
+    birthDate
+  ) {
+
+    if (!birthDate) {
+      return "-";
+    }
+
+
+    const parts =
+      birthDate.split(
+        "-"
+      );
+
+
+    if (
+      parts.length !== 3
+    ) {
+      return "-";
+    }
+
+
+    const birthYear =
+      Number(
+        parts[0]
+      );
+
+    const birthMonth =
+      Number(
+        parts[1]
+      );
+
+    const birthDay =
+      Number(
+        parts[2]
+      );
+
+
+    const today =
+      new Date();
+
+
+    let age =
+      today.getFullYear() -
+      birthYear;
+
+
+    const currentMonth =
+      today.getMonth() + 1;
+
+
+    const currentDay =
+      today.getDate();
+
+
+    if (
+      currentMonth <
+        birthMonth ||
+      (
+        currentMonth ===
+          birthMonth &&
+        currentDay <
+          birthDay
+      )
+    ) {
+
+      age--;
+    }
+
+
+    return `${age}歳`;
+  }
+
+
+  /* =========================================
+     保険未加入
+  ========================================= */
+
+  const insuranceInput =
+    document.getElementById(
+      "insurance"
+    );
+
+
+  const insuranceNone =
+    document.getElementById(
+      "insurance-none"
+    );
+
+
+  insuranceNone.addEventListener(
+    "change",
+    () => {
+
+      if (
+        insuranceNone.checked
+      ) {
+
+        insuranceInput.value =
+          "";
+
+        insuranceInput.disabled =
+          true;
+
+      } else {
+
+        insuranceInput.disabled =
+          false;
+
+        insuranceInput.focus();
+      }
+    }
+  );
+
+
+  /* =========================================
+     保存
+  ========================================= */
+
+  const saveButton =
+    document.getElementById(
+      "save-button"
+    );
+
+
+  saveButton.addEventListener(
+    "click",
+    saveMemberProfile
+  );
+
+
+  async function saveMemberProfile() {
+
+    if (!selectedMemberId) {
+
+      alert(
+        "会員を選択してください。"
+      );
+
+      return;
+    }
+
+
+    const memberName =
+      document.getElementById(
+        "name"
+      ).value;
+
+
+    const insurance =
+      insuranceNone.checked
+        ? "未加入"
+        : insuranceInput
+            .value
+            .trim();
+
+
+    const confirmed =
+      confirm(
+        `${memberName} さんの会員情報を保存しますか？`
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    const originalText =
+      saveButton.textContent;
+
+
+    try {
+
+      saveButton.disabled =
+        true;
+
+
+      saveButton.textContent =
+        "保存中...";
+
+
+      const response =
+        await portalFetch(
+          `/rest/v1/members?id=eq.${selectedMemberId}`,
+          {
+            method:
+              "PATCH",
+
+            headers: {
+              Prefer:
+                "return=minimal"
+            },
+
+            body:
+              JSON.stringify({
+
+                gender:
+                  valueOrNull(
+                    "gender"
+                  ),
+
+                blood_type:
+                  valueOrNull(
+                    "blood-type"
+                  ),
+
+                birth_date:
+                  valueOrNull(
+                    "birth-date"
+                  ),
+
+                mobile_phone:
+                  valueOrNull(
+                    "mobile-phone"
+                  ),
+
+                home_phone:
+                  valueOrNull(
+                    "home-phone"
+                  ),
+
+                postal_code:
+                  valueOrNull(
+                    "postal-code"
+                  ),
+
+                address:
+                  valueOrNull(
+                    "address"
+                  ),
+
+                emergency_name:
+                  valueOrNull(
+                    "emergency-name"
+                  ),
+
+                emergency_relation:
+                  valueOrNull(
+                    "emergency-relation"
+                  ),
+
+                emergency_phone:
+                  valueOrNull(
+                    "emergency-phone"
+                  ),
+
+                insurance:
+                  insurance || null
+              })
+          }
+        );
+
+
+      if (!response.ok) {
+
+        const errorText =
+          await response.text();
+
+
+        throw new Error(
+          errorText ||
+          "保存に失敗しました。"
+        );
+      }
+
+
+      alert(
+        `${memberName} さんの会員情報を保存しました。`
+      );
+
+
+      await loadMemberProfile(
+        selectedMemberId
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "会員情報保存エラー:",
+        error
+      );
+
+
+      alert(
+        error.message ||
+        "会員情報を保存できませんでした。"
+      );
+
+
+    } finally {
+
+      saveButton.disabled =
+        false;
+
+
+      saveButton.textContent =
+        originalText;
+    }
+  }
+
+
+  /* =========================================
+     入力値
+  ========================================= */
+
+  function valueOrNull(
+    id
+  ) {
+
+    const element =
+      document.getElementById(
+        id
+      );
+
+
+    if (!element) {
+      return null;
+    }
+
+
+    const value =
+      String(
+        element.value || ""
+      ).trim();
+
+
+    return value ||
+      null;
+  }
+
+</script>
+
+
+</body>
+</html>

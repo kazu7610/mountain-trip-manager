@@ -10,17 +10,21 @@ document.addEventListener(
   }
 );
 
+
 /* =========================================
    ログイン画面を準備
 ========================================= */
 
 async function initializeLoginPage() {
+
   const loginForm =
     document.getElementById(
       "login-form"
     );
 
+
   if (!loginForm) {
+
     console.error(
       "ログインフォームが見つかりません。"
     );
@@ -28,19 +32,23 @@ async function initializeLoginPage() {
     return;
   }
 
+
   loginForm.addEventListener(
     "submit",
     handleLogin
   );
 
+
   await loadMembers();
 }
+
 
 /* =========================================
    会員一覧を読み込む
 ========================================= */
 
 async function loadMembers() {
+
   const memberSelect =
     document.getElementById(
       "member-select"
@@ -51,7 +59,12 @@ async function loadMembers() {
       "login-message"
     );
 
-  if (!memberSelect || !message) {
+
+  if (
+    !memberSelect ||
+    !message
+  ) {
+
     console.error(
       "会員一覧の表示場所が見つかりません。"
     );
@@ -59,18 +72,23 @@ async function loadMembers() {
     return;
   }
 
+
   try {
+
     const response =
       await portalFetch(
         "/rest/v1/members" +
-        "?select=id,name,role" +
+        "?select=id,name,role,profile_completed" +
         "&active=eq.true" +
         "&order=id.asc"
       );
 
+
     if (!response.ok) {
+
       const errorText =
         await response.text();
+
 
       throw new Error(
         "会員情報の取得に失敗しました。" +
@@ -78,8 +96,10 @@ async function loadMembers() {
       );
     }
 
+
     const members =
       await response.json();
+
 
     memberSelect.innerHTML = `
       <option value="">
@@ -87,39 +107,67 @@ async function loadMembers() {
       </option>
     `;
 
-    members.forEach((member) => {
-      const option =
-        document.createElement(
-          "option"
+
+    members.forEach(
+      (member) => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          String(
+            member.id
+          );
+
+
+        option.textContent =
+          member.name;
+
+
+        option.dataset.name =
+          member.name;
+
+
+        option.dataset.role =
+          member.role ||
+          "member";
+
+
+        option.dataset.profileCompleted =
+          member.profile_completed
+            ? "true"
+            : "false";
+
+
+        memberSelect.appendChild(
+          option
         );
+      }
+    );
 
-      option.value =
-        String(member.id);
 
-      option.textContent =
-        member.name;
+    message.textContent =
+      "";
 
-      option.dataset.name =
-        member.name;
 
-      option.dataset.role =
-        member.role || "member";
-
-      memberSelect.appendChild(
-        option
-      );
-    });
-
-    message.textContent = "";
     message.classList.remove(
       "loading-text"
     );
 
+
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      error
+    );
+
 
     message.textContent =
       "会員情報を読み込めませんでした。";
+
 
     message.classList.remove(
       "loading-text"
@@ -127,12 +175,17 @@ async function loadMembers() {
   }
 }
 
+
 /* =========================================
    ログイン処理
 ========================================= */
 
-async function handleLogin(event) {
+async function handleLogin(
+  event
+) {
+
   event.preventDefault();
+
 
   const memberSelect =
     document.getElementById(
@@ -154,12 +207,14 @@ async function handleLogin(event) {
       "login-message"
     );
 
+
   if (
     !memberSelect ||
     !passwordInput ||
     !loginButton ||
     !message
   ) {
+
     console.error(
       "ログインに必要な項目が見つかりません。"
     );
@@ -167,79 +222,120 @@ async function handleLogin(event) {
     return;
   }
 
+
   const memberId =
-    Number(memberSelect.value);
+    Number(
+      memberSelect.value
+    );
+
 
   const password =
     passwordInput.value;
+
 
   const selectedOption =
     memberSelect.options[
       memberSelect.selectedIndex
     ];
 
+
   const memberName =
-    selectedOption?.dataset.name || "";
+    selectedOption?.dataset.name ||
+    "";
+
 
   const memberRole =
     selectedOption?.dataset.role ||
     "member";
 
+
+  const profileCompleted =
+    selectedOption
+      ?.dataset
+      .profileCompleted ===
+    "true";
+
+
   if (
-    !Number.isInteger(memberId) ||
+    !Number.isInteger(
+      memberId
+    ) ||
     memberId <= 0
   ) {
+
     message.textContent =
       "名前を選択してください。";
 
     return;
   }
 
+
   if (!password) {
+
     message.textContent =
       "パスワードを入力してください。";
 
     return;
   }
 
-  const email =
-    createLoginEmail(memberId);
 
-  loginButton.disabled = true;
+  const email =
+    createLoginEmail(
+      memberId
+    );
+
+
+  loginButton.disabled =
+    true;
+
+
   loginButton.textContent =
     "ログイン中...";
 
-  message.textContent = "";
+
+  message.textContent =
+    "";
+
+
   message.classList.remove(
     "loading-text"
   );
 
+
   try {
-    const response = await fetch(
-      `${SUPABASE_URL}` +
-      "/auth/v1/token" +
-      "?grant_type=password",
-      {
-        method: "POST",
 
-        headers: {
-          apikey: SUPABASE_KEY,
+    const response =
+      await fetch(
+        `${SUPABASE_URL}` +
+        "/auth/v1/token" +
+        "?grant_type=password",
+        {
+          method:
+            "POST",
 
-          "Content-Type":
-            "application/json"
-        },
+          headers: {
+            apikey:
+              SUPABASE_KEY,
 
-        body: JSON.stringify({
-          email,
-          password
-        })
-      }
-    );
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              email,
+              password
+            })
+        }
+      );
+
 
     const result =
       await response.json();
 
+
     if (!response.ok) {
+
       throw new Error(
         result.error_description ||
         result.msg ||
@@ -248,38 +344,65 @@ async function handleLogin(event) {
       );
     }
 
+
     saveLoginSession(
       result,
       memberId,
       memberName,
-      memberRole
+      memberRole,
+      profileCompleted
     );
 
-    window.location.href =
-      "index.html";
+
+    if (
+      profileCompleted
+    ) {
+
+      window.location.href =
+        "index.html";
+
+    } else {
+
+      window.location.href =
+        "member-profile.html";
+    }
+
 
   } catch (error) {
-    console.error(error);
+
+    console.error(
+      error
+    );
+
 
     message.textContent =
       "名前またはパスワードが違います。";
 
-    loginButton.disabled = false;
+
+    loginButton.disabled =
+      false;
+
+
     loginButton.textContent =
       "ログイン";
   }
 }
 
+
 /* =========================================
    Auth用の仮メールアドレス
 ========================================= */
 
-function createLoginEmail(memberId) {
+function createLoginEmail(
+  memberId
+) {
+
   return (
     `member-${memberId}` +
     "@ponkotsu-club.local"
   );
 }
+
 
 /* =========================================
    ログイン情報を保存
@@ -289,9 +412,12 @@ function saveLoginSession(
   authResult,
   memberId,
   memberName,
-  memberRole
+  memberRole,
+  profileCompleted
 ) {
+
   const session = {
+
     access_token:
       authResult.access_token,
 
@@ -302,28 +428,45 @@ function saveLoginSession(
       authResult.expires_in,
 
     expires_at:
-      Math.floor(Date.now() / 1000) +
+      Math.floor(
+        Date.now() / 1000
+      ) +
       Number(
-        authResult.expires_in || 3600
+        authResult.expires_in ||
+        3600
       ),
 
     user:
       authResult.user
   };
 
+
   localStorage.setItem(
     "ponkotsu_session",
-    JSON.stringify(session)
+    JSON.stringify(
+      session
+    )
   );
+
 
   localStorage.setItem(
     "ponkotsu_member",
     JSON.stringify({
-      id: memberId,
-      name: memberName,
-      role: memberRole,
+      id:
+        memberId,
+
+      name:
+        memberName,
+
+      role:
+        memberRole,
+
+      profileCompleted:
+        profileCompleted,
+
       authUserId:
-        authResult.user?.id || null
+        authResult.user?.id ||
+        null
     })
   );
 }
