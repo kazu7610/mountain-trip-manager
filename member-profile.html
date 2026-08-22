@@ -253,7 +253,8 @@
           "id,name,gender,blood_type,birth_date," +
           "mobile_phone,home_phone,postal_code,address," +
           "emergency_name,emergency_relation,emergency_phone," +
-          "insurance,profile_completed" +
+          "insurance,insurance_company,insurance_policy_number," +
+          "insurance_expiry_date,insurance_note,profile_completed" +
           `&id=eq.${loginMember.id}`
         );
 
@@ -320,6 +321,19 @@
       <div class="title">
         自分の会員情報
       </div>
+
+    <button
+  id="profile-toggle-button"
+  type="button"
+  class="save-button"
+>
+  プロフィール編集
+</button>  
+
+    <div
+  id="profile-section"
+  style="display:none;"
+>
 
       <div class="field">
         <label>
@@ -569,6 +583,68 @@
           未加入
 
         </label>
+
+      <button
+  id="insurance-detail-toggle-button"
+  type="button"
+  class="save-button"
+>
+  保険詳細
+</button>
+
+<div
+  id="insurance-detail-section"
+  style="display:none;"
+>
+
+  <div class="field">
+    <label for="insurance-company">
+      保険会社
+    </label>
+
+    <input
+  id="insurance-company"
+  type="text"
+  value="${escapeHtml(member.insurance_company || "")}"
+>
+  </div>
+
+  <div class="field">
+    <label for="insurance-policy-number">
+      証券番号
+    </label>
+
+    <input
+  id="insurance-policy-number"
+  type="text"
+  value="${escapeHtml(member.insurance_policy_number || "")}"
+>
+  </div>
+
+  <div class="field">
+    <label for="insurance-expiry-date">
+      有効期限
+    </label>
+
+    <input
+  id="insurance-expiry-date"
+  type="date"
+  value="${member.insurance_expiry_date || ""}"
+>
+  </div>
+
+  <div class="field">
+    <label for="insurance-note">
+      補償内容メモ
+    </label>
+
+    <textarea
+  id="insurance-note"
+>${escapeHtml(member.insurance_note || "")}</textarea>
+  </div>
+
+</div>
+
       </div>
 
 
@@ -579,6 +655,19 @@
       >
         保存する
       </button>
+
+      </div>
+<button
+  id="password-toggle-button"
+  type="button"
+  class="save-button"
+>
+  パスワード変更
+</button>
+      <div
+  id="password-section"
+  style="display:none;"
+>
 
             <div class="section-title">
         パスワード変更
@@ -631,6 +720,27 @@
       >
         パスワードを変更する
       </button>
+</div>
+
+<div class="section-title">
+  会の情報
+</div>
+
+<button
+  id="rules-button"
+  type="button"
+  class="save-button"
+>
+  会則を見る
+</button>
+
+<button
+  id="notice-button"
+  type="button"
+  class="save-button"
+>
+  お知らせ
+</button>
 
     `;
 
@@ -640,6 +750,36 @@
 
 
   function setupEvents() {
+
+    const profileToggleButton =
+  document.getElementById(
+    "profile-toggle-button"
+  );
+
+const profileSection =
+  document.getElementById(
+    "profile-section"
+  );
+
+  const passwordToggleButton =
+  document.getElementById(
+    "password-toggle-button"
+  );
+
+  const rulesButton =
+  document.getElementById(
+    "rules-button"
+  );
+
+const noticeButton =
+  document.getElementById(
+    "notice-button"
+  );
+
+const passwordSection =
+  document.getElementById(
+    "password-section"
+  );
 
     const birthDateInput =
       document.getElementById(
@@ -661,6 +801,16 @@
         "insurance-none"
       );
 
+    const insuranceDetailToggleButton =
+  document.getElementById(
+    "insurance-detail-toggle-button"
+  );
+
+const insuranceDetailSection =
+  document.getElementById(
+    "insurance-detail-section"
+  );  
+
     const saveButton =
       document.getElementById(
         "save-button"
@@ -671,6 +821,25 @@
     "change-password-button"
   );  
 
+profileToggleButton.addEventListener(
+  "click",
+  () => {
+
+    const isHidden =
+      profileSection.style.display ===
+      "none";
+
+    profileSection.style.display =
+      isHidden
+        ? "block"
+        : "none";
+
+    profileToggleButton.textContent =
+      isHidden
+        ? "プロフィール編集を閉じる"
+        : "プロフィール編集";
+  }
+);
 
     birthDateInput.addEventListener(
       "change",
@@ -683,6 +852,43 @@
       }
     );
 
+  passwordToggleButton.addEventListener(
+  "click",
+  () => {
+
+    const isHidden =
+      passwordSection.style.display ===
+      "none";
+
+    passwordSection.style.display =
+      isHidden
+        ? "block"
+        : "none";
+
+    passwordToggleButton.textContent =
+      isHidden
+        ? "パスワード変更を閉じる"
+        : "パスワード変更";
+  }
+);
+
+rulesButton.addEventListener(
+  "click",
+  () => {
+    window.open(
+      "club-rules.pdf",
+      "_blank"
+    );
+  }
+);
+
+noticeButton.addEventListener(
+  "click",
+  () => {
+    window.location.href =
+      "notice.html";
+  }
+);
 
     insuranceNone.addEventListener(
       "change",
@@ -707,6 +913,26 @@
         }
       }
     );
+
+    insuranceDetailToggleButton.addEventListener(
+  "click",
+  () => {
+
+    const isHidden =
+      insuranceDetailSection.style.display ===
+      "none";
+
+    insuranceDetailSection.style.display =
+      isHidden
+        ? "block"
+        : "none";
+
+    insuranceDetailToggleButton.textContent =
+      isHidden
+        ? "保険詳細を閉じる"
+        : "保険詳細";
+  }
+);
 
 
     saveButton.addEventListener(
@@ -1065,6 +1291,26 @@ async function changePassword() {
         "insurance-none"
       );
 
+    const insuranceCompany =
+  document.getElementById(
+    "insurance-company"
+  ).value.trim();
+
+const insurancePolicyNumber =
+  document.getElementById(
+    "insurance-policy-number"
+  ).value.trim();
+
+const insuranceExpiryDate =
+  document.getElementById(
+    "insurance-expiry-date"
+  ).value;
+
+const insuranceNote =
+  document.getElementById(
+    "insurance-note"
+  ).value.trim();  
+
     const saveButton =
       document.getElementById(
         "save-button"
@@ -1242,6 +1488,18 @@ async function changePassword() {
 
                 insurance:
                   insurance,
+
+                insurance_company:
+  insuranceCompany || null,
+
+insurance_policy_number:
+  insurancePolicyNumber || null,
+
+insurance_expiry_date:
+  insuranceExpiryDate || null,
+
+insurance_note:
+  insuranceNote || null,  
 
                 profile_completed:
                   true

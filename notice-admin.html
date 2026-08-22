@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    お知らせ管理｜ポンコツ倶楽部
+  </title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+
+      color: #16324a;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+
+      background:
+        #eef8fc;
+    }
+
+    .page {
+      width:
+        min(
+          calc(100% - 24px),
+          760px
+        );
+
+      margin:
+        0 auto;
+
+      padding:
+        24px 0 60px;
+    }
+
+    .title {
+      margin-bottom:
+        20px;
+
+      color:
+        #1672a6;
+
+      font-size:
+        28px;
+
+      font-weight:
+        800;
+
+      text-align:
+        center;
+    }
+
+    .card {
+      margin-bottom:
+        18px;
+
+      padding:
+        20px;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #b9dff1;
+
+      border-radius:
+        20px;
+
+      box-shadow:
+        0 6px 18px
+        rgba(
+          31,
+          104,
+          145,
+          0.08
+        );
+    }
+
+    .section-title {
+      margin-bottom:
+        16px;
+
+      color:
+        #1672a6;
+
+      font-size:
+        20px;
+
+      font-weight:
+        800;
+    }
+
+    .field {
+      margin-bottom:
+        16px;
+    }
+
+    .field label {
+      display:
+        block;
+
+      margin-bottom:
+        6px;
+
+      font-size:
+        14px;
+
+      font-weight:
+        700;
+    }
+
+    input[type="text"],
+    textarea {
+      width:
+        100%;
+
+      padding:
+        12px;
+
+      color:
+        #16324a;
+
+      font:
+        inherit;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #a9cee0;
+
+      border-radius:
+        12px;
+    }
+
+    textarea {
+      min-height:
+        140px;
+
+      resize:
+        vertical;
+    }
+
+    .check-row {
+      display:
+        flex;
+
+      flex-wrap:
+        wrap;
+
+      gap:
+        18px;
+
+      margin-bottom:
+        18px;
+    }
+
+    .check-label {
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        7px;
+
+      font-weight:
+        700;
+    }
+
+    button {
+      font:
+        inherit;
+    }
+
+    .primary-button,
+    .back-button,
+    .cancel-button {
+      display:
+        block;
+
+      width:
+        100%;
+
+      padding:
+        14px;
+
+      font-size:
+        16px;
+
+      font-weight:
+        800;
+
+      border-radius:
+        14px;
+
+      cursor:
+        pointer;
+    }
+
+    .primary-button {
+      color:
+        #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          #1679ad,
+          #2caad2
+        );
+
+      border:
+        none;
+    }
+
+    .cancel-button {
+      margin-top:
+        10px;
+
+      color:
+        #557080;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #bdd8e5;
+    }
+
+    .back-button {
+      margin-top:
+        20px;
+
+      color:
+        #1672a6;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #75bde0;
+    }
+
+    .notice-list {
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        14px;
+    }
+
+    .notice-card {
+      padding:
+        16px;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #c4dfeb;
+
+      border-radius:
+        15px;
+    }
+
+    .notice-card.important {
+      border:
+        2px solid
+        #e89aa7;
+
+      background:
+        #fff8fa;
+    }
+
+    .notice-header {
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        flex-start;
+
+      gap:
+        10px;
+
+      margin-bottom:
+        8px;
+    }
+
+    .notice-title {
+      color:
+        #195f88;
+
+      font-size:
+        18px;
+
+      font-weight:
+        800;
+
+      word-break:
+        break-word;
+    }
+
+    .important-badge {
+      flex:
+        0 0 auto;
+
+      padding:
+        4px 8px;
+
+      color:
+        #a2384d;
+
+      font-size:
+        12px;
+
+      font-weight:
+        800;
+
+      background:
+        #ffe2e8;
+
+      border-radius:
+        999px;
+    }
+
+    .notice-meta {
+      margin-bottom:
+        10px;
+
+      color:
+        #6d8795;
+
+      font-size:
+        13px;
+    }
+
+    .notice-body {
+      margin-bottom:
+        14px;
+
+      line-height:
+        1.7;
+
+      white-space:
+        pre-wrap;
+
+      word-break:
+        break-word;
+    }
+
+    .status-row {
+      display:
+        flex;
+
+      flex-wrap:
+        wrap;
+
+      gap:
+        8px;
+
+      margin-bottom:
+        12px;
+    }
+
+    .status-badge {
+      display:
+        inline-block;
+
+      padding:
+        5px 9px;
+
+      color:
+        #246281;
+
+      font-size:
+        12px;
+
+      font-weight:
+        800;
+
+      background:
+        #e9f6fc;
+
+      border-radius:
+        999px;
+    }
+
+    .status-badge.private {
+      color:
+        #705d28;
+
+      background:
+        #fff3ce;
+    }
+
+    .read-summary-button {
+      width:
+        100%;
+
+      margin-bottom:
+        10px;
+
+      padding:
+        11px 12px;
+
+      color:
+        #176d9d;
+
+      font-weight:
+        800;
+
+      text-align:
+        left;
+
+      background:
+        #edf8fd;
+
+      border:
+        1px solid
+        #9fd2e9;
+
+      border-radius:
+        11px;
+
+      cursor:
+        pointer;
+    }
+
+    .read-detail {
+      display:
+        none;
+
+      margin-bottom:
+        12px;
+
+      padding:
+        12px;
+
+      background:
+        #f8fcfe;
+
+      border:
+        1px solid
+        #d4e8f1;
+
+      border-radius:
+        12px;
+    }
+
+    .read-detail.open {
+      display:
+        block;
+    }
+
+    .read-group {
+      margin-bottom:
+        12px;
+    }
+
+    .read-group:last-child {
+      margin-bottom:
+        0;
+    }
+
+    .read-group-title {
+      margin-bottom:
+        6px;
+
+      font-size:
+        14px;
+
+      font-weight:
+        800;
+    }
+
+    .read-group-title.read {
+      color:
+        #24784b;
+    }
+
+    .read-group-title.unread {
+      color:
+        #b14355;
+    }
+
+    .member-names {
+      color:
+        #405d6b;
+
+      font-size:
+        14px;
+
+      line-height:
+        1.8;
+    }
+
+    .notice-actions {
+      display:
+        grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap:
+        8px;
+    }
+
+    .edit-button,
+    .delete-button {
+      padding:
+        10px;
+
+      font-weight:
+        800;
+
+      border-radius:
+        10px;
+
+      cursor:
+        pointer;
+    }
+
+    .edit-button {
+      color:
+        #176d9d;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #82c3df;
+    }
+
+    .delete-button {
+      color:
+        #a83e52;
+
+      background:
+        #fff8fa;
+
+      border:
+        1px solid
+        #e6a2af;
+    }
+
+    .empty,
+    .error {
+      padding:
+        20px;
+
+      text-align:
+        center;
+    }
+
+    .empty {
+      color:
+        #688392;
+    }
+
+    .error {
+      color:
+        #b14355;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <main class="page">
+
+    <div class="title">
+      📢 お知らせ管理
+    </div>
+
+
+    <section class="card">
+
+      <div
+        id="form-title"
+        class="section-title"
+      >
+        新しいお知らせ
+      </div>
+
+
+      <div class="field">
+
+        <label for="notice-title">
+          タイトル
+        </label>
+
+        <input
+          id="notice-title"
+          type="text"
+          maxlength="100"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label for="notice-body">
+          内容
+        </label>
+
+        <textarea
+          id="notice-body"
+        ></textarea>
+
+      </div>
+
+
+      <div class="check-row">
+
+        <label class="check-label">
+
+          <input
+            id="notice-important"
+            type="checkbox"
+          >
+
+          重要なお知らせ
+
+        </label>
+
+
+        <label class="check-label">
+
+          <input
+            id="notice-published"
+            type="checkbox"
+            checked
+          >
+
+          公開する
+
+        </label>
+
+      </div>
+
+
+      <button
+        id="save-button"
+        type="button"
+        class="primary-button"
+      >
+        登録する
+      </button>
+
+
+      <button
+        id="cancel-edit-button"
+        type="button"
+        class="cancel-button"
+        style="display:none;"
+      >
+        編集をやめる
+      </button>
+
+    </section>
+
+
+    <section class="card">
+
+      <div class="section-title">
+        登録済みのお知らせ
+      </div>
+
+      <div
+        id="notice-list"
+        class="notice-list"
+      >
+        読み込み中...
+      </div>
+
+    </section>
+
+
+    <button
+      type="button"
+      class="back-button"
+      onclick="
+        location.href='admin.html'
+      "
+    >
+      管理画面へ戻る
+    </button>
+
+  </main>
+
+
+  <script src="portal-auth.js?v=4"></script>
+
+  <script src="push-notifications.js?v=5"></script>
+
+
+  <script>
+
+    const loginMember =
+      getPortalMember();
+
+
+    if (
+      !loginMember ||
+      (
+        loginMember.role !==
+          "super_admin" &&
+        loginMember.role !==
+          "admin"
+      )
+    ) {
+
+      location.href =
+        "index.html";
+
+    }
+
+
+    const titleInput =
+      document.getElementById(
+        "notice-title"
+      );
+
+    const bodyInput =
+      document.getElementById(
+        "notice-body"
+      );
+
+    const importantInput =
+      document.getElementById(
+        "notice-important"
+      );
+
+    const publishedInput =
+      document.getElementById(
+        "notice-published"
+      );
+
+    const saveButton =
+      document.getElementById(
+        "save-button"
+      );
+
+    const cancelEditButton =
+      document.getElementById(
+        "cancel-edit-button"
+      );
+
+    const formTitle =
+      document.getElementById(
+        "form-title"
+      );
+
+    const noticeList =
+      document.getElementById(
+        "notice-list"
+      );
+
+
+    let editingNoticeId =
+      null;
+
+
+    let activeMembers =
+      [];
+
+
+    let allNoticeReads =
+      [];
+
+
+    /* =========================================
+       初期表示
+    ========================================= */
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+
+        setupEvents();
+
+        await loadNotices();
+
+      }
+    );
+
+
+    /* =========================================
+       イベント
+    ========================================= */
+
+    function setupEvents() {
+
+      saveButton.addEventListener(
+        "click",
+        saveNotice
+      );
+
+
+      cancelEditButton.addEventListener(
+        "click",
+        resetForm
+      );
+
+    }
+
+
+    /* =========================================
+       お知らせ保存
+    ========================================= */
+
+    async function saveNotice() {
+
+      const title =
+        titleInput.value.trim();
+
+      const body =
+        bodyInput.value.trim();
+
+
+      if (!title) {
+
+        alert(
+          "タイトルを入力してください。"
+        );
+
+        titleInput.focus();
+
+        return;
+
+      }
+
+
+      if (!body) {
+
+        alert(
+          "内容を入力してください。"
+        );
+
+        bodyInput.focus();
+
+        return;
+
+      }
+
+
+      const isNewNotice =
+        !editingNoticeId;
+
+
+      const payload = {
+
+        title:
+          title,
+
+        body:
+          body,
+
+        is_important:
+          importantInput.checked,
+
+        is_published:
+          publishedInput.checked,
+
+        updated_at:
+          new Date()
+            .toISOString()
+
+      };
+
+
+      if (isNewNotice) {
+
+        const session =
+          getPortalAuthSession();
+
+        payload.created_by =
+          session?.user?.id ||
+          null;
+
+      }
+
+
+      try {
+
+        saveButton.disabled =
+          true;
+
+
+        let response;
+
+
+        if (isNewNotice) {
+
+          response =
+            await portalFetch(
+              "/rest/v1/notices",
+              {
+                method:
+                  "POST",
+
+                headers: {
+                  Prefer:
+                    "return=representation"
+                },
+
+                body:
+                  JSON.stringify(
+                    payload
+                  )
+              }
+            );
+
+        } else {
+
+          response =
+            await portalFetch(
+              "/rest/v1/notices" +
+              `?id=eq.${editingNoticeId}`,
+              {
+                method:
+                  "PATCH",
+
+                headers: {
+                  Prefer:
+                    "return=representation"
+                },
+
+                body:
+                  JSON.stringify(
+                    payload
+                  )
+              }
+            );
+
+        }
+
+
+        if (!response.ok) {
+
+          const errorText =
+            await response.text();
+
+          throw new Error(
+            "お知らせを保存できませんでした。" +
+            ` ${response.status} ${errorText}`
+          );
+
+        }
+
+
+        /*
+         * Push通知
+         *
+         * ・新規登録のみ
+         * ・公開ONのみ
+         * ・編集時は送らない
+         */
+        if (
+          isNewNotice &&
+          publishedInput.checked
+        ) {
+
+          try {
+
+            await sendNoticePushNotification();
+
+          } catch (notificationError) {
+
+            console.error(
+              "お知らせPush通知エラー:",
+              notificationError
+            );
+
+          }
+
+        }
+
+
+        alert(
+          isNewNotice
+            ? "お知らせを登録しました。"
+            : "お知らせを更新しました。"
+        );
+
+
+        resetForm();
+
+        await loadNotices();
+
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+        alert(
+          error?.message ||
+          "保存できませんでした。"
+        );
+
+
+      } finally {
+
+        saveButton.disabled =
+          false;
+
+      }
+
+    }
+
+
+    /* =========================================
+       お知らせPush通知
+    ========================================= */
+
+    async function sendNoticePushNotification() {
+
+      const response =
+        await portalFetch(
+          "/rest/v1/members" +
+          "?select=id" +
+          "&active=eq.true"
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "通知対象の会員を取得できませんでした。"
+        );
+
+      }
+
+
+      const members =
+        await response.json();
+
+
+      const memberIds =
+        members
+          .map(
+            member =>
+              Number(member.id)
+          )
+          .filter(
+            memberId =>
+              Number.isInteger(
+                memberId
+              ) &&
+              memberId > 0
+          );
+
+
+      await sendPushNotification({
+
+        memberIds:
+          memberIds,
+
+        title:
+          "ポンコツ倶楽部",
+
+        body:
+          "会からのお知らせがあります。",
+
+        url:
+          "/mountain-trip-manager/notice.html",
+
+        badge:
+          1
+
+      });
+
+    }
+
+
+    /* =========================================
+       一覧読み込み
+    ========================================= */
+
+    async function loadNotices() {
+
+      noticeList.className =
+        "notice-list";
+
+      noticeList.textContent =
+        "読み込み中...";
+
+
+      try {
+
+        const [
+          noticesResponse,
+          membersResponse,
+          readsResponse
+        ] =
+          await Promise.all([
+
+            portalFetch(
+              "/rest/v1/notices" +
+              "?select=*" +
+              "&order=created_at.desc"
+            ),
+
+            portalFetch(
+              "/rest/v1/members" +
+              "?select=id,name" +
+              "&active=eq.true" +
+              "&order=id.asc"
+            ),
+
+            portalFetch(
+              "/rest/v1/notice_reads" +
+              "?select=notice_id,member_id,read_at"
+            )
+
+          ]);
+
+
+        if (!noticesResponse.ok) {
+
+          throw new Error(
+            "お知らせ一覧を取得できませんでした。"
+          );
+
+        }
+
+
+        if (!membersResponse.ok) {
+
+          throw new Error(
+            "会員一覧を取得できませんでした。"
+          );
+
+        }
+
+
+        if (!readsResponse.ok) {
+
+          throw new Error(
+            "既読情報を取得できませんでした。"
+          );
+
+        }
+
+
+        const notices =
+          await noticesResponse.json();
+
+
+        activeMembers =
+          await membersResponse.json();
+
+
+        allNoticeReads =
+          await readsResponse.json();
+
+
+        renderNotices(
+          notices
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "お知らせ一覧取得エラー:",
+          error
+        );
+
+
+        noticeList.className =
+          "error";
+
+
+        noticeList.textContent =
+          "お知らせ一覧を読み込めませんでした。";
+
+      }
+
+    }
+
+
+    /* =========================================
+       一覧表示
+    ========================================= */
+
+    function renderNotices(
+      notices
+    ) {
+
+      if (
+        !Array.isArray(notices) ||
+        notices.length === 0
+      ) {
+
+        noticeList.className =
+          "empty";
+
+        noticeList.textContent =
+          "登録済みのお知らせはありません。";
+
+        return;
+
+      }
+
+
+      noticeList.className =
+        "notice-list";
+
+
+      noticeList.innerHTML =
+        "";
+
+
+      notices.forEach(
+        notice => {
+
+          const card =
+            document.createElement(
+              "div"
+            );
+
+
+          card.className =
+            notice.is_important
+              ? "notice-card important"
+              : "notice-card";
+
+
+          /*
+           * このお知らせの既読会員ID
+           */
+          const readMemberIds =
+            new Set(
+
+              allNoticeReads
+
+                .filter(
+                  read =>
+                    String(
+                      read.notice_id
+                    ) ===
+                    String(
+                      notice.id
+                    )
+                )
+
+                .map(
+                  read =>
+                    Number(
+                      read.member_id
+                    )
+                )
+
+            );
+
+
+          /*
+           * 既読者
+           */
+          const readMembers =
+            activeMembers.filter(
+              member =>
+                readMemberIds.has(
+                  Number(member.id)
+                )
+            );
+
+
+          /*
+           * 未読者
+           */
+          const unreadMembers =
+            activeMembers.filter(
+              member =>
+                !readMemberIds.has(
+                  Number(member.id)
+                )
+            );
+
+
+          const totalCount =
+            activeMembers.length;
+
+
+          const readCount =
+            readMembers.length;
+
+
+          const header =
+            document.createElement(
+              "div"
+            );
+
+          header.className =
+            "notice-header";
+
+
+          const title =
+            document.createElement(
+              "div"
+            );
+
+          title.className =
+            "notice-title";
+
+          title.textContent =
+            notice.title;
+
+
+          header.appendChild(
+            title
+          );
+
+
+          if (
+            notice.is_important
+          ) {
+
+            const importantBadge =
+              document.createElement(
+                "span"
+              );
+
+            importantBadge.className =
+              "important-badge";
+
+            importantBadge.textContent =
+              "重要";
+
+
+            header.appendChild(
+              importantBadge
+            );
+
+          }
+
+
+          card.appendChild(
+            header
+          );
+
+
+          const meta =
+            document.createElement(
+              "div"
+            );
+
+          meta.className =
+            "notice-meta";
+
+          meta.textContent =
+            formatDate(
+              notice.created_at
+            );
+
+
+          card.appendChild(
+            meta
+          );
+
+
+          const body =
+            document.createElement(
+              "div"
+            );
+
+          body.className =
+            "notice-body";
+
+          body.textContent =
+            notice.body;
+
+
+          card.appendChild(
+            body
+          );
+
+
+          const statusRow =
+            document.createElement(
+              "div"
+            );
+
+          statusRow.className =
+            "status-row";
+
+
+          const publishedBadge =
+            document.createElement(
+              "span"
+            );
+
+          publishedBadge.className =
+            notice.is_published
+              ? "status-badge"
+              : "status-badge private";
+
+          publishedBadge.textContent =
+            notice.is_published
+              ? "公開中"
+              : "非公開";
+
+
+          statusRow.appendChild(
+            publishedBadge
+          );
+
+
+          card.appendChild(
+            statusRow
+          );
+
+
+          /*
+           * 既読状況ボタン
+           *
+           * 非公開でも表示するが、
+           * 通常は0人になる。
+           */
+          const readButton =
+            document.createElement(
+              "button"
+            );
+
+          readButton.type =
+            "button";
+
+          readButton.className =
+            "read-summary-button";
+
+          readButton.textContent =
+            `👀 既読 ${readCount} / ${totalCount}人　既読状況を見る`;
+
+
+          card.appendChild(
+            readButton
+          );
+
+
+          /*
+           * 既読詳細
+           */
+          const readDetail =
+            document.createElement(
+              "div"
+            );
+
+          readDetail.className =
+            "read-detail";
+
+
+          const readGroup =
+            createMemberGroup(
+              "✅ 既読者",
+              readMembers,
+              "read"
+            );
+
+
+          const unreadGroup =
+            createMemberGroup(
+              "🔴 未読者",
+              unreadMembers,
+              "unread"
+            );
+
+
+          readDetail.appendChild(
+            readGroup
+          );
+
+
+          readDetail.appendChild(
+            unreadGroup
+          );
+
+
+          card.appendChild(
+            readDetail
+          );
+
+
+          readButton.addEventListener(
+            "click",
+            () => {
+
+              const isOpen =
+                readDetail.classList
+                  .contains(
+                    "open"
+                  );
+
+
+              readDetail.classList
+                .toggle(
+                  "open"
+                );
+
+
+              readButton.textContent =
+                isOpen
+                  ? `👀 既読 ${readCount} / ${totalCount}人　既読状況を見る`
+                  : `👀 既読 ${readCount} / ${totalCount}人　閉じる`;
+
+            }
+          );
+
+
+          /*
+           * 編集・削除
+           */
+          const actions =
+            document.createElement(
+              "div"
+            );
+
+          actions.className =
+            "notice-actions";
+
+
+          const editButton =
+            document.createElement(
+              "button"
+            );
+
+          editButton.type =
+            "button";
+
+          editButton.className =
+            "edit-button";
+
+          editButton.textContent =
+            "編集";
+
+
+          editButton.addEventListener(
+            "click",
+            () => {
+
+              startEdit(
+                notice
+              );
+
+            }
+          );
+
+
+          const deleteButton =
+            document.createElement(
+              "button"
+            );
+
+          deleteButton.type =
+            "button";
+
+          deleteButton.className =
+            "delete-button";
+
+          deleteButton.textContent =
+            "削除";
+
+
+          deleteButton.addEventListener(
+            "click",
+            async () => {
+
+              await deleteNotice(
+                notice
+              );
+
+            }
+          );
+
+
+          actions.appendChild(
+            editButton
+          );
+
+
+          actions.appendChild(
+            deleteButton
+          );
+
+
+          card.appendChild(
+            actions
+          );
+
+
+          noticeList.appendChild(
+            card
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =========================================
+       既読・未読の名前欄
+    ========================================= */
+
+    function createMemberGroup(
+      titleText,
+      members,
+      type
+    ) {
+
+      const group =
+        document.createElement(
+          "div"
+        );
+
+      group.className =
+        "read-group";
+
+
+      const title =
+        document.createElement(
+          "div"
+        );
+
+      title.className =
+        `read-group-title ${type}`;
+
+      title.textContent =
+        `${titleText}（${members.length}人）`;
+
+
+      group.appendChild(
+        title
+      );
+
+
+      const names =
+        document.createElement(
+          "div"
+        );
+
+      names.className =
+        "member-names";
+
+
+      if (
+        members.length === 0
+      ) {
+
+        names.textContent =
+          type === "read"
+            ? "まだ誰も確認していません。"
+            : "未読者はいません。";
+
+      } else {
+
+        names.textContent =
+          members
+            .map(
+              member =>
+                member.name
+            )
+            .join(
+              "、"
+            );
+
+      }
+
+
+      group.appendChild(
+        names
+      );
+
+
+      return group;
+
+    }
+
+
+    /* =========================================
+       編集開始
+    ========================================= */
+
+    function startEdit(
+      notice
+    ) {
+
+      editingNoticeId =
+        notice.id;
+
+
+      titleInput.value =
+        notice.title ||
+        "";
+
+
+      bodyInput.value =
+        notice.body ||
+        "";
+
+
+      importantInput.checked =
+        Boolean(
+          notice.is_important
+        );
+
+
+      publishedInput.checked =
+        Boolean(
+          notice.is_published
+        );
+
+
+      formTitle.textContent =
+        "お知らせを編集";
+
+
+      saveButton.textContent =
+        "更新する";
+
+
+      cancelEditButton.style.display =
+        "block";
+
+
+      window.scrollTo({
+        top:
+          0,
+
+        behavior:
+          "smooth"
+      });
+
+    }
+
+
+    /* =========================================
+       編集解除
+    ========================================= */
+
+    function resetForm() {
+
+      editingNoticeId =
+        null;
+
+
+      titleInput.value =
+        "";
+
+
+      bodyInput.value =
+        "";
+
+
+      importantInput.checked =
+        false;
+
+
+      publishedInput.checked =
+        true;
+
+
+      formTitle.textContent =
+        "新しいお知らせ";
+
+
+      saveButton.textContent =
+        "登録する";
+
+
+      cancelEditButton.style.display =
+        "none";
+
+    }
+
+
+    /* =========================================
+       削除
+    ========================================= */
+
+    async function deleteNotice(
+      notice
+    ) {
+
+      const confirmed =
+        confirm(
+          `「${notice.title}」を削除しますか？`
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
+
+        const response =
+          await portalFetch(
+            "/rest/v1/notices" +
+            `?id=eq.${notice.id}`,
+            {
+              method:
+                "DELETE"
+            }
+          );
+
+
+        if (!response.ok) {
+
+          const errorText =
+            await response.text();
+
+
+          throw new Error(
+            "削除できませんでした。" +
+            ` ${response.status} ${errorText}`
+          );
+
+        }
+
+
+        /*
+         * notice_reads は
+         * ON DELETE CASCADEなので
+         * 一緒に削除される
+         */
+        alert(
+          "お知らせを削除しました。"
+        );
+
+
+        if (
+          String(
+            editingNoticeId
+          ) ===
+          String(
+            notice.id
+          )
+        ) {
+
+          resetForm();
+
+        }
+
+
+        await loadNotices();
+
+
+      } catch (error) {
+
+        console.error(
+          error
+        );
+
+
+        alert(
+          error?.message ||
+          "削除できませんでした。"
+        );
+
+      }
+
+    }
+
+
+    /* =========================================
+       日付表示
+    ========================================= */
+
+    function formatDate(
+      dateText
+    ) {
+
+      if (!dateText) {
+        return "";
+      }
+
+
+      const date =
+        new Date(
+          dateText
+        );
+
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return "";
+      }
+
+
+      return (
+        date.getFullYear() +
+        "/" +
+        String(
+          date.getMonth() + 1
+        ).padStart(
+          2,
+          "0"
+        ) +
+        "/" +
+        String(
+          date.getDate()
+        ).padStart(
+          2,
+          "0"
+        ) +
+        " " +
+        String(
+          date.getHours()
+        ).padStart(
+          2,
+          "0"
+        ) +
+        ":" +
+        String(
+          date.getMinutes()
+        ).padStart(
+          2,
+          "0"
+        )
+      );
+
+    }
+
+  </script>
+
+</body>
+
+</html>

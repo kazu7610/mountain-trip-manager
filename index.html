@@ -854,6 +854,28 @@
   opacity: 0.65;
 }
 
+.new-notice-button {
+  border-color: #e89aa7;
+
+  color: #9b3f52;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff1f4,
+      #ffdce4
+    );
+
+  box-shadow:
+    0 4px 12px
+    rgba(
+      190,
+      90,
+      110,
+      0.16
+    );
+}
+
   </style>
 
   <link
@@ -960,6 +982,20 @@
     >
       管理者画面
     </button>
+
+<div
+  id="new-notice-area"
+  style="display:none;"
+>
+  <button
+  type="button"
+  class="admin-button new-notice-button"
+  onclick="location.href='notice.html'"
+>
+  📢 新しいお知らせ
+</button>
+
+</div>
 
     <button
   id="enable-notification-button"

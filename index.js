@@ -128,8 +128,105 @@ async function refreshHomeData() {
     loadAdminChangeRequestNotice(),
     loadApprovalWaitingCount(),
     loadSubmittedCount(),
-    loadHomeTrips()
+    loadHomeTrips(),
+    checkUnreadNotices(),
   ]);
+}
+
+async function checkUnreadNotices() {
+
+  const member =
+    getPortalMember();
+
+  const noticeArea =
+    document.getElementById(
+      "new-notice-area"
+    );
+
+  if (
+    !member ||
+    !member.id ||
+    !noticeArea
+  ) {
+    return;
+  }
+
+  try {
+
+    const noticeResponse =
+      await portalFetch(
+        "/rest/v1/notices" +
+        "?select=id" +
+        "&is_published=eq.true"
+      );
+
+    if (!noticeResponse.ok) {
+      throw new Error(
+        "お知らせを取得できませんでした。"
+      );
+    }
+
+    const notices =
+      await noticeResponse.json();
+
+    if (
+      !Array.isArray(notices) ||
+      notices.length === 0
+    ) {
+
+      noticeArea.style.display =
+        "none";
+
+      return;
+    }
+
+    const readResponse =
+      await portalFetch(
+        "/rest/v1/notice_reads" +
+        "?select=notice_id" +
+        `&member_id=eq.${member.id}`
+      );
+
+    if (!readResponse.ok) {
+      throw new Error(
+        "既読情報を取得できませんでした。"
+      );
+    }
+
+    const reads =
+      await readResponse.json();
+
+    const readIds =
+      new Set(
+        reads.map(
+          row =>
+            row.notice_id
+        )
+      );
+
+    const hasUnread =
+      notices.some(
+        notice =>
+          !readIds.has(
+            notice.id
+          )
+      );
+
+    noticeArea.style.display =
+      hasUnread
+        ? "block"
+        : "none";
+
+  } catch (error) {
+
+    console.error(
+      "未読お知らせ確認エラー:",
+      error
+    );
+
+    noticeArea.style.display =
+      "none";
+  }
 }
 
 function showPullRefreshStatus(

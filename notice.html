@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    お知らせ
+  </title>
+
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+      margin: 0;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background:
+        linear-gradient(
+          180deg,
+          #eef7fb 0%,
+          #ffffff 100%
+        );
+
+      color: #24465a;
+    }
+
+
+    header {
+      padding: 18px 16px;
+
+      color: white;
+      text-align: center;
+
+      font-size: 20px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0d6fa8,
+          #27a7d3
+        );
+    }
+
+
+    main {
+      max-width: 720px;
+
+      margin: 0 auto;
+
+      padding:
+        18px 14px
+        40px;
+    }
+
+
+    .back-button {
+      display: inline-block;
+
+      margin-bottom: 16px;
+
+      padding: 9px 14px;
+
+      border: none;
+      border-radius: 10px;
+
+      color: #17658f;
+
+      background: #e4f3fa;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+
+    .page-card {
+      padding: 18px;
+
+      border-radius: 16px;
+
+      background: white;
+
+      box-shadow:
+        0 4px 18px
+        rgba(
+          40,
+          90,
+          120,
+          0.12
+        );
+    }
+
+
+    .title {
+      margin-bottom: 18px;
+
+      color: #1d648b;
+
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+
+    .notice-list {
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 14px;
+    }
+
+
+    .notice-card {
+      padding: 16px;
+
+      border:
+        1px solid
+        #d7e8f1;
+
+      border-radius: 14px;
+
+      background:
+        #ffffff;
+    }
+
+
+    .notice-card.important {
+      border:
+        2px solid
+        #e16a6a;
+
+      background:
+        #fff7f7;
+    }
+
+
+    .notice-top {
+      display: flex;
+
+      align-items: center;
+
+      justify-content:
+        space-between;
+
+      gap: 10px;
+
+      margin-bottom: 8px;
+    }
+
+
+    .notice-date {
+      color: #7693a3;
+
+      font-size: 13px;
+    }
+
+
+    .important-badge {
+      display: inline-block;
+
+      padding:
+        4px 8px;
+
+      border-radius: 999px;
+
+      color: #ffffff;
+
+      background:
+        #d95858;
+
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+
+    .notice-title {
+      margin-bottom: 10px;
+
+      color: #246b92;
+
+      font-size: 17px;
+      font-weight: bold;
+
+      line-height: 1.5;
+    }
+
+
+    .notice-body {
+      color: #405f70;
+
+      font-size: 15px;
+
+      line-height: 1.7;
+
+      white-space: pre-wrap;
+
+      overflow-wrap:
+        anywhere;
+    }
+
+
+    .loading {
+      padding: 30px 12px;
+
+      text-align: center;
+
+      color: #6f8fa1;
+    }
+
+
+    .empty {
+      padding: 30px 12px;
+
+      text-align: center;
+
+      color: #6f8fa1;
+    }
+
+
+    .error {
+      padding: 16px;
+
+      border-radius: 12px;
+
+      color: #a03a3a;
+
+      background: #fff1f1;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+  お知らせ
+</header>
+
+
+<main>
+
+
+  <button
+    type="button"
+    class="back-button"
+    onclick="history.back()"
+  >
+    ← 戻る
+  </button>
+
+
+  <div class="page-card">
+
+
+    <div class="title">
+      お知らせ
+    </div>
+
+
+    <div
+      id="notice-list"
+      class="loading"
+    >
+      お知らせを読み込んでいます...
+    </div>
+
+
+  </div>
+
+
+</main>
+
+
+<script src="portal-auth.js?v=4"></script>
+
+
+<script>
+
+
+  const noticeList =
+    document.getElementById(
+      "notice-list"
+    );
+
+
+  const loginMember =
+    getPortalMember();
+
+
+  /* =========================================
+     ログイン確認
+  ========================================= */
+
+  if (
+    !loginMember ||
+    !loginMember.id
+  ) {
+
+    window.location.href =
+      "login.html";
+
+  } else {
+
+    loadNotices();
+
+  }
+
+
+  /* =========================================
+     お知らせ読込
+  ========================================= */
+
+  async function loadNotices() {
+
+    try {
+
+      const response =
+        await portalFetch(
+          "/rest/v1/notices" +
+          "?select=" +
+          "id,title,body,is_important,created_at" +
+          "&is_published=eq.true" +
+          "&order=created_at.desc"
+        );
+
+
+      if (!response.ok) {
+
+        const errorText =
+          await response.text();
+
+
+        throw new Error(
+          errorText ||
+          "お知らせを取得できませんでした。"
+        );
+
+      }
+
+
+      const notices =
+        await response.json();
+
+
+      renderNotices(
+        notices
+      );
+
+
+      await markNoticesAsRead(
+        notices
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "お知らせ取得エラー:",
+        error
+      );
+
+
+      noticeList.className =
+        "error";
+
+
+      noticeList.textContent =
+        "お知らせを読み込めませんでした。";
+
+    }
+
+  }
+
+
+  /* =========================================
+     既読登録
+  ========================================= */
+
+  async function markNoticesAsRead(
+    notices
+  ) {
+
+    if (
+      !Array.isArray(notices) ||
+      notices.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    for (
+      const notice
+      of notices
+    ) {
+
+      try {
+
+        const checkResponse =
+          await portalFetch(
+            "/rest/v1/notice_reads" +
+            "?select=id" +
+            `&notice_id=eq.${notice.id}` +
+            `&member_id=eq.${loginMember.id}` +
+            "&limit=1"
+          );
+
+
+        if (!checkResponse.ok) {
+
+          throw new Error(
+            "既読状態を確認できませんでした。"
+          );
+
+        }
+
+
+        const existingRows =
+          await checkResponse.json();
+
+
+        if (
+          Array.isArray(existingRows) &&
+          existingRows.length > 0
+        ) {
+
+          continue;
+
+        }
+
+
+        const insertResponse =
+          await portalFetch(
+            "/rest/v1/notice_reads",
+            {
+              method:
+                "POST",
+
+              headers: {
+                Prefer:
+                  "return=minimal"
+              },
+
+              body:
+                JSON.stringify({
+                  notice_id:
+                    notice.id,
+
+                  member_id:
+                    loginMember.id
+                })
+            }
+          );
+
+
+        if (!insertResponse.ok) {
+
+          const errorText =
+            await insertResponse.text();
+
+
+          throw new Error(
+            errorText ||
+            "既読登録に失敗しました。"
+          );
+
+        }
+
+
+      } catch (error) {
+
+        console.error(
+          "既読登録エラー:",
+          notice.id,
+          error
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================================
+     お知らせ表示
+  ========================================= */
+
+  function renderNotices(
+    notices
+  ) {
+
+    if (
+      !Array.isArray(notices) ||
+      notices.length === 0
+    ) {
+
+      noticeList.className =
+        "empty";
+
+
+      noticeList.textContent =
+        "現在、お知らせはありません。";
+
+
+      return;
+
+    }
+
+
+    noticeList.className =
+      "notice-list";
+
+
+    noticeList.innerHTML =
+      notices
+        .map(
+          notice => {
+
+            const importantClass =
+              notice.is_important
+                ? " important"
+                : "";
+
+
+            const importantBadge =
+              notice.is_important
+                ? `
+                    <span
+                      class="important-badge"
+                    >
+                      重要
+                    </span>
+                  `
+                : "";
+
+
+            return `
+              <div
+                class="notice-card${importantClass}"
+              >
+
+                <div class="notice-top">
+
+                  <div class="notice-date">
+                    ${formatDate(notice.created_at)}
+                  </div>
+
+                  ${importantBadge}
+
+                </div>
+
+
+                <div class="notice-title">
+                  ${escapeHtml(notice.title || "")}
+                </div>
+
+
+                <div class="notice-body">
+                  ${escapeHtml(notice.body || "")}
+                </div>
+
+              </div>
+            `;
+
+          }
+        )
+        .join("");
+
+  }
+
+
+  /* =========================================
+     日付表示
+  ========================================= */
+
+  function formatDate(
+    value
+  ) {
+
+    if (!value) {
+      return "";
+    }
+
+
+    const date =
+      new Date(value);
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return "";
+
+    }
+
+
+    return (
+      date.getFullYear() +
+      "/" +
+      String(
+        date.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      ) +
+      "/" +
+      String(
+        date.getDate()
+      ).padStart(
+        2,
+        "0"
+      )
+    );
+
+  }
+
+
+  /* =========================================
+     HTML安全化
+  ========================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(
+      value
+    )
+      .replaceAll(
+        "&",
+        "&amp;"
+      )
+      .replaceAll(
+        "<",
+        "&lt;"
+      )
+      .replaceAll(
+        ">",
+        "&gt;"
+      )
+      .replaceAll(
+        '"',
+        "&quot;"
+      )
+      .replaceAll(
+        "'",
+        "&#039;"
+      );
+
+  }
+
+
+</script>
+
+
+</body>
+
+</html>
