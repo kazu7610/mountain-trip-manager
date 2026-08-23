@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    管理者メニュー｜ポンコツ倶楽部
+  </title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+
+      color: #16324a;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+
+      background: #eef8fc;
+    }
+
+    .page {
+      width:
+        min(
+          calc(100% - 24px),
+          760px
+        );
+
+      margin:
+        0 auto;
+
+      padding:
+        24px 0 60px;
+    }
+
+    .title {
+      margin-bottom:
+        22px;
+
+      color:
+        #1672a6;
+
+      font-size:
+        28px;
+
+      font-weight:
+        800;
+
+      text-align:
+        center;
+    }
+
+    .menu-card {
+      margin-bottom:
+        16px;
+
+      padding:
+        18px;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #bddceb;
+
+      border-radius:
+        18px;
+
+      box-shadow:
+        0 5px 16px
+        rgba(
+          31,
+          104,
+          145,
+          0.08
+        );
+    }
+
+    .menu-title {
+      margin-bottom:
+        14px;
+
+      color:
+        #1672a6;
+
+      font-size:
+        20px;
+
+      font-weight:
+        800;
+    }
+
+    .count-list {
+      margin-bottom:
+        14px;
+
+      overflow:
+        hidden;
+
+      border:
+        1px solid
+        #d8e8f0;
+
+      border-radius:
+        12px;
+    }
+
+    .count-row {
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
+      gap:
+        12px;
+
+      width:
+        100%;
+
+      padding:
+        12px 14px;
+
+      color:
+        #16324a;
+
+      font-size:
+        15px;
+
+      text-align:
+        left;
+
+      background:
+        #ffffff;
+
+      border:
+        none;
+
+      border-bottom:
+        1px solid
+        #edf3f6;
+
+      cursor:
+        pointer;
+    }
+
+    .count-row:last-child {
+      border-bottom:
+        none;
+    }
+
+    .count-row:hover {
+      background:
+        #f7fbfd;
+    }
+
+    .count-label {
+      font-weight:
+        700;
+    }
+
+    .count-right {
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        8px;
+
+      white-space:
+        nowrap;
+    }
+
+    .count-value {
+      font-weight:
+        800;
+    }
+
+    .arrow {
+      color:
+        #7b9bab;
+
+      font-size:
+        18px;
+    }
+
+    .menu-button,
+    .back-button {
+      display:
+        block;
+
+      width:
+        100%;
+
+      padding:
+        14px;
+
+      font-size:
+        16px;
+
+      font-weight:
+        800;
+
+      border-radius:
+        14px;
+
+      cursor:
+        pointer;
+    }
+
+    .menu-button {
+      color:
+        #1672a6;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #75bde0;
+    }
+
+    .menu-button + .menu-button {
+      margin-top:
+        10px;
+    }
+
+    .back-button {
+      margin-top:
+        22px;
+
+      color:
+        #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          #1679ad,
+          #2caad2
+        );
+
+      border:
+        none;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <main class="page">
+
+    <div class="title">
+      管理者メニュー
+    </div>
+
+
+    <!-- =====================================
+         山行管理
+    ====================================== -->
+
+    <section class="menu-card">
+
+      <div class="menu-title">
+        ⛰️ 山行管理
+      </div>
+
+
+      <div class="count-list">
+
+        <button
+          type="button"
+          class="count-row"
+          onclick="
+            location.href=
+              'admin.html#submitted-section'
+          "
+        >
+
+          <span class="count-label">
+            承認待ち
+          </span>
+
+          <span class="count-right">
+
+            <span
+              id="submitted-count"
+              class="count-value"
+            >
+              -
+            </span>
+
+            <span class="arrow">
+              ›
+            </span>
+
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="count-row"
+          onclick="
+            location.href=
+              'admin.html#change-section'
+          "
+        >
+
+          <span class="count-label">
+            変更申請
+          </span>
+
+          <span class="count-right">
+
+            <span
+              id="change-count"
+              class="count-value"
+            >
+              -
+            </span>
+
+            <span class="arrow">
+              ›
+            </span>
+
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="count-row"
+          onclick="
+            location.href=
+              'admin.html#cancel-section'
+          "
+        >
+
+          <span class="count-label">
+            中止申請
+          </span>
+
+          <span class="count-right">
+
+            <span
+              id="cancel-count"
+              class="count-value"
+            >
+              -
+            </span>
+
+            <span class="arrow">
+              ›
+            </span>
+
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="count-row"
+          onclick="
+            location.href=
+              'admin.html#cancelled-section'
+          "
+        >
+
+          <span class="count-label">
+            中止確認待ち
+          </span>
+
+          <span class="count-right">
+
+            <span
+              id="cancel-confirm-count"
+              class="count-value"
+            >
+              -
+            </span>
+
+            <span class="arrow">
+              ›
+            </span>
+
+          </span>
+
+        </button>
+
+
+        <button
+          type="button"
+          class="count-row"
+          onclick="
+            location.href=
+              'admin.html#descended-section'
+          "
+        >
+
+          <span class="count-label">
+            下山確認待ち
+          </span>
+
+          <span class="count-right">
+
+            <span
+              id="descent-count"
+              class="count-value"
+            >
+              -
+            </span>
+
+            <span class="arrow">
+              ›
+            </span>
+
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="menu-button"
+        onclick="
+          location.href=
+            'admin.html'
+        "
+      >
+        山行管理をすべて見る
+      </button>
+
+    </section>
+
+
+    <!-- =====================================
+         会員情報
+    ====================================== -->
+
+    <section class="menu-card">
+
+      <div class="menu-title">
+        👥 会員情報
+      </div>
+
+
+      <div class="count-list">
+
+        <button
+          type="button"
+          class="count-row"
+          onclick="
+            location.href=
+              'join-request-admin.html'
+          "
+        >
+
+          <span class="count-label">
+            入会申請
+          </span>
+
+          <span class="count-right">
+
+            <span
+              id="join-count"
+              class="count-value"
+            >
+              -
+            </span>
+
+            <span class="arrow">
+              ›
+            </span>
+
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="menu-button"
+        onclick="
+          location.href=
+            'member-profile-admin.html'
+        "
+      >
+        会員情報管理
+      </button>
+
+    </section>
+
+
+    <!-- =====================================
+         会の運営
+    ====================================== -->
+
+    <section class="menu-card">
+
+      <div class="menu-title">
+        📢 会の運営
+      </div>
+
+
+      <button
+        type="button"
+        class="menu-button"
+        onclick="
+          location.href=
+            'notice-admin.html'
+        "
+      >
+        お知らせ管理
+      </button>
+
+    </section>
+
+
+    <button
+      type="button"
+      class="back-button"
+      onclick="
+        location.href=
+          'index.html'
+      "
+    >
+      ホームへ戻る
+    </button>
+
+  </main>
+
+
+  <script src="portal-auth.js?v=4"></script>
+
+
+  <script>
+
+    const loginMember =
+      getPortalMember();
+
+
+    if (
+      !loginMember ||
+      (
+        loginMember.role !==
+          "admin" &&
+        loginMember.role !==
+          "super_admin"
+      )
+    ) {
+
+      location.href =
+        "index.html";
+
+    }
+
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+
+        await loadAdminMenuCounts();
+
+      }
+    );
+
+
+    /* =========================================
+       管理項目の件数を取得
+    ========================================= */
+
+    async function loadAdminMenuCounts() {
+
+      try {
+
+        const [
+          tripsResponse,
+          requestsResponse,
+          joinResponse
+        ] =
+          await Promise.all([
+
+            portalFetch(
+              "/rest/v1/trips" +
+              "?select=id,status" +
+              "&status=in.(submitted,descended,cancelled)"
+            ),
+
+            portalFetch(
+              "/rest/v1/trip_requests" +
+              "?select=id,request_type,status" +
+              "&status=eq.pending"
+            ),
+
+            portalFetch(
+              "/rest/v1/join_requests" +
+              "?select=id" +
+              "&status=eq.pending"
+            )
+
+          ]);
+
+
+        if (!tripsResponse.ok) {
+
+          throw new Error(
+            "山行件数を取得できませんでした。"
+          );
+
+        }
+
+
+        if (!requestsResponse.ok) {
+
+          throw new Error(
+            "申請件数を取得できませんでした。"
+          );
+
+        }
+
+
+        if (!joinResponse.ok) {
+
+          throw new Error(
+            "入会申請件数を取得できませんでした。"
+          );
+
+        }
+
+
+        const trips =
+          await tripsResponse.json();
+
+
+        const requests =
+          await requestsResponse.json();
+
+
+        const joins =
+          await joinResponse.json();
+
+
+        const submittedCount =
+          trips.filter(
+            trip =>
+              trip.status ===
+              "submitted"
+          ).length;
+
+
+        const cancelConfirmCount =
+          trips.filter(
+            trip =>
+              trip.status ===
+              "cancelled"
+          ).length;
+
+
+        const descentCount =
+          trips.filter(
+            trip =>
+              trip.status ===
+              "descended"
+          ).length;
+
+
+        const changeCount =
+          requests.filter(
+            request =>
+              request.request_type ===
+              "change"
+          ).length;
+
+
+        const cancelCount =
+          requests.filter(
+            request =>
+              request.request_type ===
+              "cancel"
+          ).length;
+
+
+        const joinCount =
+          Array.isArray(joins)
+            ? joins.length
+            : 0;
+
+
+        setCount(
+          "submitted-count",
+          submittedCount
+        );
+
+
+        setCount(
+          "change-count",
+          changeCount
+        );
+
+
+        setCount(
+          "cancel-count",
+          cancelCount
+        );
+
+
+        setCount(
+          "cancel-confirm-count",
+          cancelConfirmCount
+        );
+
+
+        setCount(
+          "descent-count",
+          descentCount
+        );
+
+
+        setCount(
+          "join-count",
+          joinCount
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "管理者メニュー件数取得エラー:",
+          error
+        );
+
+      }
+
+    }
+
+
+    /* =========================================
+       件数表示
+    ========================================= */
+
+    function setCount(
+      elementId,
+      count
+    ) {
+
+      const element =
+        document.getElementById(
+          elementId
+        );
+
+
+      if (!element) {
+        return;
+      }
+
+
+      element.textContent =
+        `${count}件`;
+
+    }
+
+  </script>
+
+</body>
+
+</html>

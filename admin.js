@@ -188,6 +188,37 @@ const approvedTrips =
       descendedSection
     );
 
+    const targetHash =
+  window.location.hash;
+
+if (targetHash) {
+
+  setTimeout(
+    () => {
+
+      const targetElement =
+        document.querySelector(
+          targetHash
+        );
+
+      if (targetElement) {
+
+        targetElement.scrollIntoView({
+          behavior:
+            "smooth",
+
+          block:
+            "start"
+        });
+
+      }
+
+    },
+    100
+  );
+
+}
+
   } catch (error) {
     console.error(error);
 
@@ -492,13 +523,45 @@ function createSectionBase(
   title,
   count
 ) {
+
   const section =
     document.createElement(
       "section"
     );
 
+
   section.className =
     "admin-trip-section";
+
+
+  const sectionIds = {
+    "承認待ち":
+      "submitted-section",
+
+    "承認済み・山行中":
+      "approved-section",
+
+    "変更申請":
+      "change-section",
+
+    "中止申請":
+      "cancel-section",
+
+    "中止確認待ち":
+      "cancelled-section",
+
+    "下山確認待ち":
+      "descended-section"
+  };
+
+
+  if (sectionIds[title]) {
+
+    section.id =
+      sectionIds[title];
+
+  }
+
 
   section.innerHTML = `
     <h2 class="section-title">
@@ -509,6 +572,7 @@ function createSectionBase(
       </span>
     </h2>
   `;
+
 
   return section;
 }

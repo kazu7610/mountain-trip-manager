@@ -319,7 +319,7 @@
     content.innerHTML = `
 
       <div class="title">
-        自分の会員情報
+        アカウント
       </div>
 
     <button
@@ -327,7 +327,7 @@
   type="button"
   class="save-button"
 >
-  プロフィール編集
+  プロフィール設定
 </button>  
 
     <div
@@ -723,8 +723,19 @@
 </div>
 
 <div class="section-title">
-  会の情報
+  クラブ情報
 </div>
+
+<button
+  type="button"
+  class="save-button"
+  onclick="
+    location.href=
+      'trip-history.html'
+  "
+>
+  山行履歴
+</button>
 
 <button
   id="rules-button"
