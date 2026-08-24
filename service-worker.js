@@ -4,7 +4,7 @@
 ========================================= */
 
 const CACHE_NAME =
-  "mountain-trip-manager-v24";
+  "mountain-trip-manager-v25";
 
 const APP_FILES = [
   "./",
@@ -13,16 +13,24 @@ const APP_FILES = [
   "./trip-form.html",
   "./trip-detail.html",
   "./admin.html",
+
+  "./app-settings.css",
+  "./app-settings.js",
+  "./side-menu.css",
+  "./side-menu.js",
+
   "./portal-auth.js",
   "./push-notifications.js",
   "./index.js",
   "./trip-form.js",
   "./trip-detail.js",
   "./admin.js",
+
   "./manifest.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png"
 ];
+
 
 /* =========================================
    アプリ本体をキャッシュ
@@ -31,6 +39,7 @@ const APP_FILES = [
 self.addEventListener(
   "install",
   (event) => {
+
     event.waitUntil(
       caches
         .open(CACHE_NAME)
@@ -44,6 +53,7 @@ self.addEventListener(
   }
 );
 
+
 /* =========================================
    古いキャッシュを削除
 ========================================= */
@@ -51,6 +61,7 @@ self.addEventListener(
 self.addEventListener(
   "activate",
   (event) => {
+
     event.waitUntil(
       caches
         .keys()
@@ -77,6 +88,7 @@ self.addEventListener(
   }
 );
 
+
 /* =========================================
    同じサイト内の静的ファイルだけキャッシュ
 ========================================= */
@@ -84,6 +96,7 @@ self.addEventListener(
 self.addEventListener(
   "fetch",
   (event) => {
+
     const request =
       event.request;
 
@@ -95,7 +108,9 @@ self.addEventListener(
     }
 
     const requestUrl =
-      new URL(request.url);
+      new URL(
+        request.url
+      );
 
     /*
      * Supabaseなどの外部通信は
@@ -109,10 +124,15 @@ self.addEventListener(
     }
 
     event.respondWith(
+
       fetch(request)
         .then(
           (response) => {
-            if (response.ok) {
+
+            if (
+              response.ok
+            ) {
+
               const responseCopy =
                 response.clone();
 
@@ -132,11 +152,14 @@ self.addEventListener(
         )
         .catch(
           () =>
-            caches.match(request)
+            caches.match(
+              request
+            )
         )
     );
   }
 );
+
 
 /* =========================================
    Push通知を受信
@@ -145,6 +168,7 @@ self.addEventListener(
 self.addEventListener(
   "push",
   (event) => {
+
     let data = {
       title:
         "山行管理",
@@ -159,14 +183,19 @@ self.addEventListener(
         1
     };
 
-    if (event.data) {
+    if (
+      event.data
+    ) {
+
       try {
+
         data = {
           ...data,
           ...event.data.json()
         };
 
       } catch (error) {
+
         data.body =
           event.data.text();
       }
@@ -181,6 +210,7 @@ self.addEventListener(
       );
 
     const notificationOptions = {
+
       body:
         data.body,
 
@@ -205,6 +235,7 @@ self.addEventListener(
 
     event.waitUntil(
       Promise.all([
+
         self.registration
           .showNotification(
             data.title ||
@@ -215,10 +246,12 @@ self.addEventListener(
         setApplicationBadge(
           badgeCount
         )
+
       ])
     );
   }
 );
+
 
 /* =========================================
    通知を押したとき
@@ -227,6 +260,7 @@ self.addEventListener(
 self.addEventListener(
   "notificationclick",
   (event) => {
+
     event.notification.close();
 
     const targetUrl =
@@ -239,6 +273,7 @@ self.addEventListener(
 
     event.waitUntil(
       Promise.all([
+
         clearApplicationBadge(),
 
         clients
@@ -251,13 +286,16 @@ self.addEventListener(
           })
           .then(
             (clientList) => {
+
               for (
-                const client of
-                clientList
+                const client
+                of clientList
               ) {
+
                 if (
                   "focus" in client
                 ) {
+
                   client.navigate(
                     targetUrl
                   );
@@ -269,6 +307,7 @@ self.addEventListener(
               if (
                 clients.openWindow
               ) {
+
                 return clients
                   .openWindow(
                     targetUrl
@@ -278,10 +317,12 @@ self.addEventListener(
               return null;
             }
           )
+
       ])
     );
   }
 );
+
 
 /* =========================================
    アプリアイコンへバッジを設定
@@ -290,17 +331,22 @@ self.addEventListener(
 async function setApplicationBadge(
   count
 ) {
+
   try {
+
     if (
       "setAppBadge" in
       navigator
     ) {
+
       await navigator
         .setAppBadge(
           count
         );
     }
+
   } catch (error) {
+
     console.error(
       "バッジを設定できませんでした。",
       error
@@ -308,20 +354,26 @@ async function setApplicationBadge(
   }
 }
 
+
 /* =========================================
    アプリアイコンのバッジを消す
 ========================================= */
 
 async function clearApplicationBadge() {
+
   try {
+
     if (
       "clearAppBadge" in
       navigator
     ) {
+
       await navigator
         .clearAppBadge();
     }
+
   } catch (error) {
+
     console.error(
       "バッジを消去できませんでした。",
       error
