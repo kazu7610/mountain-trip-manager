@@ -25,24 +25,35 @@ async function setupMemberStats() {
       window.location.search
     );
 
-  const memberId =
-    Number(
-      params.get("member")
-    );
+  const selectedMemberId =
+  Number(
+    params.get("member")
+  );
 
-  if (
-    !Number.isInteger(memberId) ||
-    memberId <= 0
-  ) {
-    alert(
-      "会員が選択されていません。"
-    );
+const loginMember =
+  getPortalMember();
 
-    location.href =
-      "annual-stats.html";
+const memberId =
+  (
+    Number.isInteger(selectedMemberId) &&
+    selectedMemberId > 0
+  )
+    ? selectedMemberId
+    : Number(loginMember?.id);
 
-    return;
-  }
+if (
+  !Number.isInteger(memberId) ||
+  memberId <= 0
+) {
+  alert(
+    "会員情報を確認できませんでした。"
+  );
+
+  location.href =
+    "login.html";
+
+  return;
+}
 
   const yearSelect =
     document.getElementById(

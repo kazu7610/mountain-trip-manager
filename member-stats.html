@@ -56,15 +56,16 @@
       padding: 24px 0 42px;
     }
 
-    .page-title {
-      display: flex;
-      align-items: center;
-      gap: 9px;
+   .page-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
 
-      margin: 0 2px 18px;
+  margin: 0 0 2px 0;
 
-      font-size: 26px;
-    }
+  font-size: 26px;
+}
 
     .page-title::before {
       content: "";
@@ -294,6 +295,9 @@
       }
     }
   </style>
+
+  <link rel="stylesheet" href="side-menu.css">
+
 </head>
 
 <body>
@@ -459,6 +463,14 @@
       年間山行実績へ戻る
     </button>
 
+    <button
+  class="back-button"
+  type="button"
+  onclick="location.href='member-profile.html'"
+>
+  マイページへ戻る
+</button>
+
   </main>
 
 
@@ -488,6 +500,8 @@
         }
       );
   </script>
+
+  <script src="side-menu.js"></script>
 
 </body>
 

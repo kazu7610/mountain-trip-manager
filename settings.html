@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>設定｜ポンコツ倶楽部</title>
+
+  <link
+    rel="stylesheet"
+    href="app-settings.css"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: #24465a;
+
+      background:
+        linear-gradient(
+          180deg,
+          #eef7fb 0%,
+          #ffffff 100%
+        );
+    }
+
+    header {
+      padding: 18px 16px;
+
+      color: white;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0d6fa8,
+          #27a7d3
+        );
+    }
+
+    main {
+      width:
+        min(
+          calc(100% - 28px),
+          720px
+        );
+
+      margin: 0 auto;
+      padding: 18px 0 40px;
+    }
+
+    .back-button {
+      display: inline-block;
+
+      margin-bottom: 16px;
+      padding: 9px 14px;
+
+      border: none;
+      border-radius: 10px;
+
+      color: #17658f;
+      background: #e4f3fa;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .card {
+      padding: 18px;
+
+      border-radius: 16px;
+
+      background: white;
+
+      box-shadow:
+        0 4px 18px
+        rgba(40, 90, 120, 0.12);
+    }
+
+    .section-title {
+      margin:
+        0 0 14px;
+
+      padding-bottom: 8px;
+
+      border-bottom:
+        1px solid #d8e8f0;
+
+      color: #246b92;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .section-title:not(:first-child) {
+      margin-top: 28px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+
+      padding: 14px 2px;
+
+      border-bottom:
+        1px solid #edf3f6;
+    }
+
+    .setting-label {
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .setting-sub {
+      margin-top: 4px;
+
+      color: #6d8796;
+      font-size: 12px;
+      font-weight: normal;
+    }
+
+    .action-button {
+      width: 100%;
+
+      margin-top: 10px;
+      padding: 14px 12px;
+
+      border: none;
+      border-radius: 12px;
+
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #126da9,
+          #2aa8d3
+        );
+
+      cursor: pointer;
+    }
+
+    .action-button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .toggle {
+      position: relative;
+
+      width: 52px;
+      height: 30px;
+
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+
+      border-radius: 999px;
+
+      background: #c9d7df;
+
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+    .slider::before {
+      content: "";
+
+      position: absolute;
+
+      width: 24px;
+      height: 24px;
+
+      left: 3px;
+      top: 3px;
+
+      border-radius: 50%;
+
+      background: white;
+
+      box-shadow:
+        0 2px 6px
+        rgba(0, 0, 0, 0.18);
+
+      transition: 0.2s;
+    }
+
+    .toggle input:checked + .slider {
+      background: #249fd0;
+    }
+
+    .toggle input:checked + .slider::before {
+      transform:
+        translateX(22px);
+    }
+
+    select,
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+
+      margin-top: 8px;
+      padding: 12px;
+
+      border:
+        1px solid #b7d1df;
+
+      border-radius: 10px;
+
+      color: #24465a;
+      font-size: 16px;
+
+      background: white;
+    }
+
+    .info-text {
+      color: #6d8796;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    #password-section {
+      display: none;
+    }
+  </style>
+
+  <link rel="stylesheet" href="side-menu.css">
+
+</head>
+
+
+<body>
+
+  <header>
+    設定
+  </header>
+
+
+  <main>
+
+    <button
+      type="button"
+      class="back-button"
+      onclick="location.href='index.html'"
+    >
+      ← ホームへ
+    </button>
+
+
+    <div class="card">
+
+      <!-- =========================
+           通知
+      ========================== -->
+
+      <div class="section-title">
+        通知
+      </div>
+
+
+      <div class="setting-row">
+
+        <div>
+          <div class="setting-label">
+            プッシュ通知
+          </div>
+
+          <div class="setting-sub">
+            山行・下山などの通知を受け取る
+          </div>
+        </div>
+
+
+        <label class="toggle">
+
+          <input
+            id="push-toggle"
+            type="checkbox"
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <!-- =========================
+           アカウント
+      ========================== -->
+
+      <div class="section-title">
+        アカウント
+      </div>
+
+
+      <button
+        id="password-toggle-button"
+        type="button"
+        class="action-button"
+      >
+        パスワード変更
+      </button>
+
+
+      <div id="password-section">
+
+        <div class="setting-row">
+
+          <div style="width:100%;">
+
+            <div class="setting-label">
+              現在のパスワード
+            </div>
+
+            <input
+              id="current-password"
+              type="password"
+              autocomplete="current-password"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div style="width:100%;">
+
+            <div class="setting-label">
+              新しいパスワード
+            </div>
+
+            <div class="setting-sub">
+              6文字以上
+            </div>
+
+            <input
+              id="new-password"
+              type="password"
+              autocomplete="new-password"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div style="width:100%;">
+
+            <div class="setting-label">
+              新しいパスワード（確認）
+            </div>
+
+            <input
+              id="new-password-confirm"
+              type="password"
+              autocomplete="new-password"
+            >
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="change-password-button"
+          type="button"
+          class="action-button"
+        >
+          パスワードを変更する
+        </button>
+
+      </div>
+
+
+      <div class="setting-row">
+
+        <div style="width:100%;">
+
+          <div class="setting-label">
+            連絡用メールアドレス
+          </div>
+
+          <div class="setting-sub">
+            ログイン用とは別の連絡用メール
+          </div>
+
+          <input
+            id="contact-email"
+            type="email"
+            placeholder="未登録"
+          >
+
+          <button
+            id="save-email-button"
+            type="button"
+            class="action-button"
+          >
+            メールアドレスを保存
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           表示
+      ========================== -->
+
+      <div class="section-title">
+        表示
+      </div>
+
+
+      <div class="setting-row">
+
+        <div>
+          <div class="setting-label">
+            ダークモード
+          </div>
+
+          <div class="setting-sub">
+            暗い配色で表示
+          </div>
+        </div>
+
+
+        <label class="toggle">
+
+          <input
+            id="dark-mode-toggle"
+            type="checkbox"
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <div class="setting-row">
+
+        <div style="width:100%;">
+
+          <div class="setting-label">
+            文字サイズ
+          </div>
+
+          <select id="font-size-select">
+
+            <option value="normal">
+              標準
+            </option>
+
+            <option value="large">
+              大きめ
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           アプリ情報
+      ========================== -->
+
+      <div class="section-title">
+        アプリ情報
+      </div>
+
+      <button
+  type="button"
+  class="action-button"
+  onclick="location.href='guide.html'"
+>
+  仕様ガイド
+</button>
+
+      <button
+        type="button"
+        class="action-button"
+        onclick="location.href='terms.html'"
+      >
+        アプリ利用規約
+      </button>
+
+
+      <button
+        type="button"
+        class="action-button"
+        onclick="location.href='privacy.html'"
+      >
+        プライバシーポリシー
+      </button>
+
+
+      <div class="setting-row">
+
+        <div>
+
+          <div class="setting-label">
+            バージョン
+          </div>
+
+          <div class="setting-sub">
+            ポンコツ倶楽部 Webアプリ
+          </div>
+
+        </div>
+
+
+        <div class="info-text">
+          v1.0
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <script src="portal-auth.js?v=4"></script>
+  <script src="app-settings.js"></script>
+  <script src="push-notifications.js?v=1"></script>
+
+
+  <script>
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+
+        if (!requirePortalLogin()) {
+          return;
+        }
+
+
+        /* =========================
+           通知
+        ========================== */
+
+        const pushToggle =
+          document.getElementById(
+            "push-toggle"
+          );
+
+
+        try {
+
+          pushToggle.checked =
+            await isPushNotificationEnabled();
+
+        } catch (error) {
+
+          console.error(
+            "通知状態確認エラー:",
+            error
+          );
+
+          pushToggle.checked =
+            false;
+        }
+
+
+        pushToggle.addEventListener(
+          "change",
+          async () => {
+
+            pushToggle.disabled =
+              true;
+
+
+            try {
+
+              if (pushToggle.checked) {
+
+                const success =
+                  await enablePushNotifications();
+
+                if (!success) {
+                  pushToggle.checked =
+                    false;
+                }
+
+              } else {
+
+                const success =
+                  await disablePushNotifications();
+
+                if (!success) {
+                  pushToggle.checked =
+                    true;
+                }
+              }
+
+            } finally {
+
+              pushToggle.disabled =
+                false;
+            }
+          }
+        );
+
+
+        /* =========================
+           パスワード欄 開閉
+        ========================== */
+
+        const passwordToggleButton =
+          document.getElementById(
+            "password-toggle-button"
+          );
+
+        const passwordSection =
+          document.getElementById(
+            "password-section"
+          );
+
+
+        passwordToggleButton.addEventListener(
+          "click",
+          () => {
+
+            const isHidden =
+              passwordSection.style.display ===
+                "" ||
+              passwordSection.style.display ===
+                "none";
+
+
+            passwordSection.style.display =
+              isHidden
+                ? "block"
+                : "none";
+
+
+            passwordToggleButton.textContent =
+              isHidden
+                ? "パスワード変更を閉じる"
+                : "パスワード変更";
+          }
+        );
+
+
+        /* =========================
+           パスワード変更
+        ========================== */
+
+        const changePasswordButton =
+          document.getElementById(
+            "change-password-button"
+          );
+
+
+        changePasswordButton.addEventListener(
+          "click",
+          changePassword
+        );
+
+
+        /* =========================
+           連絡用メール
+        ========================== */
+
+        const contactEmailInput =
+          document.getElementById(
+            "contact-email"
+          );
+
+        const saveEmailButton =
+          document.getElementById(
+            "save-email-button"
+          );
+
+        const loginMember =
+          getPortalMember();
+
+
+        if (loginMember?.id) {
+
+          try {
+
+            const response =
+              await portalFetch(
+                "/rest/v1/members" +
+                `?id=eq.${loginMember.id}` +
+                "&select=contact_email"
+              );
+
+
+            if (response.ok) {
+
+              const rows =
+                await response.json();
+
+
+              contactEmailInput.value =
+                rows?.[0]?.contact_email ||
+                "";
+            }
+
+          } catch (error) {
+
+            console.error(
+              "連絡用メール読込エラー:",
+              error
+            );
+          }
+        }
+
+
+        saveEmailButton.addEventListener(
+          "click",
+          async () => {
+
+            const email =
+              contactEmailInput
+                .value
+                .trim();
+
+
+            if (
+              email &&
+              !contactEmailInput.checkValidity()
+            ) {
+
+              alert(
+                "メールアドレスを正しく入力してください。"
+              );
+
+              contactEmailInput.focus();
+
+              return;
+            }
+
+
+            const originalText =
+              saveEmailButton.textContent;
+
+
+            try {
+
+              saveEmailButton.disabled =
+                true;
+
+              saveEmailButton.textContent =
+                "保存中...";
+
+
+              const response =
+                await portalFetch(
+                  "/rest/v1/members" +
+                  `?id=eq.${loginMember.id}`,
+                  {
+                    method:
+                      "PATCH",
+
+                    headers: {
+                      Prefer:
+                        "return=minimal"
+                    },
+
+                    body:
+                      JSON.stringify({
+                        contact_email:
+                          email || null
+                      })
+                  }
+                );
+
+
+              if (!response.ok) {
+
+                const errorText =
+                  await response.text();
+
+
+                throw new Error(
+                  "保存に失敗しました。" +
+                  ` ${response.status} ${errorText}`
+                );
+              }
+
+
+              alert(
+                "連絡用メールアドレスを保存しました。"
+              );
+
+
+            } catch (error) {
+
+              console.error(
+                "連絡用メール保存エラー:",
+                error
+              );
+
+
+              alert(
+                error.message ||
+                "連絡用メールアドレスを保存できませんでした。"
+              );
+
+
+            } finally {
+
+              saveEmailButton.disabled =
+                false;
+
+              saveEmailButton.textContent =
+                originalText;
+            }
+          }
+        );
+
+
+        /* =========================
+           ダークモード
+        ========================== */
+
+        const darkModeToggle =
+          document.getElementById(
+            "dark-mode-toggle"
+          );
+
+
+        darkModeToggle.checked =
+          localStorage.getItem(
+            "ponkotsu_dark_mode"
+          ) === "true";
+
+
+        darkModeToggle.addEventListener(
+          "change",
+          () => {
+
+            localStorage.setItem(
+              "ponkotsu_dark_mode",
+              String(
+                darkModeToggle.checked
+              )
+            );
+
+
+            applyPortalDisplaySettings();
+          }
+        );
+
+
+        /* =========================
+           文字サイズ
+        ========================== */
+
+        const fontSizeSelect =
+          document.getElementById(
+            "font-size-select"
+          );
+
+
+        fontSizeSelect.value =
+          localStorage.getItem(
+            "ponkotsu_font_size"
+          ) ||
+          "normal";
+
+
+        fontSizeSelect.addEventListener(
+          "change",
+          () => {
+
+            localStorage.setItem(
+              "ponkotsu_font_size",
+              fontSizeSelect.value
+            );
+
+
+            applyPortalDisplaySettings();
+          }
+        );
+
+      }
+    );
+
+
+    /* =========================================
+       パスワード変更
+    ========================================= */
+
+    async function changePassword() {
+
+      const loginMember =
+        getPortalMember();
+
+
+      if (!loginMember?.id) {
+
+        alert(
+          "ログイン情報を確認できません。"
+        );
+
+        location.href =
+          "login.html";
+
+        return;
+      }
+
+
+      const currentPasswordInput =
+        document.getElementById(
+          "current-password"
+        );
+
+      const newPasswordInput =
+        document.getElementById(
+          "new-password"
+        );
+
+      const newPasswordConfirmInput =
+        document.getElementById(
+          "new-password-confirm"
+        );
+
+      const changePasswordButton =
+        document.getElementById(
+          "change-password-button"
+        );
+
+
+      const currentPassword =
+        currentPasswordInput.value;
+
+      const newPassword =
+        newPasswordInput.value;
+
+      const newPasswordConfirm =
+        newPasswordConfirmInput.value;
+
+
+      if (!currentPassword) {
+
+        alert(
+          "現在のパスワードを入力してください。"
+        );
+
+        currentPasswordInput.focus();
+
+        return;
+      }
+
+
+      if (
+        newPassword.length < 6
+      ) {
+
+        alert(
+          "新しいパスワードは6文字以上にしてください。"
+        );
+
+        newPasswordInput.focus();
+
+        return;
+      }
+
+
+      if (
+        newPassword !==
+        newPasswordConfirm
+      ) {
+
+        alert(
+          "新しいパスワードが一致していません。"
+        );
+
+        newPasswordConfirmInput.focus();
+
+        return;
+      }
+
+
+      if (
+        currentPassword ===
+        newPassword
+      ) {
+
+        alert(
+          "現在のパスワードとは違うパスワードを設定してください。"
+        );
+
+        newPasswordInput.focus();
+
+        return;
+      }
+
+
+      const confirmed =
+        confirm(
+          "パスワードを変更しますか？"
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      const originalText =
+        changePasswordButton.textContent;
+
+
+      try {
+
+        changePasswordButton.disabled =
+          true;
+
+        changePasswordButton.textContent =
+          "確認中...";
+
+
+        const email =
+          `member-${loginMember.id}` +
+          "@ponkotsu-club.local";
+
+
+        const loginResponse =
+          await fetch(
+            `${SUPABASE_URL}` +
+            "/auth/v1/token" +
+            "?grant_type=password",
+            {
+              method:
+                "POST",
+
+              headers: {
+                apikey:
+                  SUPABASE_KEY,
+
+                "Content-Type":
+                  "application/json"
+              },
+
+              body:
+                JSON.stringify({
+                  email:
+                    email,
+
+                  password:
+                    currentPassword
+                })
+            }
+          );
+
+
+        const loginResult =
+          await loginResponse.json();
+
+
+        if (!loginResponse.ok) {
+
+          alert(
+            "現在のパスワードが違います。"
+          );
+
+          currentPasswordInput.focus();
+
+          return;
+        }
+
+
+        changePasswordButton.textContent =
+          "変更中...";
+
+
+        const updateResponse =
+          await fetch(
+            `${SUPABASE_URL}` +
+            "/auth/v1/user",
+            {
+              method:
+                "PUT",
+
+              headers: {
+                apikey:
+                  SUPABASE_KEY,
+
+                Authorization:
+                  `Bearer ${loginResult.access_token}`,
+
+                "Content-Type":
+                  "application/json"
+              },
+
+              body:
+                JSON.stringify({
+                  password:
+                    newPassword
+                })
+            }
+          );
+
+
+        const updateResult =
+          await updateResponse.json();
+
+
+        if (!updateResponse.ok) {
+
+          throw new Error(
+            updateResult.message ||
+            updateResult.msg ||
+            "パスワードを変更できませんでした。"
+          );
+        }
+
+
+        const newSession = {
+
+          access_token:
+            loginResult.access_token,
+
+          refresh_token:
+            loginResult.refresh_token,
+
+          expires_in:
+            loginResult.expires_in,
+
+          expires_at:
+            Math.floor(
+              Date.now() / 1000
+            ) +
+            Number(
+              loginResult.expires_in ||
+              3600
+            ),
+
+          user:
+            loginResult.user
+        };
+
+
+        localStorage.setItem(
+          "ponkotsu_session",
+          JSON.stringify(
+            newSession
+          )
+        );
+
+
+        currentPasswordInput.value =
+          "";
+
+        newPasswordInput.value =
+          "";
+
+        newPasswordConfirmInput.value =
+          "";
+
+
+        alert(
+          "パスワードを変更しました。"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "パスワード変更エラー:",
+          error
+        );
+
+
+        alert(
+          error.message ||
+          "パスワードを変更できませんでした。"
+        );
+
+
+      } finally {
+
+        changePasswordButton.disabled =
+          false;
+
+        changePasswordButton.textContent =
+          originalText;
+      }
+    }
+
+  </script>
+
+<script src="side-menu.js"></script>
+
+</body>
+
+</html>

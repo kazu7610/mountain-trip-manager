@@ -8,7 +8,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>会員情報</title>
+  <title>マイページ</title>
 
   <style>
     body {
@@ -184,23 +184,26 @@
       color: #a03a3a;
     }
   </style>
+
+  <link rel="stylesheet" href="side-menu.css">
+
 </head>
 
 <body>
 
 <header>
-  会員情報
+  マイページ
 </header>
 
 <main>
 
   <button
-    type="button"
-    class="back-button"
-    onclick="history.back()"
-  >
-    ← 戻る
-  </button>
+  type="button"
+  class="back-button"
+  onclick="location.href='index.html'"
+>
+  ← ホームへ
+</button>
 
   <div
     id="content"
@@ -319,7 +322,7 @@
     content.innerHTML = `
 
       <div class="title">
-        アカウント
+        会員情報
       </div>
 
     <button
@@ -329,6 +332,14 @@
 >
   プロフィール設定
 </button>  
+
+<button
+  type="button"
+  class="save-button"
+  onclick="location.href='./member-stats.html'"
+>
+  個人実績
+</button>
 
     <div
   id="profile-section"
@@ -657,13 +668,7 @@
       </button>
 
       </div>
-<button
-  id="password-toggle-button"
-  type="button"
-  class="save-button"
->
-  パスワード変更
-</button>
+
       <div
   id="password-section"
   style="display:none;"
@@ -723,7 +728,7 @@
 </div>
 
 <div class="section-title">
-  クラブ情報
+  倶楽部情報
 </div>
 
 <button
@@ -753,6 +758,18 @@
   お知らせ
 </button>
 
+<div class="section-title">
+  設定
+</div>
+
+<button
+  type="button"
+  class="save-button"
+  onclick="location.href='settings.html'"
+>
+  設定
+</button>
+
     `;
 
 
@@ -770,11 +787,6 @@
 const profileSection =
   document.getElementById(
     "profile-section"
-  );
-
-  const passwordToggleButton =
-  document.getElementById(
-    "password-toggle-button"
   );
 
   const rulesButton =
@@ -863,25 +875,6 @@ profileToggleButton.addEventListener(
       }
     );
 
-  passwordToggleButton.addEventListener(
-  "click",
-  () => {
-
-    const isHidden =
-      passwordSection.style.display ===
-      "none";
-
-    passwordSection.style.display =
-      isHidden
-        ? "block"
-        : "none";
-
-    passwordToggleButton.textContent =
-      isHidden
-        ? "パスワード変更を閉じる"
-        : "パスワード変更";
-  }
-);
 
 rulesButton.addEventListener(
   "click",
@@ -1674,6 +1667,8 @@ if (storedMember) {
   }
 
 </script>
+
+<script src="side-menu.js"></script>
 
 </body>
 </html>

@@ -317,6 +317,104 @@ async function enablePushNotifications(
 }
 
 /* =========================================
+   通知を無効にする
+========================================= */
+
+async function disablePushNotifications() {
+  if (
+    !canUsePushNotifications()
+  ) {
+    return true;
+  }
+
+  const member =
+    getPortalMember();
+
+  if (!member?.id) {
+    alert(
+      "ログイン情報を確認できません。"
+    );
+
+    return false;
+  }
+
+  try {
+    const registration =
+      await navigator
+        .serviceWorker
+        .ready;
+
+    const subscription =
+      await registration
+        .pushManager
+        .getSubscription();
+
+    if (subscription) {
+      const endpoint =
+        subscription.endpoint;
+
+      const response =
+        await portalFetch(
+          "/rest/v1/push_subscriptions" +
+          `?endpoint=eq.${encodeURIComponent(endpoint)}`,
+          {
+            method:
+              "PATCH",
+
+            headers: {
+              Prefer:
+                "return=minimal"
+            },
+
+            body:
+              JSON.stringify({
+                active:
+                  false,
+
+                updated_at:
+                  new Date()
+                    .toISOString()
+              })
+          }
+        );
+
+      if (!response.ok) {
+        const errorText =
+          await response.text();
+
+        throw new Error(
+          "通知登録の無効化に失敗しました。" +
+          ` ${response.status} ${errorText}`
+        );
+      }
+
+      await subscription.unsubscribe();
+    }
+
+    alert(
+      "通知を無効にしました。"
+    );
+
+    return true;
+
+  } catch (error) {
+    console.error(
+      error
+    );
+
+    alert(
+      "通知を無効にできませんでした。\n" +
+      (
+        error?.message ||
+        "設定を確認してください。"
+      )
+    );
+
+    return false;
+  }
+}
+
+/* =========================================
    現在の通知登録状態を確認
 ========================================= */
 

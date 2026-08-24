@@ -1,0 +1,248 @@
+/* ========================================
+   ポンコツ倶楽部 共通スライドメニュー
+======================================== */
+
+:root {
+  --side-menu-width: 280px;
+  --side-menu-bg: #ffffff;
+  --side-menu-text: #222222;
+  --side-menu-border: #e3e3e3;
+  --side-menu-overlay: rgba(0, 0, 0, 0.45);
+  --side-menu-hover: #f3f5f7;
+  --side-menu-danger: #c62828;
+}
+
+/* ☰ ボタン */
+.side-menu-toggle {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1100;
+
+  width: 44px;
+  height: 44px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.95);
+  color: #222;
+
+  font-size: 26px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.side-menu-toggle:active {
+  transform: scale(0.96);
+}
+
+/* 背景オーバーレイ */
+.side-menu-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 1190;
+
+  background: var(--side-menu-overlay);
+
+  opacity: 0;
+  visibility: hidden;
+
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+.side-menu-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* スライドメニュー本体 */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  z-index: 1200;
+
+  width: min(var(--side-menu-width), 86vw);
+
+  background: var(--side-menu-bg);
+  color: var(--side-menu-text);
+
+  transform: translateX(-100%);
+  transition: transform 0.28s ease;
+
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.18);
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding-bottom: max(18px, env(safe-area-inset-bottom));
+}
+
+.side-menu.is-open {
+  transform: translateX(0);
+}
+
+/* ヘッダー */
+.side-menu-header {
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding:
+    max(16px, env(safe-area-inset-top))
+    16px
+    14px;
+
+  border-bottom: 1px solid var(--side-menu-border);
+}
+
+.side-menu-title {
+  margin: 0;
+
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.side-menu-close {
+  flex: 0 0 auto;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #444;
+
+  font-size: 28px;
+  line-height: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.side-menu-close:hover,
+.side-menu-close:active {
+  background: var(--side-menu-hover);
+}
+
+/* メニュー項目 */
+.side-menu-nav {
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 8px;
+}
+
+.side-menu-link,
+.side-menu-button {
+  width: 100%;
+  min-height: 48px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 11px 14px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: transparent;
+  color: var(--side-menu-text);
+
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+
+  text-align: left;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.side-menu-link:hover,
+.side-menu-link:active,
+.side-menu-button:hover,
+.side-menu-button:active {
+  background: var(--side-menu-hover);
+}
+
+.side-menu-link.is-current {
+  background: var(--side-menu-hover);
+  font-weight: 700;
+}
+
+/* 区切り */
+.side-menu-divider {
+  height: 1px;
+  margin: 8px 10px;
+
+  background: var(--side-menu-border);
+}
+
+/* 管理者用 */
+.side-menu-admin {
+  display: none;
+}
+
+.side-menu-admin.is-visible {
+  display: block;
+}
+
+/* ログアウト */
+.side-menu-logout {
+  color: var(--side-menu-danger);
+}
+
+/* メニュー表示中は後ろをスクロールさせない */
+body.side-menu-open {
+  overflow: hidden;
+}
+
+/* PC表示時に少しだけ広げる */
+@media (min-width: 768px) {
+  :root {
+    --side-menu-width: 300px;
+  }
+}
+
+/* 動きを減らす設定への対応 */
+@media (prefers-reduced-motion: reduce) {
+  .side-menu,
+  .side-menu-overlay {
+    transition: none;
+  }
+}

@@ -1,0 +1,108 @@
+/* =========================================
+   ポンコツ倶楽部
+   共通表示設定
+========================================= */
+
+
+/* =========================================
+   文字サイズ
+========================================= */
+
+html.ponkotsu-large-font body {
+  font-size: 18px !important;
+}
+
+html.ponkotsu-large-font button,
+html.ponkotsu-large-font input,
+html.ponkotsu-large-font select,
+html.ponkotsu-large-font textarea,
+html.ponkotsu-large-font .setting-label,
+html.ponkotsu-large-font .section-title,
+html.ponkotsu-large-font .setting-sub,
+html.ponkotsu-large-font .info-text {
+  font-size: 1.15em !important;
+}
+
+
+/* =========================================
+   ダークモード
+========================================= */
+
+html.ponkotsu-dark-mode body {
+  color: #e7f1f6 !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      #14242d 0%,
+      #1b303a 100%
+    ) !important;
+}
+
+
+/* 白いカード系 */
+html.ponkotsu-dark-mode .card,
+html.ponkotsu-dark-mode .summary-item,
+html.ponkotsu-dark-mode .accordion,
+html.ponkotsu-dark-mode .panel,
+html.ponkotsu-dark-mode .section {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color:
+    #3c5865 !important;
+}
+
+
+/* 入力欄 */
+html.ponkotsu-dark-mode input,
+html.ponkotsu-dark-mode select,
+html.ponkotsu-dark-mode textarea {
+  color: #eef7fb !important;
+  background: #172a33 !important;
+
+  border-color:
+    #567583 !important;
+}
+
+
+/* 読み取り専用 */
+html.ponkotsu-dark-mode input[readonly] {
+  color: #c9d9e0 !important;
+  background: #2b414b !important;
+}
+
+
+/* 見出し */
+html.ponkotsu-dark-mode .title,
+html.ponkotsu-dark-mode .section-title,
+html.ponkotsu-dark-mode .page-title,
+html.ponkotsu-dark-mode .member-name {
+  color: #7fd0ef !important;
+}
+
+
+/* 補足文字 */
+html.ponkotsu-dark-mode .setting-sub,
+html.ponkotsu-dark-mode .info-text,
+html.ponkotsu-dark-mode .loading {
+  color: #aec1ca !important;
+}
+
+
+/* 戻るボタン */
+html.ponkotsu-dark-mode .back-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color:
+    #547888 !important;
+}
+
+
+/* 境界線 */
+html.ponkotsu-dark-mode .setting-row,
+html.ponkotsu-dark-mode .stats-row {
+  border-color:
+    #38535f !important;
+}

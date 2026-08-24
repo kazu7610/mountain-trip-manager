@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    仕様ガイド｜ポンコツ倶楽部
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="app-settings.css"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      color: #24465a;
+
+      background:
+        linear-gradient(
+          180deg,
+          #eef7fb 0%,
+          #ffffff 100%
+        );
+    }
+
+    header {
+      padding: 18px 16px;
+
+      color: white;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0d6fa8,
+          #27a7d3
+        );
+    }
+
+    main {
+      width:
+        min(
+          calc(100% - 28px),
+          720px
+        );
+
+      margin: 0 auto;
+      padding: 18px 0 40px;
+    }
+
+    .back-button {
+      display: inline-block;
+
+      margin-bottom: 16px;
+      padding: 9px 14px;
+
+      border: none;
+      border-radius: 10px;
+
+      color: #17658f;
+      background: #e4f3fa;
+
+      font-size: 14px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    .card {
+      padding: 20px;
+
+      border-radius: 16px;
+
+      background: white;
+
+      box-shadow:
+        0 4px 18px
+        rgba(40, 90, 120, 0.12);
+    }
+
+    h1 {
+      margin: 0 0 20px;
+
+      color: #1d648b;
+      font-size: 22px;
+    }
+
+    h2 {
+      margin: 26px 0 10px;
+      padding-bottom: 7px;
+
+      border-bottom:
+        1px solid #d8e8f0;
+
+      color: #246b92;
+      font-size: 17px;
+    }
+
+    h3 {
+      margin: 18px 0 8px;
+
+      color: #2c708f;
+      font-size: 15px;
+    }
+
+    p,
+    li {
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    .note {
+      margin-top: 24px;
+      padding: 14px;
+
+      border-radius: 10px;
+
+      color: #536e7d;
+      background: #f1f7fa;
+
+      font-size: 13px;
+      line-height: 1.7;
+    }
+  </style>
+
+  <link rel="stylesheet" href="side-menu.css">
+
+</head>
+
+
+<body>
+
+  <header>
+    仕様ガイド
+  </header>
+
+
+  <main>
+
+    <button
+      type="button"
+      class="back-button"
+      onclick="location.href='settings.html'"
+    >
+      ← 設定へ戻る
+    </button>
+
+
+    <div class="card">
+
+      <h1>
+        Webアプリ 仕様ガイド
+      </h1>
+
+
+      <h2>
+        1. ホーム画面
+      </h2>
+
+      <p>
+        ホーム画面では、現在の山行状況や山行募集、
+        お知らせなどを確認できます。
+      </p>
+
+      <ul>
+        <li>本日の山行</li>
+        <li>本日の下山予定</li>
+        <li>下山予定時刻を過ぎている山行</li>
+        <li>山行募集</li>
+        <li>お知らせ</li>
+      </ul>
+
+
+      <h2>
+        2. 山行届
+      </h2>
+
+      <p>
+        山行へ出かける前に、山行届を作成して提出します。
+      </p>
+
+      <ul>
+        <li>入山日</li>
+        <li>下山予定日時</li>
+        <li>山域・山名</li>
+        <li>参加者</li>
+        <li>山行ジャンル</li>
+        <li>その他必要事項</li>
+      </ul>
+
+      <p>
+        提出後は、管理者の確認・承認を待ちます。
+        承認後に内容を変更したい場合は、
+        変更申請を行います。
+      </p>
+
+
+      <h2>
+        3. 提出済み山行
+      </h2>
+
+      <p>
+        自分が提出した山行届を確認できます。
+      </p>
+
+      <ul>
+        <li>承認待ち</li>
+        <li>承認済み</li>
+        <li>修正依頼</li>
+        <li>中止</li>
+        <li>下山済み</li>
+        <li>完了</li>
+      </ul>
+
+
+      <h2>
+        4. 山行募集
+      </h2>
+
+      <p>
+        他の会員が登録した山行募集を確認できます。
+        参加したい山行がある場合は、
+        募集画面から参加申込みを行います。
+      </p>
+
+      <p>
+        通常の山行届には参加申込み機能はありません。
+        参加申込みができるのは
+        「山行募集」として登録された山行のみです。
+      </p>
+
+
+      <h2>
+        5. 山行履歴
+      </h2>
+
+      <p>
+        これまでに実施された山行を確認できます。
+      </p>
+
+      <p>
+        年度や月を選択して山行を探したり、
+        キーワードから検索することができます。
+      </p>
+
+
+      <h2>
+        6. 個人実績
+      </h2>
+
+      <p>
+        マイページの「個人実績」から、
+        自分の山行実績を確認できます。
+      </p>
+
+      <p>
+        ログイン中の本人が自動的に表示されます。
+      </p>
+
+      <ul>
+        <li>年間山行回数</li>
+        <li>入山日数</li>
+        <li>月別実績</li>
+        <li>山行形態別実績</li>
+        <li>山域別実績</li>
+        <li>スタイル別実績</li>
+      </ul>
+
+
+      <h2>
+        7. 下山連絡
+      </h2>
+
+      <p>
+        山行終了後は、アプリから下山連絡を行います。
+      </p>
+
+      <p>
+        下山予定時刻を過ぎても下山連絡がない場合、
+        アプリ上で警告表示や通知が行われる場合があります。
+      </p>
+
+      <p>
+        通信状況などにより通知が届かない場合もあるため、
+        緊急時の連絡手段として
+        本アプリだけに依存しないでください。
+      </p>
+
+
+      <h2>
+        8. マイページ
+      </h2>
+
+      <h3>
+        会員情報
+      </h3>
+
+      <ul>
+        <li>プロフィール設定</li>
+        <li>個人実績</li>
+      </ul>
+
+      <h3>
+        倶楽部情報
+      </h3>
+
+      <ul>
+        <li>山行履歴</li>
+        <li>会則を見る</li>
+        <li>お知らせ</li>
+      </ul>
+
+      <h3>
+        設定
+      </h3>
+
+      <ul>
+        <li>設定画面へ移動</li>
+      </ul>
+
+
+      <h2>
+        9. プロフィール設定
+      </h2>
+
+      <p>
+        プロフィール設定では、
+        次の情報を確認・変更できます。
+      </p>
+
+      <ul>
+        <li>性別</li>
+        <li>血液型</li>
+        <li>生年月日</li>
+        <li>電話番号</li>
+        <li>住所</li>
+        <li>緊急連絡先</li>
+        <li>山岳保険情報</li>
+      </ul>
+
+      <p>
+        氏名など一部の項目は、
+        本人では変更できない場合があります。
+      </p>
+
+
+      <h2>
+        10. 通知設定
+      </h2>
+
+      <p>
+        設定画面からプッシュ通知の
+        ON / OFF を変更できます。
+      </p>
+
+      <p>
+        通知をONにすると、
+        山行や下山に関する通知を受け取ることができます。
+      </p>
+
+      <p>
+        通知は端末やブラウザの設定によって
+        届かない場合があります。
+      </p>
+
+
+      <h2>
+        11. パスワード変更
+      </h2>
+
+      <p>
+        設定画面からパスワードを変更できます。
+      </p>
+
+      <ul>
+        <li>現在のパスワード</li>
+        <li>新しいパスワード</li>
+        <li>新しいパスワードの確認</li>
+      </ul>
+
+      <p>
+        新しいパスワードは6文字以上で設定してください。
+      </p>
+
+
+      <h2>
+        12. 連絡用メールアドレス
+      </h2>
+
+      <p>
+        設定画面から、
+        連絡用メールアドレスを登録できます。
+      </p>
+
+      <p>
+        このメールアドレスはログイン用ではなく、
+        倶楽部からの連絡などに使用するためのものです。
+      </p>
+
+
+      <h2>
+        13. 表示設定
+      </h2>
+
+      <h3>
+        ダークモード
+      </h3>
+
+      <p>
+        画面を暗い配色に変更できます。
+      </p>
+
+      <h3>
+        文字サイズ
+      </h3>
+
+      <p>
+        「標準」「大きめ」から選択できます。
+      </p>
+
+
+      <h2>
+        14. お知らせ
+      </h2>
+
+      <p>
+        倶楽部からのお知らせを確認できます。
+        重要な連絡が掲載される場合があるため、
+        定期的に確認してください。
+      </p>
+
+
+      <h2>
+        15. 会則
+      </h2>
+
+      <p>
+        マイページの「倶楽部情報」から、
+        ポンコツ倶楽部の会則を確認できます。
+      </p>
+
+      <p>
+        会則はアプリ利用規約とは別のものです。
+      </p>
+
+
+      <h2>
+        16. アプリ利用規約
+      </h2>
+
+      <p>
+        設定画面から、
+        本アプリを利用する際のルールを確認できます。
+      </p>
+
+
+      <h2>
+        17. プライバシーポリシー
+      </h2>
+
+      <p>
+        設定画面から、
+        本アプリで取り扱う個人情報や山行情報などの
+        取扱い方針を確認できます。
+      </p>
+
+
+      <h2>
+        18. ログアウト
+      </h2>
+
+      <p>
+        利用を終了するときは、
+        メニューからログアウトできます。
+      </p>
+
+      <p>
+        共用端末などを使用した場合は、
+        必ずログアウトしてください。
+      </p>
+
+
+      <h2>
+        19. 困ったとき
+      </h2>
+
+      <p>
+        画面が正常に表示されない場合は、
+        まず次を試してください。
+      </p>
+
+      <ul>
+        <li>画面を再読み込みする</li>
+        <li>アプリを一度閉じて開き直す</li>
+        <li>通信状態を確認する</li>
+        <li>再度ログインする</li>
+      </ul>
+
+      <p>
+        それでも改善しない場合は、
+        管理者へ連絡してください。
+      </p>
+
+
+      <div class="note">
+        ポンコツ倶楽部 Webアプリ
+        <br>
+        仕様ガイド
+        <br>
+        2026年8月版
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <script src="app-settings.js"></script>
+
+</body>
+
+<script src="side-menu.js"></script>
+
+</html>
