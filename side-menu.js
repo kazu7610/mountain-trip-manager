@@ -36,12 +36,10 @@ function createSideMenu() {
       ☰
     </button>
 
-
     <div
       class="side-menu-overlay"
       id="side-menu-overlay"
     ></div>
-
 
     <aside
       class="side-menu"
@@ -66,11 +64,7 @@ function createSideMenu() {
 
       </div>
 
-
       <nav class="side-menu-nav">
-
-
-        <!-- ホーム -->
 
         <a
           class="side-menu-link"
@@ -79,18 +73,12 @@ function createSideMenu() {
           ホーム
         </a>
 
-
-        <!-- 山行届 -->
-
         <a
           class="side-menu-link"
           href="trip-form.html?v=25"
         >
           山行届
         </a>
-
-
-        <!-- 山行届 子メニュー -->
 
         <a
           class="
@@ -102,8 +90,15 @@ function createSideMenu() {
           <span>
             提出済み
           </span>
-        </a>
 
+          <span
+            id="side-menu-submitted-badge"
+            class="side-menu-badge"
+            hidden
+          >
+            0
+          </span>
+        </a>
 
         <a
           class="
@@ -112,7 +107,6 @@ function createSideMenu() {
           "
           href="trip-list.html?status=submitted"
         >
-
           <span>
             承認待ち
           </span>
@@ -124,11 +118,7 @@ function createSideMenu() {
           >
             0
           </span>
-
         </a>
-
-
-        <!-- 山行一覧 -->
 
         <a
           class="side-menu-link"
@@ -137,18 +127,12 @@ function createSideMenu() {
           山行一覧
         </a>
 
-
-        <!-- 山行履歴 -->
-
         <a
           class="side-menu-link"
           href="trip-history.html"
         >
           山行履歴
         </a>
-
-
-        <!-- 年間実績 -->
 
         <a
           class="side-menu-link"
@@ -157,14 +141,10 @@ function createSideMenu() {
           年間実績
         </a>
 
-
-        <!-- お知らせ -->
-
         <a
           class="side-menu-link"
           href="notice.html"
         >
-
           <span>
             お知らせ
           </span>
@@ -176,14 +156,9 @@ function createSideMenu() {
           >
             0
           </span>
-
         </a>
 
-
         <div class="side-menu-divider"></div>
-
-
-        <!-- 会員情報 -->
 
         <a
           class="side-menu-link"
@@ -192,18 +167,12 @@ function createSideMenu() {
           会員情報
         </a>
 
-
-        <!-- 設定 -->
-
         <a
           class="side-menu-link"
           href="settings.html"
         >
           設定
         </a>
-
-
-        <!-- 仕様ガイド -->
 
         <a
           class="side-menu-link"
@@ -212,11 +181,7 @@ function createSideMenu() {
           仕様ガイド
         </a>
 
-
         <div class="side-menu-divider"></div>
-
-
-        <!-- ログアウト -->
 
         <button
           type="button"
@@ -229,23 +194,20 @@ function createSideMenu() {
           ログアウト
         </button>
 
-
       </nav>
 
     </aside>
   `;
 
-
   document.body.insertAdjacentHTML(
     "afterbegin",
     menuHtml
   );
-
 }
 
 
 /* ========================================
-   サイドメニューイベント
+   イベント設定
 ======================================== */
 
 function setupSideMenuEvents() {
@@ -270,24 +232,20 @@ function setupSideMenuEvents() {
       "side-menu-logout"
     );
 
-
   toggleButton?.addEventListener(
     "click",
     openSideMenu
   );
-
 
   closeButton?.addEventListener(
     "click",
     closeSideMenu
   );
 
-
   overlay?.addEventListener(
     "click",
     closeSideMenu
   );
-
 
   document.addEventListener(
     "keydown",
@@ -297,20 +255,16 @@ function setupSideMenuEvents() {
         event.key ===
         "Escape"
       ) {
-
         closeSideMenu();
-
       }
 
     }
   );
 
-
   logoutButton?.addEventListener(
     "click",
     logout
   );
-
 }
 
 
@@ -335,7 +289,6 @@ function openSideMenu() {
       "side-menu-toggle"
     );
 
-
   menu?.classList.add(
     "is-open"
   );
@@ -348,7 +301,6 @@ function openSideMenu() {
     "side-menu-open"
   );
 
-
   menu?.setAttribute(
     "aria-hidden",
     "false"
@@ -358,7 +310,6 @@ function openSideMenu() {
     "aria-expanded",
     "true"
   );
-
 }
 
 
@@ -383,7 +334,6 @@ function closeSideMenu() {
       "side-menu-toggle"
     );
 
-
   menu?.classList.remove(
     "is-open"
   );
@@ -396,7 +346,6 @@ function closeSideMenu() {
     "side-menu-open"
   );
 
-
   menu?.setAttribute(
     "aria-hidden",
     "true"
@@ -406,12 +355,11 @@ function closeSideMenu() {
     "aria-expanded",
     "false"
   );
-
 }
 
 
 /* ========================================
-   現在のページを強調
+   現在ページ強調
 ======================================== */
 
 function highlightCurrentPage() {
@@ -422,16 +370,13 @@ function highlightCurrentPage() {
       .pop() ||
     "index.html";
 
-
   const currentSearch =
     window.location.search;
-
 
   const links =
     document.querySelectorAll(
       ".side-menu-link"
     );
-
 
   links.forEach(
     (link) => {
@@ -442,17 +387,11 @@ function highlightCurrentPage() {
           window.location.href
         );
 
-
       const linkPage =
         linkUrl.pathname
           .split("/")
           .pop();
 
-
-      /*
-       * trip-list.html は
-       * status まで一致したものを優先
-       */
       if (
         currentPage ===
           "trip-list.html" &&
@@ -464,45 +403,33 @@ function highlightCurrentPage() {
           linkUrl.search ===
           currentSearch
         ) {
-
           link.classList.add(
             "is-current"
           );
-
         }
 
         return;
-
       }
-
 
       if (
         linkPage ===
         currentPage
       ) {
-
         link.classList.add(
           "is-current"
         );
-
       }
 
     }
   );
-
 }
 
 
 /* ========================================
-   バッジ読込
+   バッジまとめて読込
 ======================================== */
 
 async function loadSideMenuBadges() {
-
-  /*
-   * portal-auth.js がない画面では
-   * 件数取得を行わない
-   */
 
   if (
     typeof portalFetch !==
@@ -510,26 +437,21 @@ async function loadSideMenuBadges() {
     typeof getPortalMember !==
       "function"
   ) {
-
     return;
-
   }
-
 
   const loginMember =
     getPortalMember();
 
-
   if (
     !loginMember?.id
   ) {
-
     return;
-
   }
 
-
   await Promise.allSettled([
+
+    loadSubmittedBadge(),
 
     loadApprovalWaitingBadge(),
 
@@ -538,13 +460,66 @@ async function loadSideMenuBadges() {
     )
 
   ]);
+}
 
+
+/* ========================================
+   提出済み件数
+   ホームの提出済みカードと同じ
+======================================== */
+
+async function loadSubmittedBadge() {
+
+  const badge =
+    document.getElementById(
+      "side-menu-submitted-badge"
+    );
+
+  if (!badge) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=id" +
+        "&status=in.(approved,descended,cancelled)"
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "提出済み件数を取得できませんでした。"
+      );
+    }
+
+    const trips =
+      await response.json();
+
+    const count =
+      Array.isArray(trips)
+        ? trips.length
+        : 0;
+
+    setSideMenuBadge(
+      badge,
+      count
+    );
+
+  } catch (error) {
+
+    console.error(
+      "サイドメニュー提出済み件数取得エラー:",
+      error
+    );
+
+  }
 }
 
 
 /* ========================================
    承認待ち件数
-   ホームの承認待ちカードと同じ
 ======================================== */
 
 async function loadApprovalWaitingBadge() {
@@ -554,11 +529,9 @@ async function loadApprovalWaitingBadge() {
       "side-menu-approval-badge"
     );
 
-
   if (!badge) {
     return;
   }
-
 
   try {
 
@@ -569,31 +542,24 @@ async function loadApprovalWaitingBadge() {
         "&status=eq.submitted"
       );
 
-
     if (!response.ok) {
-
       throw new Error(
         "承認待ち件数を取得できませんでした。"
       );
-
     }
-
 
     const trips =
       await response.json();
-
 
     const count =
       Array.isArray(trips)
         ? trips.length
         : 0;
 
-
     setSideMenuBadge(
       badge,
       count
     );
-
 
   } catch (error) {
 
@@ -603,12 +569,12 @@ async function loadApprovalWaitingBadge() {
     );
 
   }
-
 }
 
 
 /* ========================================
    お知らせ未読件数
+   ホームと同じ判定方法
 ======================================== */
 
 async function loadUnreadNoticeBadge(
@@ -642,7 +608,6 @@ async function loadUnreadNoticeBadge(
     const notices =
       await noticeResponse.json();
 
-
     const readResponse =
       await portalFetch(
         "/rest/v1/notice_reads" +
@@ -659,7 +624,6 @@ async function loadUnreadNoticeBadge(
     const reads =
       await readResponse.json();
 
-
     const readIds =
       new Set(
         reads.map(
@@ -668,7 +632,6 @@ async function loadUnreadNoticeBadge(
         )
       );
 
-
     const unreadCount =
       notices.filter(
         notice =>
@@ -676,7 +639,6 @@ async function loadUnreadNoticeBadge(
             notice.id
           )
       ).length;
-
 
     setSideMenuBadge(
       badge,
@@ -709,7 +671,6 @@ function setSideMenuBadge(
       Number(count) || 0
     );
 
-
   if (
     safeCount === 0
   ) {
@@ -721,9 +682,7 @@ function setSideMenuBadge(
       "0";
 
     return;
-
   }
-
 
   badge.textContent =
     safeCount > 99
@@ -732,10 +691,8 @@ function setSideMenuBadge(
           safeCount
         );
 
-
   badge.hidden =
     false;
-
 }
 
 
@@ -745,11 +702,6 @@ function setSideMenuBadge(
 
 function logout() {
 
-  /*
-   * portal-auth.js の
-   * 共通ログアウトを優先
-   */
-
   if (
     typeof logoutPortal ===
     "function"
@@ -758,24 +710,16 @@ function logout() {
     logoutPortal();
 
     return;
-
   }
-
-
-  /*
-   * 念のための予備処理
-   */
 
   const confirmed =
     confirm(
       "ログアウトしますか？"
     );
 
-
   if (!confirmed) {
     return;
   }
-
 
   localStorage.removeItem(
     "ponkotsu_session"
@@ -785,8 +729,6 @@ function logout() {
     "ponkotsu_member"
   );
 
-
   window.location.href =
     "login.html";
-
 }
