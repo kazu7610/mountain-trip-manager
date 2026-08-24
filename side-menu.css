@@ -246,3 +246,65 @@ body.side-menu-open {
     transition: none;
   }
 }
+
+/* ========================================
+   ダークモード
+   共通スライドメニュー
+======================================== */
+
+html.ponkotsu-dark-mode {
+  --side-menu-bg: #182a34;
+  --side-menu-text: #eef7fb;
+  --side-menu-border: #38535f;
+  --side-menu-hover: #243d49;
+  --side-menu-danger: #ff8f98;
+}
+
+html.ponkotsu-dark-mode .side-menu-toggle {
+  background: #223843;
+  color: #eef7fb;
+
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.3);
+}
+
+html.ponkotsu-dark-mode .side-menu {
+  background: var(--side-menu-bg);
+  color: var(--side-menu-text);
+}
+
+html.ponkotsu-dark-mode .side-menu-header {
+  border-color: var(--side-menu-border);
+}
+
+html.ponkotsu-dark-mode .side-menu-title {
+  color: #7fd0ef;
+}
+
+html.ponkotsu-dark-mode .side-menu-close {
+  color: #eef7fb;
+}
+
+html.ponkotsu-dark-mode .side-menu-close:hover,
+html.ponkotsu-dark-mode .side-menu-close:active,
+html.ponkotsu-dark-mode .side-menu-link:hover,
+html.ponkotsu-dark-mode .side-menu-link:active,
+html.ponkotsu-dark-mode .side-menu-button:hover,
+html.ponkotsu-dark-mode .side-menu-button:active,
+html.ponkotsu-dark-mode .side-menu-link.is-current {
+  background: var(--side-menu-hover);
+}
+
+html.ponkotsu-dark-mode .side-menu-link,
+html.ponkotsu-dark-mode .side-menu-button {
+  color: var(--side-menu-text);
+}
+
+html.ponkotsu-dark-mode .side-menu-divider {
+  background: var(--side-menu-border);
+}
+
+html.ponkotsu-dark-mode .side-menu-logout {
+  color: var(--side-menu-danger);
+}

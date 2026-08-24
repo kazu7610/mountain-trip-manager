@@ -106,3 +106,894 @@ html.ponkotsu-dark-mode .stats-row {
   border-color:
     #38535f !important;
 }
+
+/* =========================================
+   ダークモード
+   ホーム画面
+========================================= */
+
+/* ヘッダー下の山型部分 */
+html.ponkotsu-dark-mode .header::before {
+  background: #14242d !important;
+}
+
+
+/* マイページ・管理者画面ボタン */
+html.ponkotsu-dark-mode .admin-button {
+  color: #9ddbf3 !important;
+  background: #223843 !important;
+
+  border-color: #547888 !important;
+}
+
+
+/* 提出済み・承認待ちカード */
+html.ponkotsu-dark-mode .summary-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 5px 16px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+
+html.ponkotsu-dark-mode .summary-label {
+  color: #c5d7df !important;
+}
+
+
+html.ponkotsu-dark-mode .summary-count {
+  color: #62c7ef !important;
+}
+
+
+html.ponkotsu-dark-mode .summary-link-text {
+  color: #9fb8c4 !important;
+}
+
+
+/* セクション補足文字 */
+html.ponkotsu-dark-mode .section-subtitle {
+  color: #9fb5c0 !important;
+}
+
+
+/* 山行カード */
+html.ponkotsu-dark-mode .trip-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+}
+
+
+html.ponkotsu-dark-mode .trip-title {
+  color: #e7f1f6 !important;
+}
+
+
+html.ponkotsu-dark-mode .trip-leader,
+html.ponkotsu-dark-mode .trip-date,
+html.ponkotsu-dark-mode .trip-info {
+  color: #b8ccd5 !important;
+}
+
+
+html.ponkotsu-dark-mode .trip-info strong {
+  color: #d8e8ee !important;
+}
+
+
+/* 詳細ボタン */
+html.ponkotsu-dark-mode .detail-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
+
+
+/* データなし表示 */
+html.ponkotsu-dark-mode .empty-message {
+  color: #9fb8c4 !important;
+  background: #293f49 !important;
+
+  border-color: #557481 !important;
+}
+
+
+/* Pull to Refresh */
+html.ponkotsu-dark-mode .pull-refresh-status {
+  color: #9ddbf3 !important;
+  background: #223843 !important;
+
+  border-color: #547888 !important;
+}
+
+
+/* 下山後コメント */
+html.ponkotsu-dark-mode .descent-comment-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
+
+/* =========================================
+   ダークモード
+   山行届作成
+========================================= */
+
+/* ヘッダー下の山型 */
+html.ponkotsu-dark-mode .header::before {
+  background: #14242d !important;
+}
+
+
+/* 戻るリンク */
+html.ponkotsu-dark-mode .back-link {
+  color: #8fd7f2 !important;
+}
+
+
+/* フォーム本体 */
+html.ponkotsu-dark-mode .form-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 5px 17px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+
+/* 項目名 */
+html.ponkotsu-dark-mode .form-label {
+  color: #e7f1f6 !important;
+}
+
+
+/* 必須 */
+html.ponkotsu-dark-mode .required {
+  color: #ff8b8b !important;
+}
+
+
+/* 入力欄 */
+html.ponkotsu-dark-mode .form-card input,
+html.ponkotsu-dark-mode .form-card textarea,
+html.ponkotsu-dark-mode .form-card select {
+  color: #eef7fb !important;
+  background: #172a33 !important;
+
+  border-color: #567583 !important;
+}
+
+
+/* プレースホルダー */
+html.ponkotsu-dark-mode .form-card input::placeholder,
+html.ponkotsu-dark-mode .form-card textarea::placeholder {
+  color: #77919c !important;
+}
+
+
+/* 無効状態 */
+html.ponkotsu-dark-mode .form-card input:disabled,
+html.ponkotsu-dark-mode .form-card textarea:disabled,
+html.ponkotsu-dark-mode .form-card select:disabled {
+  color: #b8c8cf !important;
+  background: #415660 !important;
+
+  opacity: 1;
+}
+
+
+/* 補足文字 */
+html.ponkotsu-dark-mode .help-text,
+html.ponkotsu-dark-mode .option-note,
+html.ponkotsu-dark-mode .member-loading {
+  color: #a9bec8 !important;
+}
+
+
+/* 会員一覧 */
+html.ponkotsu-dark-mode .member-box {
+  color: #e7f1f6 !important;
+  background: #1c313b !important;
+
+  border-color: #496774 !important;
+}
+
+
+html.ponkotsu-dark-mode .member-item + .member-item {
+  border-color: #38535f !important;
+}
+
+
+html.ponkotsu-dark-mode .member-name {
+  color: #8fd7f2 !important;
+}
+
+
+/* 会員外人数 */
+html.ponkotsu-dark-mode .count-unit {
+  color: #c2d4dc !important;
+}
+
+
+/* ラジオボタン */
+html.ponkotsu-dark-mode .radio-label {
+  color: #e7f1f6 !important;
+}
+
+
+/* 詳細計画書 */
+html.ponkotsu-dark-mode .option-box {
+  color: #e7f1f6 !important;
+  background: #1c313b !important;
+
+  border-color: #496774 !important;
+}
+
+
+html.ponkotsu-dark-mode .option-label {
+  color: #e7f1f6 !important;
+}
+
+
+/* 下書き保存 */
+html.ponkotsu-dark-mode .draft-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
+
+/* =========================================
+   ダークモード
+   山行届一覧
+========================================= */
+
+html.ponkotsu-dark-mode .list-title {
+  color: #7fd0ef !important;
+}
+
+html.ponkotsu-dark-mode .list-description {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .loading-card,
+html.ponkotsu-dark-mode .empty-card {
+  color: #a9bec8 !important;
+  background: #293f49 !important;
+
+  box-shadow:
+    0 5px 17px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .error-card {
+  color: #ff9696 !important;
+  background: #3b2a2e !important;
+
+  box-shadow:
+    0 5px 17px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .trip-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+}
+
+html.ponkotsu-dark-mode .trip-title {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .trip-info {
+  color: #b8ccd5 !important;
+}
+
+html.ponkotsu-dark-mode .trip-info strong {
+  color: #d8e8ee !important;
+}
+
+html.ponkotsu-dark-mode .detail-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
+
+html.ponkotsu-dark-mode .cancelled-card {
+  background: #3b2a2e !important;
+}
+
+html.ponkotsu-dark-mode .cancel-message {
+  color: #ff9a9a !important;
+  background: #4a3035 !important;
+}
+
+html.ponkotsu-dark-mode .force-delete-button {
+  color: #ff9a9a !important;
+  background: #3b2a2e !important;
+
+  border-color: #9a5b62 !important;
+}
+
+/* =========================================
+   ダークモード
+   山行履歴
+========================================= */
+
+html.ponkotsu-dark-mode .history-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 5px 16px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .history-section-title,
+html.ponkotsu-dark-mode .history-count {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .history-select,
+html.ponkotsu-dark-mode .history-search {
+  color: #eef7fb !important;
+  background: #172a33 !important;
+
+  border-color: #567583 !important;
+}
+
+html.ponkotsu-dark-mode .history-search::placeholder {
+  color: #77919c !important;
+}
+
+html.ponkotsu-dark-mode .history-empty {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .history-trip-row {
+  color: #e7f1f6 !important;
+  background: #293f49 !important;
+
+  border-color: #557481 !important;
+
+  box-shadow:
+    0 3px 10px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .history-trip-date {
+  color: #b8ccd5 !important;
+}
+
+html.ponkotsu-dark-mode .history-trip-title {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .history-trip-status {
+  color: #7fd0ef !important;
+}
+
+html.ponkotsu-dark-mode .history-trip-arrow {
+  color: #8fb9cb !important;
+}
+
+/* =========================================
+   ダークモード
+   年間山行実績
+========================================= */
+
+html.ponkotsu-dark-mode .year-select {
+  color: #eef7fb !important;
+  background: #172a33 !important;
+
+  border-color: #567583 !important;
+}
+
+html.ponkotsu-dark-mode .main-count {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 5px 16px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .stats-heading {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .main-count-number {
+  color: #62c7ef !important;
+}
+
+html.ponkotsu-dark-mode .accordion {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 4px 13px
+    rgba(0, 0, 0, 0.16) !important;
+}
+
+html.ponkotsu-dark-mode .accordion-button {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .accordion-arrow {
+  color: #8fb9cb !important;
+}
+
+html.ponkotsu-dark-mode .stats-row {
+  border-color: #38535f !important;
+}
+
+html.ponkotsu-dark-mode .stats-label {
+  color: #d8e8ee !important;
+}
+
+html.ponkotsu-dark-mode .stats-value {
+  color: #7fd0ef !important;
+}
+
+html.ponkotsu-dark-mode .member-days-note {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .member-area {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 5px 16px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+/* =========================================
+   ダークモード
+   マイページ 年齢表示
+========================================= */
+
+html.ponkotsu-dark-mode .age-box {
+  color: #c9d9e0 !important;
+  background: #2b414b !important;
+
+  border:
+    1px solid
+    #567583 !important;
+}
+
+/* =========================================
+   ダークモード
+   お知らせ
+========================================= */
+
+html.ponkotsu-dark-mode .page-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  box-shadow:
+    0 4px 18px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .notice-card {
+  color: #e7f1f6 !important;
+  background: #293f49 !important;
+
+  border-color: #557481 !important;
+}
+
+html.ponkotsu-dark-mode .notice-card.important {
+  background: #3b2a2e !important;
+
+  border-color: #d96f6f !important;
+}
+
+html.ponkotsu-dark-mode .notice-date {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .notice-title {
+  color: #7fd0ef !important;
+}
+
+html.ponkotsu-dark-mode .notice-body {
+  color: #d8e8ee !important;
+}
+
+html.ponkotsu-dark-mode .loading,
+html.ponkotsu-dark-mode .empty {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .error {
+  color: #ff9696 !important;
+  background: #3b2a2e !important;
+}
+
+/* =========================================
+   ダークモード
+   仕様ガイド 補足欄
+========================================= */
+
+html.ponkotsu-dark-mode .note {
+  color: #c7d9e1 !important;
+  background: #293f49 !important;
+
+  border:
+    1px solid
+    #557481 !important;
+}
+
+/* =========================================
+   ダークモード
+   山行履歴詳細
+========================================= */
+
+html.ponkotsu-dark-mode .detail-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 5px 17px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .detail-body {
+  background: #223843 !important;
+}
+
+html.ponkotsu-dark-mode .detail-row {
+  border-color: #38535f !important;
+}
+
+html.ponkotsu-dark-mode .detail-label {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .detail-value {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .member-chip {
+  color: #8fd7f2 !important;
+  background: #284552 !important;
+}
+
+html.ponkotsu-dark-mode .outside-chip {
+  color: #ffd77a !important;
+  background: #4a4028 !important;
+}
+
+html.ponkotsu-dark-mode .trip-comment-item {
+  border-color: #38535f !important;
+}
+
+html.ponkotsu-dark-mode .trip-comment-head {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .trip-comment-message {
+  color: #d8e8ee !important;
+}
+
+html.ponkotsu-dark-mode .loading-card {
+  color: #a9bec8 !important;
+  background: #293f49 !important;
+}
+
+html.ponkotsu-dark-mode .error-card {
+  color: #ff9696 !important;
+  background: #3b2a2e !important;
+}
+
+/* =========================================
+   ダークモード
+   詳細計画書
+========================================= */
+
+html.ponkotsu-dark-mode .plan-section,
+html.ponkotsu-dark-mode .plan-member-card,
+html.ponkotsu-dark-mode .plan-action-day,
+html.ponkotsu-dark-mode .meal-day-card,
+html.ponkotsu-dark-mode .meal-item-card,
+html.ponkotsu-dark-mode .emergency-search-box,
+html.ponkotsu-dark-mode .emergency-candidate-card,
+html.ponkotsu-dark-mode .emergency-selected-card,
+html.ponkotsu-dark-mode .emergency-manual-box,
+html.ponkotsu-dark-mode .equipment-entry-box,
+html.ponkotsu-dark-mode .equipment-card,
+html.ponkotsu-dark-mode .equipment-person-options,
+html.ponkotsu-dark-mode .equipment-holder-summary,
+html.ponkotsu-dark-mode .equipment-holder-item,
+html.ponkotsu-dark-mode .meal-summary-box,
+html.ponkotsu-dark-mode .plan-action-row {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+  border-color: #3c5865 !important;
+}
+
+html.ponkotsu-dark-mode .section-title,
+html.ponkotsu-dark-mode .plan-member-name,
+html.ponkotsu-dark-mode .plan-member-value,
+html.ponkotsu-dark-mode .plan-action-date,
+html.ponkotsu-dark-mode .meal-day-title,
+html.ponkotsu-dark-mode .meal-type-label,
+html.ponkotsu-dark-mode .meal-summary-title,
+html.ponkotsu-dark-mode .meal-summary-label,
+html.ponkotsu-dark-mode .emergency-contact-name,
+html.ponkotsu-dark-mode .emergency-contact-phone,
+html.ponkotsu-dark-mode .emergency-selected-title,
+html.ponkotsu-dark-mode .emergency-manual-title,
+html.ponkotsu-dark-mode .equipment-list-title,
+html.ponkotsu-dark-mode .equipment-card-value,
+html.ponkotsu-dark-mode .plan-action-note-label {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .section-note,
+html.ponkotsu-dark-mode .placeholder,
+html.ponkotsu-dark-mode .plan-member-label,
+html.ponkotsu-dark-mode .meal-field-label,
+html.ponkotsu-dark-mode .meal-summary-person,
+html.ponkotsu-dark-mode .emergency-search-label,
+html.ponkotsu-dark-mode .emergency-filter-label,
+html.ponkotsu-dark-mode .emergency-contact-area,
+html.ponkotsu-dark-mode .emergency-contact-note,
+html.ponkotsu-dark-mode .equipment-field-label,
+html.ponkotsu-dark-mode .equipment-card-label {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .plan-role-option,
+html.ponkotsu-dark-mode .equipment-person-option {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+  border-color: #547888 !important;
+}
+
+html.ponkotsu-dark-mode .plan-action-time,
+html.ponkotsu-dark-mode .plan-action-text,
+html.ponkotsu-dark-mode .meal-input,
+html.ponkotsu-dark-mode .meal-select,
+html.ponkotsu-dark-mode .emergency-search-input,
+html.ponkotsu-dark-mode .emergency-manual-input,
+html.ponkotsu-dark-mode .equipment-input,
+html.ponkotsu-dark-mode .equipment-select,
+html.ponkotsu-dark-mode .plan-action-note {
+  color: #eef7fb !important;
+  background: #172a33 !important;
+  border-color: #567583 !important;
+}
+
+html.ponkotsu-dark-mode .meal-input:disabled,
+html.ponkotsu-dark-mode .meal-select:disabled {
+  color: #b8c8cf !important;
+  background: #415660 !important;
+}
+
+html.ponkotsu-dark-mode .secondary-button,
+html.ponkotsu-dark-mode .plan-action-add-button,
+html.ponkotsu-dark-mode .emergency-select-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+  border-color: #547888 !important;
+}
+
+html.ponkotsu-dark-mode .plan-leader-badge,
+html.ponkotsu-dark-mode .plan-action-day-badge,
+html.ponkotsu-dark-mode .emergency-contact-type {
+  color: #8fd7f2 !important;
+  background: #284552 !important;
+}
+
+html.ponkotsu-dark-mode .meal-none-label,
+html.ponkotsu-dark-mode .meal-summary-count {
+  color: #ffd77a !important;
+}
+
+html.ponkotsu-dark-mode .equipment-holder-name {
+  color: #8fd7ba !important;
+}
+
+html.ponkotsu-dark-mode .equipment-holder-card,
+html.ponkotsu-dark-mode .plan-member-detail,
+html.ponkotsu-dark-mode .meal-summary-row {
+  border-color: #38535f !important;
+}
+
+html.ponkotsu-dark-mode .plan-action-completed-message {
+  color: #8fd7ba !important;
+  background: #28453b !important;
+}
+
+html.ponkotsu-dark-mode .emergency-warning {
+  color: #ffd77a !important;
+  background: #4a4028 !important;
+}
+
+html.ponkotsu-dark-mode .plan-action-delete-button,
+html.ponkotsu-dark-mode .emergency-remove-button,
+html.ponkotsu-dark-mode .equipment-delete-button {
+  color: #ff9a9a !important;
+  background: #3b2a2e !important;
+  border-color: #9a5b62 !important;
+}
+
+/* =========================================
+   ダークモード
+   管理者メニュー
+========================================= */
+
+html.ponkotsu-dark-mode .menu-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 5px 16px
+    rgba(0, 0, 0, 0.18) !important;
+}
+
+html.ponkotsu-dark-mode .menu-title {
+  color: #7fd0ef !important;
+}
+
+html.ponkotsu-dark-mode .count-list {
+  border-color: #3c5865 !important;
+}
+
+html.ponkotsu-dark-mode .count-row {
+  color: #e7f1f6 !important;
+  background: #293f49 !important;
+
+  border-color: #38535f !important;
+}
+
+html.ponkotsu-dark-mode .count-row:hover {
+  background: #314b57 !important;
+}
+
+html.ponkotsu-dark-mode .count-label,
+html.ponkotsu-dark-mode .count-value {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .arrow {
+  color: #8fb9cb !important;
+}
+
+html.ponkotsu-dark-mode .menu-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
+
+/* =========================================
+   ダークモード
+   会員情報管理 ステータス表示
+========================================= */
+
+html.ponkotsu-dark-mode .status-box {
+  color: #c9d9e0 !important;
+  background: #2b414b !important;
+
+  border:
+    1px solid
+    #567583 !important;
+}
+
+/* =========================================
+   ダークモード
+   お知らせ管理・既読状況
+========================================= */
+
+html.ponkotsu-dark-mode .read-summary-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
+
+html.ponkotsu-dark-mode .read-detail {
+  color: #e7f1f6 !important;
+  background: #293f49 !important;
+
+  border-color: #557481 !important;
+}
+
+html.ponkotsu-dark-mode .member-names {
+  color: #d8e8ee !important;
+}
+
+html.ponkotsu-dark-mode .read-group-title.read {
+  color: #8fd7ba !important;
+}
+
+html.ponkotsu-dark-mode .read-group-title.unread {
+  color: #ff9aa8 !important;
+}
+
+/* =========================================
+   ダークモード
+   お知らせ管理・編集削除ボタン
+========================================= */
+
+html.ponkotsu-dark-mode .edit-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
+
+html.ponkotsu-dark-mode .delete-button {
+  color: #ff9aa8 !important;
+  background: #3b2a2e !important;
+
+  border-color: #9a5b62 !important;
+}
+
+/* =========================================
+   ダークモード
+   ログイン画面
+========================================= */
+
+html.ponkotsu-dark-mode .login-card {
+  color: #e7f1f6 !important;
+  background: #223843 !important;
+
+  border-color: #3c5865 !important;
+
+  box-shadow:
+    0 18px 45px
+    rgba(0, 0, 0, 0.22) !important;
+}
+
+html.ponkotsu-dark-mode .brand-title {
+  color: #7fd0ef !important;
+}
+
+html.ponkotsu-dark-mode .brand-subtitle,
+html.ponkotsu-dark-mode .footer-note {
+  color: #a9bec8 !important;
+}
+
+html.ponkotsu-dark-mode .login-title {
+  color: #e7f1f6 !important;
+}
+
+html.ponkotsu-dark-mode .field-label {
+  color: #d8e8ee !important;
+}
+
+html.ponkotsu-dark-mode .join-request-button {
+  color: #9ddbf3 !important;
+  background: #284552 !important;
+
+  border-color: #547888 !important;
+}
