@@ -12,7 +12,11 @@
   --side-menu-danger: #c62828;
 }
 
-/* ☰ ボタン */
+
+/* ========================================
+   ☰ ボタン
+======================================== */
+
 .side-menu-toggle {
   position: fixed;
   top: 14px;
@@ -26,7 +30,7 @@
   border-radius: 10px;
 
   background: rgba(255, 255, 255, 0.95);
-  color: #222;
+  color: #222222;
 
   font-size: 26px;
   line-height: 1;
@@ -37,7 +41,9 @@
 
   cursor: pointer;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    0 2px 8px
+    rgba(0, 0, 0, 0.18);
 
   -webkit-tap-highlight-color: transparent;
 }
@@ -46,7 +52,11 @@
   transform: scale(0.96);
 }
 
-/* 背景オーバーレイ */
+
+/* ========================================
+   背景オーバーレイ
+======================================== */
+
 .side-menu-overlay {
   position: fixed;
   inset: 0;
@@ -68,7 +78,11 @@
   visibility: visible;
 }
 
-/* スライドメニュー本体 */
+
+/* ========================================
+   スライドメニュー本体
+======================================== */
+
 .side-menu {
   position: fixed;
   top: 0;
@@ -77,30 +91,52 @@
 
   z-index: 1200;
 
-  width: min(var(--side-menu-width), 86vw);
+  width: min(
+    var(--side-menu-width),
+    86vw
+  );
 
-  background: var(--side-menu-bg);
-  color: var(--side-menu-text);
+  background:
+    var(--side-menu-bg);
 
-  transform: translateX(-100%);
-  transition: transform 0.28s ease;
+  color:
+    var(--side-menu-text);
 
-  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.18);
+  transform:
+    translateX(-100%);
+
+  transition:
+    transform 0.28s ease;
+
+  box-shadow:
+    4px 0 16px
+    rgba(0, 0, 0, 0.18);
 
   display: flex;
   flex-direction: column;
 
   overflow-y: auto;
-  overscroll-behavior: contain;
 
-  padding-bottom: max(18px, env(safe-area-inset-bottom));
+  overscroll-behavior:
+    contain;
+
+  padding-bottom:
+    max(
+      18px,
+      env(safe-area-inset-bottom)
+    );
 }
 
 .side-menu.is-open {
-  transform: translateX(0);
+  transform:
+    translateX(0);
 }
 
-/* ヘッダー */
+
+/* ========================================
+   ヘッダー
+======================================== */
+
 .side-menu-header {
   min-height: 76px;
 
@@ -111,11 +147,16 @@
   gap: 12px;
 
   padding:
-    max(16px, env(safe-area-inset-top))
+    max(
+      16px,
+      env(safe-area-inset-top)
+    )
     16px
     14px;
 
-  border-bottom: 1px solid var(--side-menu-border);
+  border-bottom:
+    1px solid
+    var(--side-menu-border);
 }
 
 .side-menu-title {
@@ -136,7 +177,7 @@
   border-radius: 10px;
 
   background: transparent;
-  color: #444;
+  color: #444444;
 
   font-size: 28px;
   line-height: 1;
@@ -147,21 +188,32 @@
 
   cursor: pointer;
 
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color:
+    transparent;
 }
 
 .side-menu-close:hover,
 .side-menu-close:active {
-  background: var(--side-menu-hover);
+  background:
+    var(--side-menu-hover);
 }
 
-/* メニュー項目 */
+
+/* ========================================
+   メニュー本体
+======================================== */
+
 .side-menu-nav {
   display: flex;
   flex-direction: column;
 
   padding: 10px 8px;
 }
+
+
+/* ========================================
+   通常メニュー
+======================================== */
 
 .side-menu-link,
 .side-menu-button {
@@ -171,13 +223,17 @@
   display: flex;
   align-items: center;
 
+  gap: 10px;
+
   padding: 11px 14px;
 
   border: none;
   border-radius: 9px;
 
   background: transparent;
-  color: var(--side-menu-text);
+
+  color:
+    var(--side-menu-text);
 
   font: inherit;
   font-size: 15px;
@@ -190,66 +246,168 @@
 
   box-sizing: border-box;
 
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color:
+    transparent;
 }
 
 .side-menu-link:hover,
 .side-menu-link:active,
 .side-menu-button:hover,
 .side-menu-button:active {
-  background: var(--side-menu-hover);
+  background:
+    var(--side-menu-hover);
 }
 
 .side-menu-link.is-current {
-  background: var(--side-menu-hover);
+  background:
+    var(--side-menu-hover);
+
   font-weight: 700;
 }
 
-/* 区切り */
-.side-menu-divider {
-  height: 1px;
-  margin: 8px 10px;
 
-  background: var(--side-menu-border);
+/* ========================================
+   山行届 子メニュー
+======================================== */
+
+.side-menu-sub-link {
+  min-height: 40px;
+
+  margin-left: 12px;
+
+  width:
+    calc(100% - 12px);
+
+  padding:
+    8px
+    14px
+    8px
+    24px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #555555;
 }
 
-/* 管理者用 */
-.side-menu-admin {
+.side-menu-sub-link::before {
+  content: "└";
+
+  flex: 0 0 auto;
+
+  color: #9a9a9a;
+
+  font-size: 13px;
+}
+
+
+/* ========================================
+   件数バッジ
+======================================== */
+
+.side-menu-badge {
+  margin-left: auto;
+
+  min-width: 22px;
+  height: 22px;
+
+  padding: 0 7px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  background: #e53935;
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+
+  box-shadow:
+    0 1px 4px
+    rgba(0, 0, 0, 0.16);
+}
+
+.side-menu-badge[hidden] {
   display: none;
 }
 
-.side-menu-admin.is-visible {
-  display: block;
+
+/* ========================================
+   区切り
+======================================== */
+
+.side-menu-divider {
+  height: 1px;
+
+  margin:
+    8px
+    10px;
+
+  background:
+    var(--side-menu-border);
 }
 
-/* ログアウト */
+
+/* ========================================
+   ログアウト
+======================================== */
+
 .side-menu-logout {
-  color: var(--side-menu-danger);
+  color:
+    var(--side-menu-danger);
 }
 
-/* メニュー表示中は後ろをスクロールさせない */
+
+/* ========================================
+   メニュー表示中
+======================================== */
+
 body.side-menu-open {
   overflow: hidden;
 }
 
-/* PC表示時に少しだけ広げる */
-@media (min-width: 768px) {
+
+/* ========================================
+   PC表示
+======================================== */
+
+@media (
+  min-width: 768px
+) {
+
   :root {
-    --side-menu-width: 300px;
+    --side-menu-width:
+      300px;
   }
+
 }
 
-/* 動きを減らす設定への対応 */
-@media (prefers-reduced-motion: reduce) {
+
+/* ========================================
+   動きを減らす設定
+======================================== */
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+
   .side-menu,
   .side-menu-overlay {
     transition: none;
   }
+
 }
+
 
 /* ========================================
    ダークモード
-   共通スライドメニュー
 ======================================== */
 
 html.ponkotsu-dark-mode {
@@ -260,7 +418,12 @@ html.ponkotsu-dark-mode {
   --side-menu-danger: #ff8f98;
 }
 
-html.ponkotsu-dark-mode .side-menu-toggle {
+
+/* ☰ */
+
+html.ponkotsu-dark-mode
+.side-menu-toggle {
+
   background: #223843;
   color: #eef7fb;
 
@@ -269,42 +432,127 @@ html.ponkotsu-dark-mode .side-menu-toggle {
     rgba(0, 0, 0, 0.3);
 }
 
-html.ponkotsu-dark-mode .side-menu {
-  background: var(--side-menu-bg);
-  color: var(--side-menu-text);
+
+/* メニュー本体 */
+
+html.ponkotsu-dark-mode
+.side-menu {
+
+  background:
+    var(--side-menu-bg);
+
+  color:
+    var(--side-menu-text);
 }
 
-html.ponkotsu-dark-mode .side-menu-header {
-  border-color: var(--side-menu-border);
+
+/* ヘッダー */
+
+html.ponkotsu-dark-mode
+.side-menu-header {
+
+  border-color:
+    var(--side-menu-border);
 }
 
-html.ponkotsu-dark-mode .side-menu-title {
+html.ponkotsu-dark-mode
+.side-menu-title {
+
   color: #7fd0ef;
 }
 
-html.ponkotsu-dark-mode .side-menu-close {
+html.ponkotsu-dark-mode
+.side-menu-close {
+
   color: #eef7fb;
 }
 
-html.ponkotsu-dark-mode .side-menu-close:hover,
-html.ponkotsu-dark-mode .side-menu-close:active,
-html.ponkotsu-dark-mode .side-menu-link:hover,
-html.ponkotsu-dark-mode .side-menu-link:active,
-html.ponkotsu-dark-mode .side-menu-button:hover,
-html.ponkotsu-dark-mode .side-menu-button:active,
-html.ponkotsu-dark-mode .side-menu-link.is-current {
-  background: var(--side-menu-hover);
+
+/* 通常リンク */
+
+html.ponkotsu-dark-mode
+.side-menu-link,
+
+html.ponkotsu-dark-mode
+.side-menu-button {
+
+  color:
+    var(--side-menu-text);
 }
 
-html.ponkotsu-dark-mode .side-menu-link,
-html.ponkotsu-dark-mode .side-menu-button {
-  color: var(--side-menu-text);
+
+/* 子メニュー */
+
+html.ponkotsu-dark-mode
+.side-menu-sub-link {
+
+  color: #c2d4dc;
 }
 
-html.ponkotsu-dark-mode .side-menu-divider {
-  background: var(--side-menu-border);
+html.ponkotsu-dark-mode
+.side-menu-sub-link::before {
+
+  color: #7796a4;
 }
 
-html.ponkotsu-dark-mode .side-menu-logout {
-  color: var(--side-menu-danger);
+
+/* hover・現在位置 */
+
+html.ponkotsu-dark-mode
+.side-menu-close:hover,
+
+html.ponkotsu-dark-mode
+.side-menu-close:active,
+
+html.ponkotsu-dark-mode
+.side-menu-link:hover,
+
+html.ponkotsu-dark-mode
+.side-menu-link:active,
+
+html.ponkotsu-dark-mode
+.side-menu-button:hover,
+
+html.ponkotsu-dark-mode
+.side-menu-button:active,
+
+html.ponkotsu-dark-mode
+.side-menu-link.is-current {
+
+  background:
+    var(--side-menu-hover);
+}
+
+
+/* 区切り */
+
+html.ponkotsu-dark-mode
+.side-menu-divider {
+
+  background:
+    var(--side-menu-border);
+}
+
+
+/* バッジ */
+
+html.ponkotsu-dark-mode
+.side-menu-badge {
+
+  background: #ef5350;
+  color: #ffffff;
+
+  box-shadow:
+    0 1px 5px
+    rgba(0, 0, 0, 0.28);
+}
+
+
+/* ログアウト */
+
+html.ponkotsu-dark-mode
+.side-menu-logout {
+
+  color:
+    var(--side-menu-danger);
 }
