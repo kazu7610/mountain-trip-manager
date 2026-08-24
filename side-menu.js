@@ -129,6 +129,23 @@ function createSideMenu() {
 
         <a
           class="side-menu-link"
+          href="index.html#recruiting-section"
+        >
+          <span>
+            山行募集
+          </span>
+
+          <span
+            id="side-menu-recruiting-badge"
+            class="side-menu-badge"
+            hidden
+          >
+            0
+          </span>
+        </a>
+
+        <a
+          class="side-menu-link"
           href="trip-history.html"
         >
           山行履歴
@@ -413,8 +430,10 @@ function highlightCurrentPage() {
 
       if (
         linkPage ===
-        currentPage
+        currentPage &&
+        !linkUrl.hash
       ) {
+
         link.classList.add(
           "is-current"
         );
@@ -455,6 +474,8 @@ async function loadSideMenuBadges() {
 
     loadApprovalWaitingBadge(),
 
+    loadRecruitingBadge(),
+
     loadUnreadNoticeBadge(
       loginMember.id
     )
@@ -465,7 +486,6 @@ async function loadSideMenuBadges() {
 
 /* ========================================
    提出済み件数
-   ホームの提出済みカードと同じ
 ======================================== */
 
 async function loadSubmittedBadge() {
@@ -573,8 +593,67 @@ async function loadApprovalWaitingBadge() {
 
 
 /* ========================================
+   山行募集件数
+   ホームの山行募集と同じ条件
+======================================== */
+
+async function loadRecruitingBadge() {
+
+  const badge =
+    document.getElementById(
+      "side-menu-recruiting-badge"
+    );
+
+  if (!badge) {
+    return;
+  }
+
+  try {
+
+    const today =
+      getSideMenuTodayString();
+
+    const response =
+      await portalFetch(
+        "/rest/v1/trips" +
+        "?select=id" +
+        "&status=eq.approved" +
+        "&is_recruiting=eq.true" +
+        `&entry_date=gt.${today}`
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "山行募集件数を取得できませんでした。"
+      );
+    }
+
+    const trips =
+      await response.json();
+
+    const count =
+      Array.isArray(trips)
+        ? trips.length
+        : 0;
+
+    setSideMenuBadge(
+      badge,
+      count
+    );
+
+  } catch (error) {
+
+    console.error(
+      "サイドメニュー山行募集件数取得エラー:",
+      error
+    );
+
+  }
+}
+
+
+/* ========================================
    お知らせ未読件数
-   ホームと同じ判定方法
 ======================================== */
 
 async function loadUnreadNoticeBadge(
@@ -653,6 +732,40 @@ async function loadUnreadNoticeBadge(
     );
 
   }
+}
+
+
+/* ========================================
+   今日の日付
+======================================== */
+
+function getSideMenuTodayString() {
+
+  const now =
+    new Date();
+
+  const year =
+    now.getFullYear();
+
+  const month =
+    String(
+      now.getMonth() + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+  const day =
+    String(
+      now.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+  return (
+    `${year}-${month}-${day}`
+  );
 }
 
 
