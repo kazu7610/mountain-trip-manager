@@ -687,7 +687,7 @@ if (
 
 ${requestActionHtml}
 
-<${detailedPlanButtonHtml}
+${detailedPlanButtonHtml}
 
 ${descentActionHtml}
 
