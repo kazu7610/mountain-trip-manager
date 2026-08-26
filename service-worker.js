@@ -4,7 +4,7 @@
 ========================================= */
 
 const CACHE_NAME =
-  "mountain-trip-manager-v29";
+  "mountain-trip-manager-v30";
 
 const APP_FILES = [
   "./",
@@ -44,9 +44,19 @@ self.addEventListener(
       caches
         .open(CACHE_NAME)
         .then(
-          (cache) =>
-            cache.addAll(APP_FILES)
-        )
+  (cache) =>
+    cache.addAll(
+      APP_FILES.map(
+        (file) =>
+          new Request(
+            file,
+            {
+              cache: "reload"
+            }
+          )
+      )
+    )
+)
     );
 
     self.skipWaiting();
