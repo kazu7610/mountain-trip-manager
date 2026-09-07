@@ -830,6 +830,33 @@
     rgba(255, 255, 255, 0.14);
 }
 
+/* Keep the existing header at 375px and above, across all themes. */
+@media screen and (max-width: 374px) {
+  .header .login-user-area {
+    gap: 6px;
+  }
+
+  .header .login-user-name,
+  .header .notification-enabled-status,
+  .header .logout-button {
+    white-space: nowrap;
+  }
+
+  .header .login-user-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+  }
+
+  .header .notification-enabled-status,
+  .header .logout-button {
+    flex-shrink: 0;
+    padding: 6px 7px;
+    font-size: 11px;
+  }
+}
+
 /* =====================================
    下山後コメントボタン
 ===================================== */
