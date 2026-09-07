@@ -26,6 +26,22 @@ document.addEventListener(
     setupPullToRefresh();
 
     await refreshHomeData();
+
+    // 開いたまま日付が変わった場合も、前日の下山済みカードを消す。
+    let homeDate = getTodayString();
+    const checkHomeDate = () => {
+      const today = getTodayString();
+      if (today === homeDate) return;
+      homeDate = today;
+      renderTodayDescents(
+        document.getElementById("today-descended-list"),
+        [],
+        "本日無事下山した山行はありません。"
+      );
+      loadHomeTrips();
+    };
+    setInterval(checkHomeDate, 1000);
+    document.addEventListener("visibilitychange", checkHomeDate);
   }
 );
 
@@ -856,13 +872,17 @@ async function loadHomeTrips() {
       "today-descent-list"
     );
 
+  const todayDescendedList =
+    document.getElementById("today-descended-list");
+
   if (
     !cancelledTripSection ||
     !cancelledTripList ||
     !recruitingSection ||
     !recruitingTripList ||
     !todayTripList ||
-    !todayDescentList
+    !todayDescentList ||
+    !todayDescendedList
   ) {
     console.error(
       "ホーム画面の山行表示場所が見つかりません。"
@@ -874,6 +894,10 @@ async function loadHomeTrips() {
   try {
     const today =
       getTodayString();
+
+    const dayStart = new Date(`${today}T00:00:00`);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
 
     const loginMember =
       getPortalMember();
@@ -888,9 +912,10 @@ async function loadHomeTrips() {
       await portalFetch(
         "/rest/v1/trips" +
         "?select=*" +
-        "&status=in.(approved,descended,cancelled)" +
-        `&entry_date=lte.${today}` +
-        `&descent_date=gte.${today}` +
+        "&or=(" +
+        `and(status.in.(approved,cancelled),entry_date.lte.${today},descent_date.gte.${today}),` +
+        "and(status.in.(descended,completed)," +
+        `descended_at.gte.${dayStart.toISOString()},descended_at.lt.${dayEnd.toISOString()}))` +
         "&order=descent_date.asc,descent_time.asc"
       );
 
@@ -910,6 +935,7 @@ async function loadHomeTrips() {
     const cancelledTrips = [];
     const todayTrips = [];
     const todayDescents = [];
+    const todayDescended = [];
 
     for (const trip of trips) {
       const memberNames =
@@ -967,10 +993,19 @@ async function loadHomeTrips() {
         todayTrips.push(item);
       }
 
-      /*
-       * 下山日が今日の山行を表示
-       */
+      // 実際に本日下山した山行は、管理者確認後も専用セクションへ。
       if (
+        ["descended", "completed"].includes(trip.status) &&
+        trip.descended_at &&
+        new Date(trip.descended_at) >= dayStart &&
+        new Date(trip.descended_at) < dayEnd
+      ) {
+        todayDescended.push(item);
+      }
+
+      // 未下山の予定日の判定は従来通り。
+      if (
+        trip.status === "approved" &&
         trip.descent_date === today
       ) {
         todayDescents.push(item);
@@ -1003,6 +1038,12 @@ async function loadHomeTrips() {
     renderTodayDescents(
       todayDescentList,
       todayDescents
+    );
+
+    renderTodayDescents(
+      todayDescendedList,
+      getTodayString() === today ? todayDescended : [],
+      "本日無事下山した山行はありません。"
     );
 
     /*
@@ -1613,12 +1654,13 @@ function renderTodayTrips(
 
 function renderTodayDescents(
   container,
-  trips
+  trips,
+  emptyMessage = "本日の下山予定はありません。"
 ) {
   if (trips.length === 0) {
     container.innerHTML = `
       <div class="empty-message">
-        本日の下山予定はありません。
+        ${emptyMessage}
       </div>
     `;
 
@@ -2368,8 +2410,7 @@ function createTodayDescentCard(
     );
 
   const isDescended =
-    trip.status ===
-    "descended";
+    ["descended", "completed"].includes(trip.status);
 
   const plannedDescent =
     new Date(
@@ -2543,6 +2584,10 @@ const commentTime =
       </span>
 
       ${timeText}
+
+      ${trip.status === "completed"
+        ? '<span class="status-badge status-descended">管理者確認済み</span>'
+        : ""}
 
     </div>
 

@@ -24,7 +24,7 @@ function applyPortalDisplaySettings() {
 
   document.documentElement.classList.toggle(
     "ponkotsu-dark-mode",
-    darkMode
+    darkMode && (!window.PortalTheme || window.PortalTheme.getTheme() === "standard")
   );
 
 

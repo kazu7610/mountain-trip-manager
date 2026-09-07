@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <script src="theme-manager.js"></script>
 
   <meta
     name="viewport"
@@ -258,6 +259,7 @@
 
   <link rel="stylesheet" href="side-menu.css">
 
+  <link rel="stylesheet" href="themes.css">
 </head>
 
 
@@ -456,7 +458,7 @@
             ダークモード
           </div>
 
-          <div class="setting-sub">
+          <div class="setting-sub" id="dark-mode-description">
             暗い配色で表示
           </div>
         </div>
@@ -466,6 +468,8 @@
 
           <input
             id="dark-mode-toggle"
+            aria-label="ダークモード"
+            aria-describedby="dark-mode-description"
             type="checkbox"
           >
 
@@ -480,6 +484,21 @@
 
         <div style="width:100%;">
 
+          <label class="setting-label" for="theme-select">着せ替え</label>
+          <div class="setting-sub" id="theme-description">
+            このブラウザに会員ごとに保存されます
+          </div>
+          <select id="theme-select" aria-describedby="theme-description">
+            <option value="standard">標準</option>
+            <option value="spring">春</option>
+            <option value="summer">夏</option>
+            <option value="autumn">秋</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div style="width:100%;">
           <div class="setting-label">
             文字サイズ
           </div>

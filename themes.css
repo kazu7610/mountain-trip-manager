@@ -1,0 +1,233 @@
+/* 標準には上書きしない。季節テーマは色だけを変更する。 */
+html[data-theme="spring"] {
+  --theme-button-bg-hover: #ebbac3;
+  --theme-button-bg-active: #e3aab5;
+  --theme-control-bg: #f2cbd2;
+  --theme-control-text: #593b40;
+  --theme-control-border: #e6bdc5;
+  --theme-page: #fff8f9;
+  --theme-page-end: #fffdfd;
+  --theme-surface: #fffdfd;
+  --theme-soft: #fceef0;
+  --theme-border: #f0dce0;
+  --theme-text: #503c40;
+  --theme-muted: #796065;
+  --theme-accent: #955763;
+  --theme-link-color: var(--theme-accent);
+  --theme-header-start: #f7dce1;
+  --theme-header-end: #fbe9ec;
+  --theme-header-text: #593b40;
+}
+
+html[data-theme="summer"] {
+  --theme-button-bg-hover: #11523e;
+  --theme-button-bg-active: #0c4131;
+  --theme-page: #e3f4ee;
+  --theme-page-end: #f3fbff;
+  --theme-surface: #fafffd;
+  --theme-soft: #dcf0e9;
+  --theme-border: #aed2c6;
+  --theme-text: #233f3c;
+  --theme-muted: #4a6964;
+  --theme-accent: #18664e;
+  --theme-header-end: #216e91;
+}
+
+html[data-theme="autumn"] {
+  --theme-button-bg-hover: #71381b;
+  --theme-button-bg-active: #5d2c16;
+  --theme-page: #f7eadc;
+  --theme-page-end: #fffaf3;
+  --theme-surface: #fffbf5;
+  --theme-soft: #f3e2cb;
+  --theme-border: #d6b898;
+  --theme-text: #48372c;
+  --theme-muted: #705845;
+  --theme-accent: #874522;
+  --theme-header-end: #813b46;
+}
+
+@media screen {
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) {
+    --theme-button-bg: var(--theme-control-bg, var(--theme-accent));
+    --theme-button-text: var(--theme-control-text, #fff);
+    --theme-button-border: var(--theme-control-border, var(--theme-accent));
+    --theme-button-focus: var(--theme-accent);
+    --side-menu-bg: var(--theme-surface);
+    --side-menu-text: var(--theme-text);
+    --side-menu-border: var(--theme-border);
+    --side-menu-hover: var(--theme-soft);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) body {
+    color: var(--theme-text);
+    background: linear-gradient(180deg, var(--theme-page), var(--theme-page-end));
+  }
+
+  html[data-theme]:not([data-theme="standard"]) :is(header, .header) {
+    color: var(--theme-header-text, #fff);
+    background: linear-gradient(135deg, var(--theme-header-start, var(--theme-accent)), var(--theme-header-end));
+  }
+
+  /* 淡い桜色のヘッダーでは、個別に白指定された文字も読みやすくする。 */
+  html[data-theme="spring"] .header :is(.login-user-name, .logout-button) {
+    color: var(--theme-header-text);
+  }
+
+  html[data-theme="spring"] .logout-button {
+    border-color: var(--theme-control-border);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) .header::before {
+    background: var(--theme-page);
+  }
+
+  /* 状態付きの山行カードは対象外。警告・承認・却下・下山済み等は既存色を維持。 */
+  html[data-theme]:not([data-theme="standard"]) :is(
+    .card, .panel, .accordion, .summary-item, .summary-card,
+    .plan-section, .menu-card, .notice-card:not(.important),
+    .form-card, .detail-card, .page-card, .main-count, [class="trip-card"]
+  ) {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) :is(
+    .section-title, .page-title, .list-title, .plan-section-title,
+    .summary-count, .menu-title, .stats-heading, .main-count-number
+  ):not(.descended-section .section-title) {
+    color: var(--theme-accent);
+    border-color: var(--theme-border);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) .section-title:not(.descended-section .section-title)::before {
+    background: var(--theme-accent);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) :is(
+    .setting-sub, .section-subtitle, .list-description,
+    .summary-label, .summary-link-text
+  ) {
+    color: var(--theme-muted);
+  }
+
+  /* 通常操作の共通配色。状態色を持つボタンは列挙しない。
+     行程の下山地点確定（.is-descent）も既存の緑を維持する。 */
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) :is(
+    .create-button,
+    .primary-button,
+    .secondary-button,
+    .action-button,
+    .save-button,
+    .submit-button,
+    .draft-button,
+    .next-button,
+    .detail-button,
+    .back-button,
+    .home-button,
+    .plan-button,
+    .admin-button,
+    .member-admin-button,
+    .member-button,
+    .annual-button,
+    .menu-button,
+    .read-summary-button,
+    .edit-button,
+    .cancel-button,
+    .descent-comment-button,
+    .admin-reply-button,
+    .change-request-button,
+    .plan-action-add-button,
+    .plan-action-finish-button:not(.is-descent),
+    .emergency-search-button,
+    .emergency-manual-add-button,
+    .emergency-select-button,
+    .equipment-add-button
+  ) {
+    color: var(--theme-button-text);
+    background: var(--theme-button-bg);
+    border-color: var(--theme-button-border);
+  }
+
+  /* 色変数だけを変更するため、上の対象以外のボタンには影響しない。 */
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) :where(button, a):hover:not(:disabled):not([aria-disabled="true"]) {
+    --theme-button-bg: var(--theme-button-bg-hover);
+    --theme-button-border: var(--theme-button-bg-hover);
+  }
+
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) :where(button, a):active:not(:disabled):not([aria-disabled="true"]) {
+    --theme-button-bg: var(--theme-button-bg-active);
+    --theme-button-border: var(--theme-button-bg-active);
+  }
+
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) :is(
+    .create-button,
+    .primary-button,
+    .secondary-button,
+    .action-button,
+    .save-button,
+    .submit-button,
+    .draft-button,
+    .next-button,
+    .detail-button,
+    .back-button,
+    .home-button,
+    .plan-button,
+    .admin-button,
+    .member-admin-button,
+    .member-button,
+    .annual-button,
+    .menu-button,
+    .read-summary-button,
+    .edit-button,
+    .cancel-button,
+    .descent-comment-button,
+    .admin-reply-button,
+    .change-request-button,
+    .plan-action-add-button,
+    .plan-action-finish-button:not(.is-descent),
+    .emergency-search-button,
+    .emergency-manual-add-button,
+    .emergency-select-button,
+    .equipment-add-button
+  ):focus-visible {
+    outline: 2px solid var(--theme-button-focus);
+    outline-offset: 2px;
+  }
+
+  /* 文字リンクとメニュー開閉は元の表示形式を保つ。 */
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) .back-link {
+    color: var(--theme-link-color, var(--theme-button-border));
+  }
+
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) .back-link:focus-visible {
+    outline: 2px solid var(--theme-button-focus);
+    outline-offset: 2px;
+  }
+
+  html:is([data-theme="spring"], [data-theme="summer"], [data-theme="autumn"]) .side-menu-toggle {
+    color: var(--theme-accent);
+    background: var(--theme-soft);
+    border-color: var(--theme-border);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) .section-count {
+    color: var(--theme-accent);
+    background: var(--theme-soft);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) :is(.setting-row, .stats-row) {
+    border-color: var(--theme-border);
+  }
+
+  html[data-theme]:not([data-theme="standard"]) #theme-select {
+    color: var(--theme-text);
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+  }
+}
+
+#dark-mode-toggle:disabled + .slider {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

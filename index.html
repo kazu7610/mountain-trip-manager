@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <script src="theme-manager.js"></script>
 
   <meta
     name="viewport"
@@ -531,8 +532,19 @@
     }
 
         .trip-card.descent-completed {
+      padding: 10px 15px;
       border-left: 5px solid #3ca67a;
       background: rgba(242, 255, 249, 0.97);
+    }
+
+    .descent-completed .status-row,
+    .descent-completed .button-row {
+      margin-top: 7px;
+      flex-wrap: wrap;
+    }
+
+    .descended-section .section-title {
+      color: #16714f;
     }
 
     .trip-card.descent-overdue {
@@ -895,6 +907,7 @@
 <link rel="stylesheet" href="side-menu.css">
 <link rel="stylesheet" href="app-settings.css">
 
+  <link rel="stylesheet" href="themes.css">
 </head>
 
 <body>
@@ -1179,7 +1192,7 @@
     <section class="section">
 
       <h2 class="section-title">
-        本日の下山
+        本日の下山予定
       </h2>
 
       <p class="section-subtitle">
@@ -1194,6 +1207,14 @@
 
       </div>
 
+    </section>
+
+    <section class="section descended-section">
+      <h2 class="section-title">下山報告</h2>
+      <p class="section-subtitle">今日、下山完了の報告があった山行</p>
+      <div id="today-descended-list">
+        <div class="empty-message">本日無事下山した山行を読み込んでいます...</div>
+      </div>
     </section>
 
     <section
@@ -1218,7 +1239,7 @@
 
 <script src="portal-auth.js?v=4"></script>
 <script src="push-notifications.js?v=4"></script>
-<script src="index.js?v=314"></script>
+<script src="index.js?v=315"></script>
 
 <script>
   if (
