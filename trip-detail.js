@@ -10,6 +10,7 @@ document.addEventListener(
       return;
     }
 
+    setupMemberContactModal();
     loadTripDetail();
   }
 );
@@ -1658,12 +1659,15 @@ function createMemberHtml(
           : "";
 
       chips.push(`
-        <span class="member-chip">
+        <button type="button" class="member-chip member-contact-button"
+          data-member-id="${escapeHtml(member.id)}"
+          aria-haspopup="dialog" aria-controls="member-contact-modal"
+          aria-label="${escapeHtml(member.name)}の緊急連絡先を表示">
           ${escapeHtml(
             member.name
           )}
           ${leaderText}
-        </span>
+        </button>
       `);
     }
   );
@@ -1690,6 +1694,82 @@ function createMemberHtml(
   }
 
   return chips.join("");
+}
+
+/* 参加者の緊急連絡先（山行詳細画面のみ） */
+function setupMemberContactModal() {
+  const modal = document.getElementById("member-contact-modal");
+  const content = document.getElementById("member-contact-content");
+  const closeButton = document.getElementById("member-contact-close");
+  const detail = document.getElementById("trip-detail");
+  if (!modal || !content || !closeButton || !detail) return;
+
+  let requestId = 0;
+
+  function closeModal() {
+    requestId += 1;
+    content.innerHTML = "";
+    modal.close();
+  }
+
+  closeButton.addEventListener("click", closeModal);
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) closeModal();
+  });
+  modal.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeModal();
+  });
+
+  // 詳細が再描画されても参加者ボタンを操作できるようにする。
+  detail.addEventListener("click", async (event) => {
+    const button = event.target.closest(".member-contact-button");
+    if (!button || !detail.contains(button)) return;
+    const memberId = Number(button.dataset.memberId);
+    if (!Number.isInteger(memberId) || memberId <= 0) return;
+
+    const currentRequest = ++requestId;
+    content.textContent = "会員情報を読み込んでいます…";
+    if (!modal.open) modal.showModal();
+    closeButton.focus();
+
+    try {
+      const response = await portalFetch(
+        "/rest/v1/members" +
+        "?select=name,mobile_phone,blood_type,emergency_name,emergency_relation,emergency_phone" +
+        `&id=eq.${memberId}&limit=1`
+      );
+      if (!response.ok) throw new Error("会員情報の取得に失敗しました。");
+      const rows = await response.json();
+      if (currentRequest !== requestId || !modal.open) return;
+      const member = rows[0];
+      if (!member) {
+        content.textContent = "対象の会員情報が見つかりません。";
+        return;
+      }
+
+      const fields = [
+        ["氏名", member.name],
+        ["携帯電話", member.mobile_phone, true],
+        ["血液型", member.blood_type],
+        ["緊急連絡先氏名", member.emergency_name],
+        ["続柄", member.emergency_relation],
+        ["緊急連絡先電話番号", member.emergency_phone, true]
+      ];
+      content.innerHTML = `<dl>${fields.map(([label, value, isPhone]) => {
+        const text = String(value ?? "").trim();
+        const display = escapeHtml(text || "未登録");
+        const phone = text.replace(/[\s()（）ー－-]/g, "");
+        const rendered = isPhone && /^\+?[0-9]+$/.test(phone)
+          ? `<a href="tel:${escapeHtml(phone)}">${display}</a>`
+          : display;
+        return `<div class="member-contact-field"><dt>${escapeHtml(label)}</dt><dd>${rendered}</dd></div>`;
+      }).join("")}</dl>`;
+    } catch (error) {
+      if (currentRequest !== requestId || !modal.open) return;
+      content.textContent = "会員情報を取得できませんでした。閉じてからもう一度お試しください。";
+    }
+  });
 }
 
 /* =========================================

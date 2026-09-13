@@ -293,6 +293,49 @@
       background: #e7f5fb;
     }
 
+    .member-contact-button {
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .member-contact-button:hover { filter: brightness(0.95); }
+    .member-contact-button:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    #member-contact-modal {
+      width: min(calc(100% - 32px), 440px);
+      max-height: 85vh;
+      padding: 0;
+      border: 1px solid var(--theme-border, #c8dde8);
+      border-radius: 18px;
+      color: var(--theme-text, #17364d);
+      background: var(--theme-surface, #fff);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      overflow: auto;
+    }
+
+    #member-contact-modal::backdrop { background: rgba(0, 0, 0, 0.5); }
+    .member-contact-panel { padding: 24px; }
+    #member-contact-title { margin: 0 0 18px; font-size: 20px; }
+    #member-contact-content { line-height: 1.6; overflow-wrap: anywhere; }
+    #member-contact-content dl { margin: 0; }
+    .member-contact-field + .member-contact-field { margin-top: 12px; }
+    .member-contact-field dt { font-size: 12px; opacity: 0.8; }
+    .member-contact-field dd { margin: 3px 0 0; font-weight: bold; }
+    #member-contact-content a { color: var(--theme-accent, #176a99); }
+    #member-contact-close { width: 100%; margin-top: 20px; }
+
+    html.ponkotsu-dark-mode #member-contact-modal {
+      color: #f2f7f9;
+      background: #243944;
+      border-color: #4d6874;
+    }
+    html.ponkotsu-dark-mode #member-contact-content a { color: #9bdcff; }
+
     .outside-chip {
       color: #755800;
       background: #fff1ca;
@@ -605,9 +648,17 @@ html.ponkotsu-dark-mode .trip-comment-time {
 
   </main>
 
+  <dialog id="member-contact-modal" aria-labelledby="member-contact-title">
+    <div class="member-contact-panel">
+      <h2 id="member-contact-title">緊急連絡先</h2>
+      <div id="member-contact-content" aria-live="polite"></div>
+      <button id="member-contact-close" class="home-button" type="button">閉じる</button>
+    </div>
+  </dialog>
+
   <script src="portal-auth.js?v=4"></script>
   <script src="push-notifications.js?v=4"></script>
-  <script src="trip-detail.js?v=56"></script>
+  <script src="trip-detail.js?v=57"></script>
   <script src="side-menu.js"></script>
   <script src="app-settings.js"></script>
 
