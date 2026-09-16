@@ -249,6 +249,16 @@ if (
     currentDetailedTrip =
       trip;
 
+    // draftでもCLは入山日前まで編集できる。提出は山行届画面で行う。
+    const backLink = document.getElementById("plan-back-link");
+    if (
+      backLink && trip.status === "draft" &&
+      trip.submitted_by === loginMember.authUserId
+    ) {
+      backLink.href = `trip-form.html?edit=${encodeURIComponent(trip.id)}`;
+      backLink.textContent = "← 山行届に戻る";
+    }
+
     infoElement.innerHTML = `
       <p class="placeholder">
         <strong>山域：</strong>
@@ -4362,6 +4372,11 @@ if (!specialNotesResponse.ok) {
     alert(
       "詳細計画書を一時保存しました。"
     );
+
+    // 下書きはこの画面に留め、山行届へ戻ってから提出できるようにする。
+    if (currentDetailedTrip.status === "draft") {
+      return;
+    }
 
     location.href =
   `trip-plan-pdf.html?id=${encodeURIComponent(

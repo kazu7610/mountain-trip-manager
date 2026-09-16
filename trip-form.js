@@ -817,6 +817,45 @@ async function saveDraftTrip(
       ? Number(leaderValue)
       : null;
 
+  const createDetailedPlan =
+    document.getElementById("create-plan").checked;
+
+  // 通常の下書きは未完成でも保存できる。詳細へ進む場合だけ確認する。
+  if (createDetailedPlan) {
+    if (
+      !entryDate || !descentDate || !descentTime ||
+      !genre || !mountainArea || !mountainName || !route
+    ) {
+      alert("詳細計画書へ進むには、入山日・下山日・下山予定時刻・ジャンル・山域・山名・ルートを入力してください。");
+      return;
+    }
+
+    if (descentDate < entryDate) {
+      alert("下山日は入山日以降の日付にしてください。");
+      return;
+    }
+
+    if (selectedMembers.length === 0) {
+      alert("詳細計画書へ進むには、会員参加者を1名以上選択してください。");
+      return;
+    }
+
+    if (!Number.isInteger(leaderId) || leaderId <= 0) {
+      alert("リーダー（CL）を選択してください。");
+      return;
+    }
+
+    if (!selectedMembers.some((member) => Number(member.value) === leaderId)) {
+      alert("リーダーは参加者の中から選択してください。");
+      return;
+    }
+
+    if (isRecruiting && !recruitingMessage) {
+      alert("募集する場合は、募集コメントを入力してください。");
+      return;
+    }
+  }
+
   const confirmed =
     confirm(
       "現在の入力内容を下書き保存しますか？"
@@ -907,14 +946,18 @@ async function saveDraftTrip(
     }
 
     await replaceTripMembers(
-  savedTripId,
-  selectedMembers,
-  leaderId
-);
+      savedTripId,
+      selectedMembers,
+      leaderId
+    );
 
-alert(
-  "山行届を下書き保存しました。"
-);
+    if (createDetailedPlan) {
+      location.href =
+        `trip-plan.html?id=${encodeURIComponent(savedTripId)}`;
+      return;
+    }
+
+    alert("山行届を下書き保存しました。");
 
     location.href =
       "index.html";
