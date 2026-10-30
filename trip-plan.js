@@ -5,6 +5,7 @@
 
 let currentDetailedTrip = null;
 let selectedEmergencyContacts = [];
+let detailedPlanLoadFailed = false;
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -189,55 +190,9 @@ if (!loginMember?.id) {
   return;
 }
 
-const leaderResponse =
-  await portalFetch(
-    "/rest/v1/trip_members" +
-    "?select=member_id,is_leader" +
-    `&trip_id=eq.${trip.id}` +
-    `&member_id=eq.${Number(loginMember.id)}` +
-    "&limit=1"
-  );
-
-if (!leaderResponse.ok) {
-  throw new Error(
-    "CL情報を確認できませんでした。"
-  );
-}
-
-const leaderRows =
-  await leaderResponse.json();
-
-const isLeader =
-  leaderRows.length > 0 &&
-  leaderRows[0].is_leader === true;
-
-if (!isLeader) {
+if (!canEditDetailedPlan(trip, loginMember)) {
   alert(
-    "詳細計画書の作成・編集はCLのみ行えます。"
-  );
-
-  location.href =
-    `trip-detail.html?id=${trip.id}`;
-
-  return;
-}
-
-const entryDate =
-  trip.entry_date
-    ? new Date(
-        `${trip.entry_date}T00:00:00`
-      )
-    : null;
-
-const now =
-  new Date();
-
-if (
-  !entryDate ||
-  now >= entryDate
-) {
-  alert(
-    "入山日以降は詳細計画書を編集できません。"
+    "詳細計画書は下書きまたは修正依頼中の山行を作成した本人が編集できます。"
   );
 
   location.href =
@@ -249,10 +204,9 @@ if (
     currentDetailedTrip =
       trip;
 
-    // draftでもCLは入山日前まで編集できる。提出は山行届画面で行う。
     const backLink = document.getElementById("plan-back-link");
     if (
-      backLink && trip.status === "draft" &&
+      backLink && ["draft", "revision_required"].includes(trip.status) &&
       trip.submitted_by === loginMember.authUserId
     ) {
       backLink.href = `trip-form.html?edit=${encodeURIComponent(trip.id)}`;
@@ -330,6 +284,14 @@ if (
       trip
     );
 
+    const saveButton = document.getElementById("save-plan-button");
+    if (saveButton) {
+      saveButton.disabled = detailedPlanLoadFailed;
+      if (detailedPlanLoadFailed) {
+        alert("詳細計画書の一部を読み込めませんでした。保存せず、画面を開き直してください。");
+      }
+    }
+
   } catch (error) {
     console.error(error);
 
@@ -339,6 +301,15 @@ if (
       </p>
     `;
   }
+}
+
+function canEditDetailedPlan(trip, member) {
+  return Boolean(member?.authUserId && trip.submitted_by === member.authUserId &&
+    ["draft", "revision_required"].includes(trip.status));
+}
+
+function hasDetailedPlanDates(trip) {
+  return Boolean(trip.entry_date && trip.descent_date && trip.entry_date <= trip.descent_date);
 }
 
 /* =========================================
@@ -515,6 +486,7 @@ async function loadClubEmergencyContact(
   } catch (error) {
     console.error(error);
 
+    detailedPlanLoadFailed = true;
     contactElement.innerHTML = `
       <p class="placeholder">
         会員情報を読み込めませんでした。
@@ -627,6 +599,7 @@ async function loadDetailedPlanGuestMembers(
   } catch (error) {
     console.error(error);
 
+    detailedPlanLoadFailed = true;
     guestElement.innerHTML = `
       <p class="placeholder">
         会員外参加者を読み込めませんでした。
@@ -1186,6 +1159,7 @@ async function loadDetailedPlanMembers(
   } catch (error) {
     console.error(error);
 
+    detailedPlanLoadFailed = true;
     membersElement.innerHTML = `
       <p class="placeholder">
         参加者情報を読み込めませんでした。
@@ -1445,6 +1419,11 @@ async function loadDetailedPlanMeals(
     return;
   }
 
+  if (!hasDetailedPlanDates(trip)) {
+    mealsElement.textContent = "食事計画の入力には、山行届で入山日と下山日を設定してください。保存済みの食事計画は保持されます。";
+    return;
+  }
+
   mealsElement.innerHTML = `
     <p class="placeholder">
       食事計画を読み込んでいます...
@@ -1527,6 +1506,7 @@ const members =
   } catch (error) {
     console.error(error);
 
+    detailedPlanLoadFailed = true;
     mealsElement.innerHTML = `
       <p class="placeholder">
         食事計画を読み込めませんでした。
@@ -2333,6 +2313,7 @@ async function loadDetailedPlanEmergencyContacts(
   } catch (error) {
     console.error(error);
 
+    detailedPlanLoadFailed = true;
     emergencyElement.innerHTML = `
       <p class="placeholder">
         緊急時連絡先を読み込めませんでした。
@@ -3335,6 +3316,15 @@ async function loadDetailedPlanActions(
     return;
   }
 
+  if (!hasDetailedPlanDates(trip)) {
+    renderActionDays([], trip);
+    const message = document.createElement("p");
+    message.className = "placeholder";
+    message.textContent = "行動予定の入力には、山行届で入山日と下山日を設定してください。保存済みの行動予定は保持されます。";
+    actionsElement.prepend(message);
+    return;
+  }
+
   actionsElement.innerHTML = `
     <p class="placeholder">
       行動予定を読み込んでいます...
@@ -3377,6 +3367,7 @@ async function loadDetailedPlanActions(
   } catch (error) {
     console.error(error);
 
+    detailedPlanLoadFailed = true;
     actionsElement.innerHTML = `
       <p class="placeholder">
         行動予定を読み込めませんでした。
@@ -4214,62 +4205,6 @@ if (!loginMember?.id) {
   return;
 }
 
-const leaderResponse =
-  await portalFetch(
-    "/rest/v1/trip_members" +
-    "?select=member_id,is_leader" +
-    `&trip_id=eq.${Number(tripId)}` +
-    `&member_id=eq.${Number(loginMember.id)}` +
-    "&limit=1"
-  );
-
-if (!leaderResponse.ok) {
-  alert(
-    "CL情報を確認できません。"
-  );
-
-  return;
-}
-
-const leaderRows =
-  await leaderResponse.json();
-
-const isLeader =
-  leaderRows.length > 0 &&
-  leaderRows[0].is_leader === true;
-
-if (!isLeader) {
-  alert(
-    "詳細計画書を保存できるのはCLのみです。"
-  );
-
-  return;
-}
-
-const entryDate =
-  currentDetailedTrip.entry_date
-    ? new Date(
-        `${currentDetailedTrip.entry_date}T00:00:00`
-      )
-    : null;
-
-const now =
-  new Date();
-
-if (
-  !entryDate ||
-  now >= entryDate
-) {
-  alert(
-    "入山日以降は詳細計画書を保存できません。"
-  );
-
-  location.href =
-    `trip-detail.html?id=${Number(tripId)}`;
-
-  return;
-}    
-
   const specialNotesElement =
   document.getElementById(
     "plan-special-notes"
@@ -4285,12 +4220,6 @@ const specialNotes =
       "保存対象の山行を確認できません。"
     );
 
-    return;
-  }
-
-  if (
-    !validateActionPlans()
-  ) {
     return;
   }
 
@@ -4311,16 +4240,30 @@ const specialNotes =
 
   try {
 
+  const statusResponse = await portalFetch(
+    `/rest/v1/trips?select=id,status,submitted_by,entry_date,descent_date&id=eq.${encodeURIComponent(tripId)}&limit=1`
+  );
+  if (!statusResponse.ok) throw new Error("山行の状態を確認できませんでした。");
+  const latestTrip = (await statusResponse.json())[0];
+  if (!latestTrip || !canEditDetailedPlan(latestTrip, loginMember)) {
+    alert("山行の状態が変わったため、詳細計画書を保存できません。画面を開き直してください。");
+    return;
+  }
+  if (latestTrip.entry_date !== currentDetailedTrip.entry_date || latestTrip.descent_date !== currentDetailedTrip.descent_date) {
+    alert("山行の日程が変更されたため、画面を開き直してください。");
+    return;
+  }
+
   const specialNotesResponse =
   await portalFetch(
-    `/rest/v1/trips?id=eq.${Number(tripId)}`,
+    `/rest/v1/trips?id=eq.${Number(tripId)}&status=eq.${latestTrip.status}&submitted_by=eq.${encodeURIComponent(loginMember.authUserId)}`,
     {
       method:
         "PATCH",
 
       headers: {
         Prefer:
-          "return=minimal"
+          "return=representation"
       },
 
       body:
@@ -4340,6 +4283,9 @@ if (!specialNotesResponse.ok) {
     ` ${specialNotesResponse.status} ${errorText}`
   );
 }
+if (!(await specialNotesResponse.json()).length) {
+  throw new Error("山行の状態が変更されたため保存できません。");
+}
 
      await saveDetailedPlanRoles(
       tripId
@@ -4349,9 +4295,9 @@ if (!specialNotesResponse.ok) {
   tripId
 );
 
-    await saveDetailedPlanActions(
-      tripId
-    );
+    if (hasDetailedPlanDates(currentDetailedTrip)) {
+      await saveDetailedPlanActions(tripId);
+    }
 
     await saveDetailedPlanEmergencyContacts(
       tripId
@@ -4361,9 +4307,9 @@ if (!specialNotesResponse.ok) {
   tripId
 );
 
-    await saveDetailedPlanMeals(
-      tripId
-    );
+    if (hasDetailedPlanDates(currentDetailedTrip)) {
+      await saveDetailedPlanMeals(tripId);
+    }
 
     await saveDetailedPlanEquipment(
       tripId
@@ -4374,16 +4320,7 @@ if (!specialNotesResponse.ok) {
     );
 
     // 下書きはこの画面に留め、山行届へ戻ってから提出できるようにする。
-    if (currentDetailedTrip.status === "draft") {
-      return;
-    }
-
-    location.href =
-  `trip-plan-pdf.html?id=${encodeURIComponent(
-    tripId
-  )}`;
-
-return;
+    return;
 
 
   } catch (error) {
@@ -4523,10 +4460,6 @@ async function saveDetailedPlanGuestMembers(
           ?.value
           .trim() ||
         "";
-
-      if (!name) {
-        return;
-      }
 
       const roles =
         Array.from(

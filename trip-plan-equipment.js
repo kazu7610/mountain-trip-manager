@@ -300,6 +300,7 @@ async function loadDetailedPlanEquipment(
   } catch (error) {
     console.error(error);
 
+    detailedPlanLoadFailed = true;
     equipmentElement.innerHTML = `
       <p class="placeholder">
         共同装備を読み込めませんでした。

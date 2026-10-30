@@ -392,21 +392,9 @@ function renderTripDetail(
       `
     : "";  
 
-   const today =
-  new Date();
-
-const entryDate =
-  trip.entry_date
-    ? new Date(`${trip.entry_date}T00:00:00`)
-    : null;
-
-const isBeforeEntryDate =
-  entryDate &&
-  today < entryDate;
-
 const canEditDetailedPlan =
-  isLeader &&
-  isBeforeEntryDate;
+  isSubmitter &&
+  ["draft", "revision_required"].includes(trip.status);
 
 const canOpenDetailedPlanPdf =
   hasDetailedPlan &&

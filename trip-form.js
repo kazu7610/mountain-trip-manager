@@ -820,42 +820,6 @@ async function saveDraftTrip(
   const createDetailedPlan =
     document.getElementById("create-plan").checked;
 
-  // 通常の下書きは未完成でも保存できる。詳細へ進む場合だけ確認する。
-  if (createDetailedPlan) {
-    if (
-      !entryDate || !descentDate || !descentTime ||
-      !genre || !mountainArea || !mountainName || !route
-    ) {
-      alert("詳細計画書へ進むには、入山日・下山日・下山予定時刻・ジャンル・山域・山名・ルートを入力してください。");
-      return;
-    }
-
-    if (descentDate < entryDate) {
-      alert("下山日は入山日以降の日付にしてください。");
-      return;
-    }
-
-    if (selectedMembers.length === 0) {
-      alert("詳細計画書へ進むには、会員参加者を1名以上選択してください。");
-      return;
-    }
-
-    if (!Number.isInteger(leaderId) || leaderId <= 0) {
-      alert("リーダー（CL）を選択してください。");
-      return;
-    }
-
-    if (!selectedMembers.some((member) => Number(member.value) === leaderId)) {
-      alert("リーダーは参加者の中から選択してください。");
-      return;
-    }
-
-    if (isRecruiting && !recruitingMessage) {
-      alert("募集する場合は、募集コメントを入力してください。");
-      return;
-    }
-  }
-
   const confirmed =
     confirm(
       "現在の入力内容を下書き保存しますか？"
@@ -930,6 +894,13 @@ async function saveDraftTrip(
     let savedTripId;
 
     if (editTripId) {
+      // 修正依頼中の一時保存でステータスや承認情報を戻さない。
+      delete tripData.status;
+      delete tripData.submitted_by;
+      delete tripData.submitted_at;
+      delete tripData.approved_by;
+      delete tripData.approved_at;
+      delete tripData.revision_reason;
       await updateExistingTrip(
         editTripId,
         tripData
@@ -1079,13 +1050,6 @@ async function submitTripForm(
       ?.value
       .trim() || "";
 
-  const createDetailedPlan =
-    document
-      .getElementById(
-        "create-plan"
-      )
-      .checked;
-
   const selectedMembers =
     Array.from(
       document.querySelectorAll(
@@ -1182,6 +1146,33 @@ async function submitTripForm(
     );
 
     return;
+  }
+
+  if (editTripId) {
+    try {
+      const response = await portalFetch(
+        `/rest/v1/trip_plan_actions?select=action_time,action_text&trip_id=eq.${editTripId}`
+      );
+      if (!response.ok) throw new Error("行動予定を確認できませんでした。");
+      const actions = await response.json();
+      if (actions.some((action) => Boolean(action.action_time) !== Boolean((action.action_text || "").trim()))) {
+        alert("詳細計画書の行動予定は、時間と行動内容を両方入力してください。");
+        return;
+      }
+      const guestResponse = await portalFetch(
+        `/rest/v1/trip_guest_members?select=name&trip_id=eq.${editTripId}`
+      );
+      if (!guestResponse.ok) throw new Error("会員外参加者を確認できませんでした。");
+      const guests = await guestResponse.json();
+      if (guests.some((guest) => !(guest.name || "").trim())) {
+        alert("詳細計画書の会員外参加者の名前を入力するか、不要な参加者を削除してください。");
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+      alert("詳細計画書の行動予定を確認できませんでした。提出を中止しました。");
+      return;
+    }
   }
 
   const confirmMessage =
@@ -1310,29 +1301,15 @@ outside_member_count:
       );
     }
 
-    if (createDetailedPlan) {
-      localStorage.setItem(
-        "pendingDetailedPlanTripId",
-        String(savedTripId)
-      );
-    } else {
-      localStorage.removeItem(
-        "pendingDetailedPlanTripId"
-      );
-    }
+    localStorage.removeItem("pendingDetailedPlanTripId");
 
     alert(
       editTripId
         ? "山行届を管理者へ再提出しました。"
-        : createDetailedPlan
-          ? "山行届を提出しました。\n詳細計画書の入力画面は次に作成します。"
-          : "山行届を管理者へ提出しました。"
+        : "山行届を管理者へ提出しました。"
     );
 
-    location.href =
-  createDetailedPlan
-    ? "trip-plan.html"
-    : "index.html";
+    location.href = "index.html";
 
   } catch (error) {
     console.error(error);
@@ -1468,13 +1445,13 @@ async function updateExistingTrip(
 
   const response =
     await portalFetch(
-      `/rest/v1/trips?id=eq.${tripId}`,
+      `/rest/v1/trips?id=eq.${tripId}&status=eq.${currentTrip.status}&submitted_by=eq.${encodeURIComponent(loginMember.authUserId)}`,
       {
         method: "PATCH",
 
         headers: {
           Prefer:
-            "return=minimal"
+            "return=representation"
         },
 
         body:
@@ -1493,6 +1470,9 @@ async function updateExistingTrip(
       ` ${response.status} ${errorText}`
     );
   }
+  if (!(await response.json()).length) {
+    throw new Error("山行の状態が変わったため更新できません。");
+  }
 }
 
 /* =========================================
@@ -1504,58 +1484,35 @@ async function replaceTripMembers(
   selectedMembers,
   leaderId
 ) {
-  const deleteResponse =
-    await portalFetch(
-      `/rest/v1/trip_members?trip_id=eq.${tripId}`,
-      {
-        method: "DELETE",
+  const response = await portalFetch(
+    `/rest/v1/trip_members?select=id,member_id,is_leader&trip_id=eq.${tripId}`
+  );
+  if (!response.ok) throw new Error("参加者情報を確認できませんでした。");
+  const existing = await response.json();
+  const selectedIds = new Set(selectedMembers.map((member) => Number(member.value)));
+  const existingIds = new Set(existing.map((member) => Number(member.member_id)));
 
-        headers: {
-          Prefer:
-            "return=minimal"
-        }
-      }
+  // 継続参加する会員の行は残し、詳細計画書で設定した役割を保持する。
+  for (const member of existing) {
+    const memberId = Number(member.member_id);
+    const isSelected = selectedIds.has(memberId);
+    const isLeader = memberId === leaderId;
+    if (isSelected && member.is_leader === isLeader) continue;
+    const result = await portalFetch(
+      `/rest/v1/trip_members?id=eq.${member.id}&trip_id=eq.${tripId}`,
+      isSelected
+        ? { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ is_leader: isLeader }) }
+        : { method: "DELETE", headers: { Prefer: "return=minimal" } }
     );
-
-  if (!deleteResponse.ok) {
-    const errorText =
-      await deleteResponse.text();
-
-    throw new Error(
-      "以前の参加者情報を削除できませんでした。" +
-      ` ${deleteResponse.status} ${errorText}`
-    );
+    if (!result.ok) throw new Error("参加者情報を更新できませんでした。");
   }
 
-  if (
-    selectedMembers.length === 0
-  ) {
-    return;
-  }
+  const memberData = Array.from(selectedIds)
+    .filter((memberId) => !existingIds.has(memberId))
+    .map((memberId) => ({ trip_id: tripId, member_id: memberId, is_leader: memberId === leaderId }));
+  if (!memberData.length) return;
 
-  const memberData =
-    selectedMembers.map(
-      (checkbox) => {
-        const memberId =
-          Number(
-            checkbox.value
-          );
-
-        return {
-          trip_id:
-            tripId,
-
-          member_id:
-            memberId,
-
-          is_leader:
-            memberId ===
-            leaderId
-        };
-      }
-    );
-
-  const response =
+  const insertResponse =
     await portalFetch(
       "/rest/v1/trip_members",
       {
@@ -1573,13 +1530,13 @@ async function replaceTripMembers(
       }
     );
 
-  if (!response.ok) {
+  if (!insertResponse.ok) {
     const errorText =
-      await response.text();
+      await insertResponse.text();
 
     throw new Error(
       "参加者の保存に失敗しました。" +
-      ` ${response.status} ${errorText}`
+      ` ${insertResponse.status} ${errorText}`
     );
   }
 }

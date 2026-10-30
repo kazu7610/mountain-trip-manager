@@ -756,6 +756,11 @@ function createRevisionTripCard(
         修正する
       </button>
 
+      <button class="detail-button" type="button"
+        onclick="location.href='trip-plan.html?id=${trip.id}'">
+        詳細計画書を編集
+      </button>
+
     </div>
   `;
 
@@ -3254,6 +3259,11 @@ async function loadDraftTrips() {
     onclick="location.href='trip-form.html?edit=${trip.id}'"
   >
     続きを編集する
+  </button>
+
+  <button class="detail-button" type="button"
+    onclick="location.href='trip-plan.html?id=${trip.id}'">
+    詳細計画書を編集
   </button>
 
   <button
