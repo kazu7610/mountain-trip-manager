@@ -10,8 +10,16 @@ document.addEventListener(
       return;
     }
 
-    setupPdfButton();
-    loadPdfPlan();
+    const mobile = isMobilePdfDevice();
+    setupPdfButton(mobile);
+    loadPdfPlan().then((loaded) => {
+      if (mobile && loaded) {
+        prepareMobilePdf();
+      } else if (mobile) {
+        const button = document.getElementById("print-pdf-button");
+        if (button) button.textContent = "計画書の読み込みに失敗しました";
+      }
+    });
   }
 );
 
@@ -32,7 +40,15 @@ function getPdfTripId() {
    PDF保存ボタン
 ========================================= */
 
-function setupPdfButton() {
+let mobilePdfBlob = null;
+let mobilePdfFile = null;
+
+function isMobilePdfDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function setupPdfButton(mobile) {
   const printButton =
     document.getElementById(
       "print-pdf-button"
@@ -42,12 +58,143 @@ function setupPdfButton() {
     return;
   }
 
+  if (mobile) {
+    printButton.disabled = true;
+    printButton.textContent = "PDF準備中...";
+  }
+
   printButton.addEventListener(
     "click",
     () => {
-      window.print();
+      if (!mobile) {
+        window.print();
+        return;
+      }
+
+      if (!mobilePdfBlob) {
+        showIosPrintInstructions(printButton);
+        return;
+      }
+
+      const shareData = { files: [mobilePdfFile] };
+      try {
+        if (mobilePdfFile && navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+          navigator.share(shareData).catch((error) => {
+            if (error.name !== "AbortError" && !downloadMobilePdf()) {
+              showIosPrintInstructions(printButton);
+            }
+          });
+          return;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (!downloadMobilePdf()) showIosPrintInstructions(printButton);
     }
   );
+}
+
+async function prepareMobilePdf() {
+  const button = document.getElementById("print-pdf-button");
+  const page = document.getElementById("pdf-page");
+  if (!button || !page) return;
+
+  try {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    if (typeof html2canvas !== "function" || !window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error("PDF生成ライブラリを読み込めませんでした。");
+    }
+    const width = page.clientWidth;
+    const height = Math.max(page.clientHeight, page.scrollHeight);
+    const canvas = await html2canvas(page, {
+      scale: 2,
+      width,
+      height,
+      backgroundColor: "#ffffff",
+      onclone: (doc) => {
+        const clonedPage = doc.getElementById("pdf-page");
+        clonedPage.style.height = height + "px";
+        clonedPage.style.overflow = "visible";
+        clonedPage.style.boxShadow = "none";
+      }
+    });
+    const pdf = new window.jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    const ratio = Math.min(297 / canvas.width, 210 / canvas.height);
+    const imageWidth = canvas.width * ratio;
+    const imageHeight = canvas.height * ratio;
+    pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", (297 - imageWidth) / 2, 0, imageWidth, imageHeight);
+    mobilePdfBlob = pdf.output("blob");
+    try {
+      mobilePdfFile = new File([mobilePdfBlob], "山行計画書.pdf", { type: "application/pdf" });
+    } catch (error) {
+      mobilePdfFile = null;
+    }
+  } catch (error) {
+    console.error("PDFの生成に失敗しました。", error);
+  } finally {
+    button.disabled = false;
+    button.textContent = "PDFとして保存";
+  }
+}
+
+function downloadMobilePdf() {
+  try {
+    const link = document.createElement("a");
+    if (!("download" in link) || !window.URL || !window.URL.createObjectURL) return false;
+    const url = window.URL.createObjectURL(mobilePdfBlob);
+    link.href = url;
+    link.download = "山行計画書.pdf";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => window.URL.revokeObjectURL(url), 60000);
+    return true;
+  } catch (error) {
+    console.error("PDFのダウンロードに失敗しました。", error);
+    return false;
+  }
+}
+
+function showIosPrintInstructions(printButton) {
+  if (document.getElementById("ios-print-instructions")) {
+    return;
+  }
+
+  const instructions = document.createElement("div");
+  instructions.id = "ios-print-instructions";
+  instructions.setAttribute("role", "status");
+  instructions.style.maxWidth = "300px";
+
+  const message = document.createElement("p");
+  message.textContent =
+    "PDFを作成または保存できませんでした。下のアドレスをコピーしてSafariで開き、ログイン後、Safariの共有メニューから「プリント」を選んでPDFとして保存してください。";
+  instructions.appendChild(message);
+
+  const address = document.createElement("input");
+  address.type = "text";
+  address.readOnly = true;
+  address.value = window.location.href;
+  address.setAttribute("aria-label", "Safariで開くアドレス");
+  address.addEventListener("focus", () => address.select());
+  instructions.appendChild(address);
+
+  if (typeof navigator.share === "function") {
+    const shareButton = document.createElement("button");
+    shareButton.type = "button";
+    shareButton.textContent = "アドレスを共有";
+    shareButton.addEventListener("click", () => {
+      navigator.share({ title: document.title, url: window.location.href })
+        .catch((error) => {
+          if (error.name !== "AbortError") {
+            address.focus();
+          }
+        });
+    });
+    instructions.appendChild(shareButton);
+  }
+
+  printButton.parentNode.appendChild(instructions);
 }
 
 /* =========================================
@@ -135,6 +282,7 @@ async function loadPdfPlan() {
   trip.id
 );
 
+    return true;
 
   } catch (error) {
     console.error(error);

@@ -91,12 +91,12 @@ body {
 }
 
 /* =========================================
-   A4縦 PDFページ
+   A4横 PDFページ
 ========================================= */
 
 .pdf-page {
-  width: 210mm;
-  height: 297mm;
+  width: 297mm;
+  height: 210mm;
 
   margin:
     18px
@@ -323,7 +323,7 @@ body {
 ========================================= */
 
 @page {
-  size: A4 portrait;
+  size: A4 landscape;
   margin: 0;
 }
 
@@ -331,8 +331,8 @@ body {
 
   html,
   body {
-    width: 210mm;
-    height: 297mm;
+    width: 297mm;
+    height: 210mm;
 
     background: #fff;
   }
@@ -342,8 +342,8 @@ body {
   }
 
   .pdf-page {
-    width: 210mm;
-    height: 297mm;
+    width: 297mm;
+    height: 210mm;
 
     margin: 0;
     padding: 8mm;
@@ -998,7 +998,7 @@ body {
   .pdf-toolbar {
     justify-content: flex-start;
 
-    min-width: 210mm;
+    min-width: 297mm;
   }
 
   .pdf-page {
